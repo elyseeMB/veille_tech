@@ -1,0 +1,19 @@
+{
+  "name": "veille_tech",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "turbo run clean",
+    "dev": "turbo run dev",
+    "host": "turbo run dev --host",
+    "build": "turbo run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.28.2",
+  "devDependencies": {
+    "turbo": "^2.9.5"
+  }
+}

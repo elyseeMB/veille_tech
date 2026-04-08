@@ -1,0 +1,11 @@
+{
+  "httpMethod": "GET",
+  "path": "/hello",
+  "queryStringParameters": {
+    "foo": "bar"
+  },
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "{\"message\": \"hello\"}"
+}
