@@ -60,7 +60,8 @@ function ArticlesList({
                   <span>{item.author}</span>
                   <span className="h-px flex-1 bg-foreground/10" />
                   <time>
-                    {new Date(item.pubDate).toLocaleDateString("fr", {
+                    {new Date(item.pubDate).toLocaleDateString("en", {
+                      year: "numeric",
                       day: "numeric",
                       month: "short",
                     })}
@@ -94,9 +95,11 @@ export function App() {
   const desktopHeaderRef = useRef<HTMLDivElement>(null);
   const mobileHeaderRef = useRef<HTMLDivElement>(null);
 
-  const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+  const [isDesktop, setIsDesktop] = useState(
+    () => window.matchMedia("(min-width: 1024px)").matches,
+  );
 
-  const [headerHeight, setHeaderHeight] = useState<number>();
+  const [headerHeight, setHeaderHeight] = useState<number>(80);
   const [data, setData] = useState<{
     hackerNews?: Array<{
       link: string;
@@ -110,7 +113,7 @@ export function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:4000/rss")
+    fetch("https://fast-singers-dream.loca.lt/rss")
       .then((r) => r.json())
       .then((r) => {
         setData(r);
@@ -122,18 +125,33 @@ export function App() {
       });
   }, []);
 
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
   useLayoutEffect(() => {
-    const header = isDesktop
-      ? desktopHeaderRef.current
-      : mobileHeaderRef.current;
+    const update = () => {
+      const desktopH =
+        desktopHeaderRef.current?.getBoundingClientRect().height ?? 0;
+      const mobileH =
+        mobileHeaderRef.current?.getBoundingClientRect().height ?? 0;
+      setHeaderHeight(desktopH > 0 ? desktopH : mobileH);
+    };
 
-    if (!header) {
-      return;
+    update();
+
+    const observer = new ResizeObserver(update);
+    if (desktopHeaderRef.current) {
+      observer.observe(desktopHeaderRef.current);
     }
-
-    const height = header.getBoundingClientRect().height;
-    setHeaderHeight(height);
-  }, [isDesktop]);
+    if (mobileHeaderRef.current) {
+      observer.observe(mobileHeaderRef.current);
+    }
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <main className="min-h-screen bg-background font-serif relative">
@@ -172,7 +190,7 @@ export function App() {
         style={{
           "--header-height": `${isDesktop ? headerHeight : headerHeight + 20}px`,
         }}
-        className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-12  pt-[var(--header-height)] pb-10"
+        className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-12 pt-[var(--header-height)] pb-10 transition-[padding-top] duration-150 ease-out"
       >
         {/* Header Mobile */}
         <div className="lg:hidden mb-8">
@@ -182,35 +200,68 @@ export function App() {
           <h1 className="text-3xl sm:text-4xl font-normal leading-none tracking-tight text-foreground">
             Veille Tech
           </h1>
-          <div className="h-px w-full bg-muted my-4" />
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            Articles et événements
-            <br />
-            de la semaine
-          </p>
         </div>
 
         {/* Grille Desktop */}
         <div className="hidden lg:grid grid-cols-2 border-l border-border">
           {/* ── Colonne gauche sticky ── */}
           <div className="border-r border-border">
-            <div className="sticky top-[calc(var(--header-height)_+_0.5rem)]">
+            <div className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[calc(var(--header-height)_+_0.5rem)] et h-[calc(100vh_-_var(--header-height)_-_0.5rem)]">
               <header className="mb-16">
                 <div className="px-5 py-0 py-3 flex flex-col gap-5">
                   <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                     Collection
                   </p>
-
                   <h1 className="text-4xl font-normal leading-none tracking-tight text-foreground">
                     Veille Tech
                   </h1>
                 </div>
-                <div className="h-px w-full bg-muted" />
-                <div className="px-5 py-0 py-3">
+                <div className="h-px w-full bg-[var(--border)]" />
+                <div className="px-5 py-0 py-3 flex flex-col gap-5">
                   <p className="text-sm leading-relaxed text-muted-foreground">
-                    Articles et événements
-                    <br />
-                    de la semaine
+                    Articles et événements de la semaine
+                  </p>
+                  <p className="leading-relaxed">
+                    La Cybersecurity and Infrastructure Security Agency (CISA) a
+                    ajouté la CVE-2009-0238 à sa liste Known Exploited
+                    Vulnerabilities (KEV) le 14 avril 2026, confirmant son
+                    exploitation active par des acteurs malveillants.
+                  </p>
+
+                  <p className="leading-relaxed">
+                    Cette vulnérabilité critique dans Microsoft Excel, vieille
+                    de 17 ans, possède un score CVSS v2 de 8.8/10 et permet une
+                    exécution de code à distance (RCE) via un débordement de
+                    tampon lors du traitement de formules dans des fichiers .xls
+                    malveillants.
+                  </p>
+
+                  <p className="leading-relaxed">
+                    Les attaques se propagent principalement par phishing,
+                    utilisant des macros ou objets embarqués pour injecter du
+                    code arbitraire, compromettant totalement le système hôte et
+                    favorisant le déploiement de malwares comme les RATs ou
+                    stealers.
+                  </p>
+
+                  <p className="leading-relaxed">
+                    Découverte en 2009 et patchée par Microsoft (MS09-017), elle
+                    persiste dans les environnements legacy non mis à jour, y
+                    compris Office 2007 et versions antérieures, ainsi que
+                    certains systèmes récents sans patches cumulatifs.
+                  </p>
+
+                  <p className="leading-relaxed">
+                    CISA impose une deadline stricte aux agences fédérales US :
+                    appliquer les correctifs d'ici le 28 avril 2026, suite à une
+                    recrudescence d'attaques observée fin 2025 - début 2026
+                    [web:1][web:3][web:4].
+                  </p>
+
+                  <p className="leading-relaxed">
+                    <strong>Mitigations prioritaires </strong>- Patcher
+                    immédiatement tous les déploiements Office (y compris
+                    Extended Support).
                   </p>
                 </div>
               </header>
@@ -238,7 +289,7 @@ export function App() {
           </div>
 
           <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60">
-            {new Date().toLocaleDateString("fr", {
+            {new Date().toLocaleDateString("en", {
               day: "numeric",
               month: "long",
             })}

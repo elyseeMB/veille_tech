@@ -189,7 +189,7 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
         return (end - start) / 2;
       })
       .attr("fill", "currentColor")
-      .attr("class", "text-muted-foreground text-[10px]");
+      .attr("class", "text-muted-foreground");
   }, [scrollable]);
 
   useEffect(() => {

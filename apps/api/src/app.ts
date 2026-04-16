@@ -25,7 +25,7 @@ app.get("/rss", async ({ json, res }) => {
     const xml = await response.text();
     const feed = await parser.parseString(xml);
     return json({
-      hackerNews: feed.items.slice(0, 10),
+      hackerNews: feed.items,
     });
   } catch (error) {
     return json({ error: "RSS fetch failed", status: res.status });
