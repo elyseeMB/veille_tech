@@ -43,9 +43,9 @@ function ArticlesList({
         : data?.hackerNews?.map((item, i) => (
             <article
               key={i}
-              className="group grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 border-b border-border last:border-0 transition-colors hover:bg-foreground/5"
+              className="group relative grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 border-b border-border last:border-0 transition-colors hover:bg-foreground/5"
             >
-              <div className="bg-muted transition-colors group-hover:bg-foreground" />
+              <div className="bg-muted opacity-0 transition-colors group-hover:opacity-100 group-hover:bg-foreground" />
 
               <div className="space-y-3">
                 <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
@@ -61,7 +61,7 @@ function ArticlesList({
 
                 <a
                   href={item.link}
-                  className="block"
+                  className="block before:absolute before:content-[''] before:inset-0 before:w-full before:h-full"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -117,15 +117,13 @@ export function App() {
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">
               Calendrier
             </p>
-            <div className="-ml-4">
-              <Calendar />
-            </div>
+            <Calendar />
           </section>
         </div>
       </div>
 
       {/* CONTENU PRINCIPAL */}
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-12 pt-[180px] lg:pt-[240px] pb-10">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-12 pt-[180px] lg:pt-[200px] pb-10">
         {/* Header Mobile */}
         <div className="lg:hidden mb-8">
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
@@ -143,7 +141,7 @@ export function App() {
         </div>
 
         {/* Grille Desktop */}
-        <div className="hidden -mt-9 lg:grid grid-cols-2 border-l border-border">
+        <div className="hidden lg:grid grid-cols-2 border-l border-border">
           {/* ── Colonne gauche sticky ── */}
           <div className="border-r border-border">
             <div className="sticky top-[260px]">

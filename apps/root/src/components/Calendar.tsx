@@ -77,7 +77,7 @@ export function Calendar() {
                     className="dark:fill-emerald-400"
                   />
                 </a>
-              ) : (
+              ) : +d < today ? (
                 <a href={`/date/${d.toISOString().slice(0, 10)}`}>
                   <circle
                     r={CELL / 2 - 1}
@@ -87,9 +87,17 @@ export function Calendar() {
                     cy={getCy(d)}
                   />
                 </a>
+              ) : (
+                <circle
+                  r={CELL / 2 - 1}
+                  fill="currentColor"
+                  opacity={+d < today ? 0.2 : 0.8}
+                  cx={getCx(d)}
+                  cy={getCy(d)}
+                />
               )}
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent className="pointer-events-none">
               <p className="font-serif text-sm">{label}</p>
             </TooltipContent>
           </Tooltip>
@@ -98,7 +106,7 @@ export function Calendar() {
 
       <g
         ref={refAxis}
-        className="text-[10px] font-serif text-muted-foreground dark:text-muted-foreground"
+        className="text-sm font-serif text-muted-foreground dark:text-muted-foreground"
         transform={`translate(0, ${height - margin[2]})`}
       />
     </svg>
