@@ -5,6 +5,7 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: { allowedHosts: ["proud-owls-change.loca.lt"] },
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

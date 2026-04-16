@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Calendar } from "./components/Calendar.tsx";
 import { Skeleton } from "./components/ui/skeleton.tsx";
 import { ModeToggle } from "./components/Mode-toggle.tsx";
@@ -43,7 +43,15 @@ function ArticlesList({
         : data?.hackerNews?.map((item, i) => (
             <article
               key={i}
-              className="group relative grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 border-b border-border last:border-0 transition-colors hover:bg-foreground/5 -ml-5 lg:ml-0 lg:ml-0"
+              className="
+                      group relative grid grid-cols-1 lg:grid-cols-[1px_1fr]
+                      gap-5
+                      w-[calc(100%_+_2rem)] -mx-[1rem]
+                      p-4
+                      lg:w-full lg:mx-0
+                      lg:py-5 lg:pl-0 lg:pr-5 lg:pr-10
+                      border-b border-border last:border-0
+                      transition-colors hover:bg-foreground/5"
             >
               <div className="bg-muted opacity-0 transition-colors group-hover:opacity-100 group-hover:bg-foreground" />
 
@@ -83,6 +91,12 @@ function ArticlesList({
 }
 
 export function App() {
+  const desktopHeaderRef = useRef<HTMLDivElement>(null);
+  const mobileHeaderRef = useRef<HTMLDivElement>(null);
+
+  const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+
+  const [headerHeight, setHeaderHeight] = useState<number>();
   const [data, setData] = useState<{
     hackerNews?: Array<{
       link: string;
@@ -108,10 +122,41 @@ export function App() {
       });
   }, []);
 
+  useLayoutEffect(() => {
+    const header = isDesktop
+      ? desktopHeaderRef.current
+      : mobileHeaderRef.current;
+
+    if (!header) {
+      return;
+    }
+
+    const height = header.getBoundingClientRect().height;
+    setHeaderHeight(height);
+  }, [isDesktop]);
+
   return (
     <main className="min-h-screen bg-background font-serif relative">
+      {/* ── HEADER FIXE Mobile (remplace l'ancien hidden) ── */}
+
+      <div
+        ref={mobileHeaderRef}
+        className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border"
+      >
+        <div className="py-3">
+          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground px-4 mb-2">
+            Calendrier
+          </p>
+          {/* Calendar gère lui-même le scroll container + snap */}
+          <Calendar scrollable />
+        </div>
+      </div>
+
       {/* CALENDRIER FIXE - Desktop uniquement */}
-      <div className="hidden lg:block fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
+      <div
+        ref={desktopHeaderRef}
+        className="hidden lg:block fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border"
+      >
         <div className="mx-auto max-w-5xl px-12 py-6">
           <section className="px-10 py-0">
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">
@@ -123,7 +168,12 @@ export function App() {
       </div>
 
       {/* CONTENU PRINCIPAL */}
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-12 pt-[180px] lg:pt-[200px] pb-10">
+      <div
+        style={{
+          "--header-height": `${isDesktop ? headerHeight : headerHeight + 20}px`,
+        }}
+        className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-12  pt-[var(--header-height)] pb-10"
+      >
         {/* Header Mobile */}
         <div className="lg:hidden mb-8">
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
@@ -144,19 +194,19 @@ export function App() {
         <div className="hidden lg:grid grid-cols-2 border-l border-border">
           {/* ── Colonne gauche sticky ── */}
           <div className="border-r border-border">
-            <div className="sticky top-[260px]">
+            <div className="sticky top-[calc(var(--header-height)_+_0.5rem)]">
               <header className="mb-16">
-                <div className="px-10 py-0 py-3 flex flex-col gap-5">
+                <div className="px-5 py-0 py-3 flex flex-col gap-5">
                   <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                     Collection
                   </p>
 
-                  <h1 className="text-[40px] font-normal leading-none tracking-tight text-foreground">
+                  <h1 className="text-4xl font-normal leading-none tracking-tight text-foreground">
                     Veille Tech
                   </h1>
                 </div>
                 <div className="h-px w-full bg-muted" />
-                <div className="px-10 py-0 py-3">
+                <div className="px-5 py-0 py-3">
                   <p className="text-sm leading-relaxed text-muted-foreground">
                     Articles et événements
                     <br />

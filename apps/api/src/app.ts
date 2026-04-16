@@ -17,14 +17,19 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-app.get("/rss", async ({ json }) => {
-  const hackerNews = await parser.parseURL(
-    "https://feeds.feedburner.com/TheHackersNews",
-  );
-
-  return json({
-    hackerNews: hackerNews.items.slice(0, 10),
-  });
+app.get("/rss", async ({ json, res }) => {
+  try {
+    const response = await fetch(
+      "https://thehackernews.com/feeds/posts/default",
+    );
+    const xml = await response.text();
+    const feed = await parser.parseString(xml);
+    return json({
+      hackerNews: feed.items.slice(0, 10),
+    });
+  } catch (error) {
+    return json({ error: "RSS fetch failed", status: res.status });
+  }
 });
 
 export default app;
