@@ -1,104 +1,76 @@
-import { useEffect, useRef } from "react";
-import { axisBottom, scaleUtc, timeYear, timeMonth, timeDay, select } from "d3";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "./components/ui/tooltip.tsx";
-
-const margin = [10, 20, 40, 40];
-const width = 900;
-const CELL = 11;
-const DAYS_IN_WEEK = 7;
-const height = DAYS_IN_WEEK * CELL + margin[0] + margin[2] + 5;
-const now = new Date();
-
-const data = timeDay.range(timeYear.floor(now), timeYear.ceil(now));
-
-const x = scaleUtc()
-  .domain([timeYear.floor(now), timeYear.ceil(now)])
-  .range([margin[3], width - margin[1]]);
-
-const getCx = (d: Date) => {
-  const monthStart = timeMonth.floor(d);
-  const startDay = (monthStart.getDay() + 6) % 7;
-  const weekIndex = Math.floor(
-    (timeDay.count(monthStart, d) + startDay) / DAYS_IN_WEEK,
-  );
-  return x(monthStart) + weekIndex * CELL;
-};
-
-const getCy = (d: Date) =>
-  (DAYS_IN_WEEK - 1 - ((d.getDay() + 6) % 7)) * CELL + CELL / 2 + margin[0];
-
-const today = +timeDay.floor(now);
+import { useEffect, useState } from "react";
+import { Calendar } from "./components/Calendar.tsx";
 
 export function App() {
-  const refAxis = useRef<SVGGElement | null>(null);
+  const [data, setData] = useState<{ hackerNews?: Array<{
+    link: string;
+    title: string;
+    author: string;
+    pubDate: string;
+    enclosure?: { url: string };
+    content?: string;
+  }> }>();
 
   useEffect(() => {
-    if (!refAxis.current) return;
-    const axis = axisBottom(x)
-      .tickValues(timeMonth.range(timeYear.floor(now), timeYear.ceil(now)))
-      .tickFormat((d) => (d as Date).toLocaleString("fr", { month: "short" }));
-
-    select(refAxis.current)
-      .call(axis)
-      .call((d) => d.select(".domain").attr("stroke", "none"))
-      .call((d) => d.selectAll(".tick line").attr("stroke", "none"))
-      .selectAll(".tick text")
-      .attr("dx", CELL);
+    fetch("http://localhost:4000/rss")
+      .then((r) => r.json())
+      .then((r) => setData(r))
+      .catch((e) => console.error(e));
   }, []);
 
   return (
-    <div className="flex items-center justify-center p-4">
-      <svg width={width} height={height}>
-        {data.map((d) => {
-          const isToday = +d === today;
-          const label = d.toLocaleDateString("en", {
-            weekday: "short",
-            day: "numeric",
-            month: "short",
-          });
+    <main className="min-h-screen bg-neutral-50 px-6 py-12">
+      <div className="mx-auto max-w-5xl space-y-12">
+        <header className="text-center">
+          <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
+            Veille Technologique
+          </h1>
+          <p className="mt-2 text-sm text-neutral-500">
+            Actualités et événements tech
+          </p>
+        </header>
 
-          return (
-            <Tooltip key={+d}>
-              <TooltipTrigger render={<g style={{ cursor: "pointer" }} />}>
-                {isToday ? (
-                  <a href={`/date/${d.toISOString().slice(0, 10)}`}>
-                    <rect
-                      width={CELL - 2}
-                      height={CELL - 2}
-                      x={getCx(d) - (CELL - 2) / 2}
-                      y={getCy(d) - (CELL - 2) / 2}
-                      fill="#5dff6d"
-                    />
-                  </a>
-                ) : (
-                  <a href={`/date/${d.toISOString().slice(0, 10)}`}>
-                    <circle
-                      r={CELL / 2 - 1}
-                      fill="black"
-                      opacity={+d < today ? 0.2 : 0.8}
-                      cx={getCx(d)}
-                      cy={getCy(d)}
-                    />
-                  </a>
-                )}
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{label}</p>
-              </TooltipContent>
-            </Tooltip>
-          );
-        })}
+        <section>
+          <Calendar />
+        </section>
 
-        <g
-          ref={refAxis}
-          className="text-sm"
-          transform={`translate(0, ${height - margin[2]})`}
-        />
-      </svg>
-    </div>
+        <section className="space-y-6">
+          <h2 className="text-lg font-medium text-neutral-700 border-b border-neutral-200 pb-2">
+            Articles récents
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {data?.hackerNews?.map((item, i) => (
+              <article
+                key={i}
+                className="group relative rounded-xl border border-neutral-200 bg-white p-5 transition-all hover:border-neutral-300 hover:shadow-sm"
+              >
+                <a href={item.link} className="block">
+                  {item.enclosure?.url && (
+                    <img
+                      src={item.enclosure.url}
+                      alt=""
+                      className="mb-4 h-40 w-full rounded-lg object-cover"
+                    />
+                  )}
+                  <h3 className="font-medium text-neutral-900 group-hover:text-neutral-600 line-clamp-2">
+                    {item.title}
+                  </h3>
+                  <div className="mt-3 flex items-center gap-3 text-xs text-neutral-500">
+                    <span>{item.author}</span>
+                    <span>·</span>
+                    <time>{new Date(item.pubDate).toLocaleDateString("fr")}</time>
+                  </div>
+                  {item.content && (
+                    <p className="mt-2 text-sm text-neutral-600 line-clamp-2">
+                      {item.content.replace(/<[^>]*>/g, "")}
+                    </p>
+                  )}
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }
