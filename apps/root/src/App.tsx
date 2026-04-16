@@ -43,7 +43,7 @@ function ArticlesList({
         : data?.hackerNews?.map((item, i) => (
             <article
               key={i}
-              className="group relative grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 border-b border-border last:border-0 transition-colors hover:bg-foreground/5"
+              className="group relative grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 border-b border-border last:border-0 transition-colors hover:bg-foreground/5 -ml-5 lg:ml-0 lg:ml-0"
             >
               <div className="bg-muted opacity-0 transition-colors group-hover:opacity-100 group-hover:bg-foreground" />
 
