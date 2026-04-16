@@ -43,58 +43,64 @@ export function Calendar() {
       .call((d) => d.select(".domain").attr("stroke", "none"))
       .call((d) => d.selectAll(".tick line").attr("stroke", "none"))
       .selectAll(".tick text")
-      .attr("dx", CELL);
+      .attr("dx", CELL)
+      .attr("fill", "currentColor")
+      .attr("class", "text-muted-foreground text-[10px]");
   }, []);
 
   return (
-    <div className="flex items-center justify-center p-4">
-      <svg width={width} height={height}>
-        {data.map((d) => {
-          const isToday = +d === today;
-          const label = d.toLocaleDateString("en", {
-            weekday: "short",
-            day: "numeric",
-            month: "short",
-          });
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      width="100%"
+      style={{ display: "block" }}
+      className="text-foreground dark:text-white"
+    >
+      {data.map((d) => {
+        const isToday = +d === today;
+        const label = d.toLocaleDateString("fr", {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+        });
 
-          return (
-            <Tooltip key={+d}>
-              <TooltipTrigger render={<g style={{ cursor: "pointer" }} />}>
-                {isToday ? (
-                  <a href={`/date/${d.toISOString().slice(0, 10)}`}>
-                    <rect
-                      width={CELL - 2}
-                      height={CELL - 2}
-                      x={getCx(d) - (CELL - 2) / 2}
-                      y={getCy(d) - (CELL - 2) / 2}
-                      fill="#5dff6d"
-                    />
-                  </a>
-                ) : (
-                  <a href={`/date/${d.toISOString().slice(0, 10)}`}>
-                    <circle
-                      r={CELL / 2 - 1}
-                      fill="black"
-                      opacity={+d < today ? 0.2 : 0.8}
-                      cx={getCx(d)}
-                      cy={getCy(d)}
-                    />
-                  </a>
-                )}
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{label}</p>
-              </TooltipContent>
-            </Tooltip>
-          );
-        })}
+        return (
+          <Tooltip key={+d}>
+            <TooltipTrigger render={<g style={{ cursor: "pointer" }} />}>
+              {isToday ? (
+                <a href={`/date/${d.toISOString().slice(0, 10)}`}>
+                  <rect
+                    width={CELL - 2}
+                    height={CELL - 2}
+                    x={getCx(d) - (CELL - 2) / 2}
+                    y={getCy(d) - (CELL - 2) / 2}
+                    fill="#5dff6d"
+                    className="dark:fill-emerald-400"
+                  />
+                </a>
+              ) : (
+                <a href={`/date/${d.toISOString().slice(0, 10)}`}>
+                  <circle
+                    r={CELL / 2 - 1}
+                    fill="currentColor"
+                    opacity={+d < today ? 0.2 : 0.8}
+                    cx={getCx(d)}
+                    cy={getCy(d)}
+                  />
+                </a>
+              )}
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="font-serif text-sm">{label}</p>
+            </TooltipContent>
+          </Tooltip>
+        );
+      })}
 
-        <g
-          ref={refAxis}
-          className="text-sm"
-          transform={`translate(0, ${height - margin[2]})`}
-        />
-      </svg>
-    </div>
+      <g
+        ref={refAxis}
+        className="text-[10px] font-serif text-muted-foreground dark:text-muted-foreground"
+        transform={`translate(0, ${height - margin[2]})`}
+      />
+    </svg>
   );
 }
