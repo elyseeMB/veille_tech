@@ -136,6 +136,7 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 ::view-transition-old(calendar-header) {
   animation: slide-up 200ms ease forwards;
 }
@@ -160,4 +161,25 @@
   to {
     transform: translateY(0);
   }
+}
+
+/* Pour Firefox */
+* {
+  scrollbar-width: thin; /* ou 'auto' */
+  scrollbar-color: var(--accent-foreground) var(--background);
+}
+
+/* Pour Chrome, Edge, Safari (WebKit) */
+*::-webkit-scrollbar {
+  width: 22px;
+}
+*::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--accent-foreground);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--secondary-foreground);
 }

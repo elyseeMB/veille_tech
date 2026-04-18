@@ -273,7 +273,7 @@ export function App() {
           {/* ── Colonne gauche sticky ── */}
 
           <div className="border-r border-border">
-            <div className="sticky scrollbar-hide overflow-y-auto top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] pt-2">
+            <div className="sticky overflow-y-auto scrollbar-hide top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] pt-2">
               {/* Sources actives */}
 
               <section id="sources">
@@ -515,6 +515,35 @@ export function App() {
                     },
                     {
                       index: "03",
+                      title:
+                        "Llama 4 : architecture MoE, 10M tokens de contexte",
+                      source: "Hacker News",
+                      date: "11 avr.",
+                    },
+
+                    {
+                      index: "04",
+                      title:
+                        "Llama 4 : architecture MoE, 10M tokens de contexte",
+                      source: "Hacker News",
+                      date: "11 avr.",
+                    },
+                    {
+                      index: "05",
+                      title:
+                        "Llama 4 : architecture MoE, 10M tokens de contexte",
+                      source: "Hacker News",
+                      date: "11 avr.",
+                    },
+                    {
+                      index: "06",
+                      title:
+                        "Llama 4 : architecture MoE, 10M tokens de contexte",
+                      source: "Hacker News",
+                      date: "11 avr.",
+                    },
+                    {
+                      index: "07",
                       title:
                         "Llama 4 : architecture MoE, 10M tokens de contexte",
                       source: "Hacker News",
