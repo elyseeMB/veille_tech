@@ -596,7 +596,7 @@ export function App() {
           <section
             ref={summaryRef}
             id="summary"
-            className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] "
+            className="sticky overflow-y-auto pt-2 scrollbar-hide overscroll-contain top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] "
           >
             <div className="border-r border-border">
               <div className="px-5 py-2 flex items-center justify-between">
