@@ -113,7 +113,7 @@ export function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("https://fast-singers-dream.loca.lt/rss")
+    fetch("http://localhost:4000/rss")
       .then((r) => r.json())
       .then((r) => {
         setData(r);
@@ -176,7 +176,7 @@ export function App() {
         className="hidden lg:block fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border"
       >
         <div className="mx-auto max-w-5xl px-12 py-6">
-          <section className="px-10 py-0">
+          <section className="px-5 py-0">
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">
               Calendrier
             </p>
@@ -190,7 +190,7 @@ export function App() {
         style={{
           "--header-height": `${isDesktop ? headerHeight : headerHeight + 20}px`,
         }}
-        className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-12 pt-[var(--header-height)] pb-10 transition-[padding-top] duration-150 ease-out"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 pt-[var(--header-height)] pb-10 transition-[padding-top] duration-150 ease-out"
       >
         {/* Header Mobile */}
         <div className="lg:hidden mb-8">
@@ -203,12 +203,12 @@ export function App() {
         </div>
 
         {/* Grille Desktop */}
-        <div className="hidden lg:grid grid-cols-2 border-l border-border">
+        <div className="hidden lg:grid grid-cols-3 border-l border-border">
           {/* ── Colonne gauche sticky ── */}
           <div className="border-r border-border">
-            <div className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[calc(var(--header-height)_+_0.5rem)] et h-[calc(100vh_-_var(--header-height)_-_0.5rem)]">
-              <header className="mb-16">
-                <div className="px-5 py-0 py-3 flex flex-col gap-5">
+            <div className="sticky overflow-y-auto scrollbar-hide top-[calc(var(--header-height)_+_0.5rem)] et h-[calc(100vh_-_var(--header-height)_-_0.5rem)]">
+              <header>
+                <div className="px-5 py-3 flex flex-col gap-5">
                   <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                     Collection
                   </p>
@@ -216,61 +216,115 @@ export function App() {
                     Veille Tech
                   </h1>
                 </div>
-                <div className="h-px w-full bg-[var(--border)]" />
-                <div className="px-5 py-0 py-3 flex flex-col gap-5">
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    Articles et événements de la semaine
-                  </p>
-                  <p className="leading-relaxed">
-                    La Cybersecurity and Infrastructure Security Agency (CISA) a
-                    ajouté la CVE-2009-0238 à sa liste Known Exploited
-                    Vulnerabilities (KEV) le 14 avril 2026, confirmant son
-                    exploitation active par des acteurs malveillants.
-                  </p>
-
-                  <p className="leading-relaxed">
-                    Cette vulnérabilité critique dans Microsoft Excel, vieille
-                    de 17 ans, possède un score CVSS v2 de 8.8/10 et permet une
-                    exécution de code à distance (RCE) via un débordement de
-                    tampon lors du traitement de formules dans des fichiers .xls
-                    malveillants.
-                  </p>
-
-                  <p className="leading-relaxed">
-                    Les attaques se propagent principalement par phishing,
-                    utilisant des macros ou objets embarqués pour injecter du
-                    code arbitraire, compromettant totalement le système hôte et
-                    favorisant le déploiement de malwares comme les RATs ou
-                    stealers.
-                  </p>
-
-                  <p className="leading-relaxed">
-                    Découverte en 2009 et patchée par Microsoft (MS09-017), elle
-                    persiste dans les environnements legacy non mis à jour, y
-                    compris Office 2007 et versions antérieures, ainsi que
-                    certains systèmes récents sans patches cumulatifs.
-                  </p>
-
-                  <p className="leading-relaxed">
-                    CISA impose une deadline stricte aux agences fédérales US :
-                    appliquer les correctifs d'ici le 28 avril 2026, suite à une
-                    recrudescence d'attaques observée fin 2025 - début 2026
-                    [web:1][web:3][web:4].
-                  </p>
-
-                  <p className="leading-relaxed">
-                    <strong>Mitigations prioritaires </strong>- Patcher
-                    immédiatement tous les déploiements Office (y compris
-                    Extended Support).
-                  </p>
-                </div>
               </header>
+              <div className="h-px w-full bg-[var(--border)]" />
+
+              <div className="px-5 py-0 py-3 flex flex-col gap-5">
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Articles et événements de la semaine
+                </p>
+                <p className="leading-relaxed">
+                  La Cybersecurity and Infrastructure Security Agency (CISA) a
+                  ajouté la CVE-2009-0238 à sa liste Known Exploited
+                  Vulnerabilities (KEV) le 14 avril 2026, confirmant son
+                  exploitation active par des acteurs malveillants.
+                </p>
+
+                <p className="leading-relaxed">
+                  Cette vulnérabilité critique dans Microsoft Excel, vieille de
+                  17 ans, possède un score CVSS v2 de 8.8/10 et permet une
+                  exécution de code à distance (RCE) via un débordement de
+                  tampon lors du traitement de formules dans des fichiers .xls
+                  malveillants.
+                </p>
+
+                <p className="leading-relaxed">
+                  Les attaques se propagent principalement par phishing,
+                  utilisant des macros ou objets embarqués pour injecter du code
+                  arbitraire, compromettant totalement le système hôte et
+                  favorisant le déploiement de malwares comme les RATs ou
+                  stealers.
+                </p>
+
+                <p className="leading-relaxed">
+                  Découverte en 2009 et patchée par Microsoft (MS09-017), elle
+                  persiste dans les environnements legacy non mis à jour, y
+                  compris Office 2007 et versions antérieures, ainsi que
+                  certains systèmes récents sans patches cumulatifs.
+                </p>
+
+                <p className="leading-relaxed">
+                  CISA impose une deadline stricte aux agences fédérales US :
+                  appliquer les correctifs d'ici le 28 avril 2026, suite à une
+                  recrudescence d'attaques observée fin 2025 - début 2026
+                  [web:1][web:3][web:4].
+                </p>
+
+                <p className="leading-relaxed">
+                  <strong>Mitigations prioritaires </strong>- Patcher
+                  immédiatement tous les déploiements Office (y compris Extended
+                  Support).
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Colonne droite Desktop */}
           <div className="border-r border-border py-0">
             <ArticlesList data={data} loading={loading} />
+          </div>
+
+          {/* third Col */}
+          <div className="border-r border-border">
+            <div className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[calc(var(--header-height)_+_0.5rem)] et h-[calc(100vh_-_var(--header-height)_-_0.5rem)]">
+              <div className="px-5 py-0 py-3 flex flex-col gap-5">
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Articles et événements de la semaine
+                </p>
+                <p className="leading-relaxed">
+                  La Cybersecurity and Infrastructure Security Agency (CISA) a
+                  ajouté la CVE-2009-0238 à sa liste Known Exploited
+                  Vulnerabilities (KEV) le 14 avril 2026, confirmant son
+                  exploitation active par des acteurs malveillants.
+                </p>
+
+                <p className="leading-relaxed">
+                  Cette vulnérabilité critique dans Microsoft Excel, vieille de
+                  17 ans, possède un score CVSS v2 de 8.8/10 et permet une
+                  exécution de code à distance (RCE) via un débordement de
+                  tampon lors du traitement de formules dans des fichiers .xls
+                  malveillants.
+                </p>
+
+                <p className="leading-relaxed">
+                  Les attaques se propagent principalement par phishing,
+                  utilisant des macros ou objets embarqués pour injecter du code
+                  arbitraire, compromettant totalement le système hôte et
+                  favorisant le déploiement de malwares comme les RATs ou
+                  stealers.
+                </p>
+
+                <p className="leading-relaxed">
+                  Découverte en 2009 et patchée par Microsoft (MS09-017), elle
+                  persiste dans les environnements legacy non mis à jour, y
+                  compris Office 2007 et versions antérieures, ainsi que
+                  certains systèmes récents sans patches cumulatifs.
+                </p>
+
+                <p className="leading-relaxed">
+                  CISA impose une deadline stricte aux agences fédérales US :
+                  appliquer les correctifs d'ici le 28 avril 2026, suite à une
+                  recrudescence d'attaques observée fin 2025 - début 2026
+                  [web:1][web:3][web:4].
+                </p>
+
+                <p className="leading-relaxed">
+                  <strong>Mitigations prioritaires </strong>- Patcher
+                  immédiatement tous les déploiements Office (y compris Extended
+                  Support).
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -280,7 +334,7 @@ export function App() {
         </div>
 
         {/* Pied de page */}
-        <footer className="px-0 lg:px-10 py-4 flex items-center justify-between mt-10 pt-6">
+        <footer className="px-0 lg:px-5 py-4 flex items-center justify-between pt-6 -mb-10 border-x border-t border-border">
           <div className="flex items-center gap-4">
             <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60">
               Veille Tech — 2026
