@@ -409,7 +409,7 @@ export function App() {
                                     {/* Trait arborescence */}
                                     <div className="flex items-center gap-2 relative">
                                       <span className="absolute -left-4 top-1/2 -translate-y-1/2 w-3 h-px bg-border" />
-                                      <span className="font-mono text-[10px] text-muted-foreground/70 group-hover:text-foreground transition-colors truncate max-w-[120px]">
+                                      <span className="font-mono text-[10px] text-muted-foreground group-hover:text-foreground transition-colors truncate max-w-[120px]">
                                         {feed.name}
                                       </span>
                                     </div>

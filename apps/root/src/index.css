@@ -136,7 +136,3 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
-main {
-  padding-top: var(--header-height);
-}
