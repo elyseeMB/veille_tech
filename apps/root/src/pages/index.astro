@@ -1,0 +1,13 @@
+---
+import { App } from "@/components/App";
+import Layout from "@/layouts/Layout.astro";
+import { Main } from "@/components/main";
+
+console.log("This runs in your terminal, not the browser!");
+---
+
+<!-- Below is your "component template." It's just HTML, but with
+    some magic sprinkled in to help you build great templates. -->
+<Layout>
+  <Main client:only />
+</Layout>

@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Calendar } from "./components/Calendar.tsx";
-import { Skeleton } from "./components/ui/skeleton.tsx";
-import { ModeToggle } from "./components/Mode-toggle.tsx";
+import { Calendar } from "./Calendar.tsx";
+import { Skeleton } from "./ui/skeleton.tsx";
+import { ModeToggle } from "./Mode-toggle.tsx";
 
 type Feed = {
   description: string;
