@@ -136,3 +136,28 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+::view-transition-old(calendar-header) {
+  animation: slide-up 200ms ease forwards;
+}
+
+::view-transition-new(calendar-header) {
+  animation: slide-down 200ms ease forwards;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

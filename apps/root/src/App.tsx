@@ -1,7 +1,20 @@
+import {
+  ArrowUpRightIcon,
+  ChevronRight,
+  ChevronsUpDown,
+  Fullscreen,
+} from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Calendar } from "./components/Calendar.tsx";
-import { Skeleton } from "./components/ui/skeleton.tsx";
 import { ModeToggle } from "./components/Mode-toggle.tsx";
+import { Button } from "./components/ui/button.tsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./components/ui/dropdown-menu.tsx";
+import { Skeleton } from "./components/ui/skeleton.tsx";
 
 type Feed = {
   description: string;
@@ -106,6 +119,7 @@ function ArticlesList({
 }
 
 export function App() {
+  const [calendarVisible, setCalendarVisible] = useState(true);
   const desktopHeaderRef = useRef<HTMLDivElement>(null);
   const mobileHeaderRef = useRef<HTMLDivElement>(null);
 
@@ -168,6 +182,37 @@ export function App() {
     return () => observer.disconnect();
   }, []);
 
+  function toggleCalendar() {
+    if (!document.startViewTransition) {
+      setCalendarVisible((v) => !v);
+      return;
+    }
+
+    document.startViewTransition(() => {
+      setCalendarVisible((v) => !v);
+    });
+  }
+  const containerMainRef = useRef<HTMLDivElement>(null);
+  const [leftOffsetContainerMain, setLeftOffsetContainerMain] =
+    useState<number>(0);
+
+  useLayoutEffect(() => {
+    const node = containerMainRef.current;
+    if (!node) {
+      return;
+    }
+
+    const update = () => {
+      setLeftOffsetContainerMain(node.getBoundingClientRect().left - 42);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const summaryRef = useRef<HTMLDivElement>(null);
+
   return (
     <main className="min-h-screen bg-background font-serif relative">
       {/* ── HEADER FIXE Mobile (remplace l'ancien hidden) ── */}
@@ -185,10 +230,11 @@ export function App() {
         </div>
       </div>
 
-      {/* CALENDRIER FIXE - Desktop uniquement */}
+      {/* CALENDRIER FIXE - Desktop */}
       <div
         ref={desktopHeaderRef}
-        className="hidden lg:block fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border"
+        style={{ viewTransitionName: "calendar-header" }}
+        className={`hidden lg:block fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-md border-b border-border ${calendarVisible ? "" : "h-0 pointer-events-none overflow-hidden"}`}
       >
         <div className="mx-auto max-w-5xl px-12 py-6">
           <section className="px-5 py-0">
@@ -203,12 +249,13 @@ export function App() {
       {/* CONTENU PRINCIPAL */}
       <div
         style={{
-          "--header-height": `${isDesktop ? headerHeight : headerHeight + 20}px`,
+          viewTransitionName: "main-content",
+          "--header-height": `${calendarVisible ? headerHeight : 0}px`,
         }}
-        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 pt-[var(--header-height)] pb-10 transition-[padding-top] duration-150 ease-out"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 pt-[var(--header-height)] pb-10 transition-[padding-top] transition-height duration-150 ease-out"
       >
         {/* Header Mobile */}
-        <div className="lg:hidden mb-8">
+        <div className="lg:hidden mb-8 pt-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
             Collection
           </p>
@@ -218,301 +265,365 @@ export function App() {
         </div>
 
         {/* Grille Desktop */}
-        <div className="hidden lg:grid grid-cols-3 border-l border-border">
+
+        <div
+          ref={containerMainRef}
+          className="hidden lg:grid grid-cols-3 border-l border-border"
+        >
           {/* ── Colonne gauche sticky ── */}
+
           <div className="border-r border-border">
-            <div className="sticky overflow-y-auto scrollbar-hide top-[calc(var(--header-height)_+_0.5rem)] h-[calc(100vh_-_var(--header-height)_-_0.5rem)]">
+            <div className="sticky scrollbar-hide overflow-y-auto top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] pt-2">
               {/* Sources actives */}
 
-              {(() => {
-                const sources = [
-                  {
-                    name: "Hacker News",
-                    count: 18,
-                    active: true,
-                    feeds: [
-                      {
-                        name: "Front page",
-                        url: "https://news.ycombinator.com/rss",
-                        count: 10,
-                      },
-                      {
-                        name: "Show HN",
-                        url: "https://hnrss.org/show",
-                        count: 5,
-                      },
-                      {
-                        name: "Ask HN",
-                        url: "https://hnrss.org/ask",
-                        count: 3,
-                      },
-                    ],
-                  },
-                  {
-                    name: "The Verge",
-                    count: 9,
-                    active: true,
-                    feeds: [
-                      {
-                        name: "Tout",
-                        url: "https://www.theverge.com/rss/index.xml",
-                        count: 5,
-                      },
-                      {
-                        name: "Tech",
-                        url: "https://www.theverge.com/rss/tech/index.xml",
-                        count: 2,
-                      },
-                      {
-                        name: "Science",
-                        url: "https://www.theverge.com/rss/science/index.xml",
-                        count: 2,
-                      },
-                    ],
-                  },
-                  {
-                    name: "Ars Technica",
-                    count: 11,
-                    active: true,
-                    feeds: [
-                      {
-                        name: "Tout",
-                        url: "https://feeds.arstechnica.com/arstechnica/index",
-                        count: 6,
-                      },
-                      {
-                        name: "Sécurité",
-                        url: "https://arstechnica.com/security/feed",
-                        count: 3,
-                      },
-                      {
-                        name: "IA",
-                        url: "https://arstechnica.com/ai/feed",
-                        count: 2,
-                      },
-                    ],
-                  },
-                  {
-                    name: "MIT Tech Review",
-                    count: 5,
-                    active: false,
-                    feeds: [
-                      {
-                        name: "Tout",
-                        url: "https://www.technologyreview.com/feed",
-                        count: 3,
-                      },
-                      {
-                        name: "IA",
-                        url: "https://www.technologyreview.com/topic/artificial-intelligence/feed",
-                        count: 2,
-                      },
-                    ],
-                  },
-                  {
-                    name: "Wired",
-                    count: 4,
-                    active: false,
-                    feeds: [
-                      {
-                        name: "Tout",
-                        url: "https://www.wired.com/feed/rss",
-                        count: 2,
-                      },
-                      {
-                        name: "Sécurité",
-                        url: "https://www.wired.com/feed/category/security/latest/rss",
-                        count: 2,
-                      },
-                    ],
-                  },
-                ];
+              <section id="sources">
+                {(() => {
+                  const sources = [
+                    {
+                      name: "Hacker News",
+                      count: 18,
+                      active: true,
+                      feeds: [
+                        {
+                          name: "Front page",
+                          url: "https://news.ycombinator.com/rss",
+                          count: 10,
+                        },
+                        {
+                          name: "Show HN",
+                          url: "https://hnrss.org/show",
+                          count: 5,
+                        },
+                        {
+                          name: "Ask HN",
+                          url: "https://hnrss.org/ask",
+                          count: 3,
+                        },
+                      ],
+                    },
+                    {
+                      name: "The Verge",
+                      count: 9,
+                      active: true,
+                      feeds: [
+                        {
+                          name: "Tout",
+                          url: "https://www.theverge.com/rss/index.xml",
+                          count: 5,
+                        },
+                        {
+                          name: "Tech",
+                          url: "https://www.theverge.com/rss/tech/index.xml",
+                          count: 2,
+                        },
+                        {
+                          name: "Science",
+                          url: "https://www.theverge.com/rss/science/index.xml",
+                          count: 2,
+                        },
+                      ],
+                    },
+                    {
+                      name: "Ars Technica",
+                      count: 11,
+                      active: true,
+                      feeds: [
+                        {
+                          name: "Tout",
+                          url: "https://feeds.arstechnica.com/arstechnica/index",
+                          count: 6,
+                        },
+                        {
+                          name: "Sécurité",
+                          url: "https://arstechnica.com/security/feed",
+                          count: 3,
+                        },
+                        {
+                          name: "IA",
+                          url: "https://arstechnica.com/ai/feed",
+                          count: 2,
+                        },
+                      ],
+                    },
+                    {
+                      name: "MIT Tech Review",
+                      count: 5,
+                      active: false,
+                      feeds: [
+                        {
+                          name: "Tout",
+                          url: "https://www.technologyreview.com/feed",
+                          count: 3,
+                        },
+                        {
+                          name: "IA",
+                          url: "https://www.technologyreview.com/topic/artificial-intelligence/feed",
+                          count: 2,
+                        },
+                      ],
+                    },
+                    {
+                      name: "Wired",
+                      count: 4,
+                      active: false,
+                      feeds: [
+                        {
+                          name: "Tout",
+                          url: "https://www.wired.com/feed/rss",
+                          count: 2,
+                        },
+                        {
+                          name: "Sécurité",
+                          url: "https://www.wired.com/feed/category/security/latest/rss",
+                          count: 2,
+                        },
+                      ],
+                    },
+                  ];
 
-                const [expanded, setExpanded] = useState<string[]>([]);
+                  const [expanded, setExpanded] = useState<string[]>([]);
 
-                const toggle = (name: string) =>
-                  setExpanded((prev) =>
-                    prev.includes(name)
-                      ? prev.filter((n) => n !== name)
-                      : [...prev, name],
-                  );
+                  const toggle = (name: string) =>
+                    setExpanded((prev) =>
+                      prev.includes(name)
+                        ? prev.filter((n) => n !== name)
+                        : [...prev, name],
+                    );
 
-                return (
-                  <>
-                    <div className="px-5 pt-4 pb-2 flex items-center justify-between">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                        Sources
-                      </p>
-                      <span className="font-mono text-[10px] text-foreground">
-                        {sources.length}
-                      </span>
-                    </div>
+                  return (
+                    <>
+                      <div className="px-5 pt-4 pb-2 flex items-center justify-between">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                          Sources
+                        </p>
 
-                    <div className="grid grid-cols-1">
-                      {sources.map((source) => {
-                        const isOpen = expanded.includes(source.name);
-                        return (
-                          <div
-                            key={source.name}
-                            className="border-b border-border last:border-0"
-                          >
-                            {/* Ligne source principale */}
-                            <div
-                              onClick={() => toggle(source.name)}
-                              className="group flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-foreground/5 transition-colors"
-                            >
-                              <div className="flex items-center gap-2">
-                                {/* Chevron */}
-                                <span
-                                  className={`font-mono text-[10px] text-muted-foreground/50 transition-transform duration-200 select-none ${
-                                    isOpen ? "rotate-90" : ""
-                                  } inline-block`}
-                                >
-                                  ›
-                                </span>
-                                <span
-                                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                                    source.active
-                                      ? "bg-foreground"
-                                      : "bg-muted-foreground/30"
-                                  }`}
-                                />
-                                <span
-                                  className={`text-sm ${
-                                    source.active
-                                      ? "text-foreground"
-                                      : "text-muted-foreground"
-                                  }`}
-                                >
-                                  {source.name}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2 -mr-1.5">
-                                <span className="font-mono text-[10px] text-foreground flex items-center justify-center">
-                                  {source.count}
-                                </span>
-                                <div className="bg-primary w-5 h-5 rounded-full font-mono text-[10px] font-bold text-primary-foreground flex items-center justify-center">
-                                  <span>+</span>
-                                  <span>2</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Sous-feeds */}
-                            {isOpen && (
-                              <div className="border-t border-border/50">
-                                {source.feeds.map((feed, i) => (
-                                  <div
-                                    key={i}
-                                    className="flex items-center justify-between pl-10 pr-5 py-2 hover:bg-foreground/5 transition-colors cursor-default group"
-                                  >
-                                    {/* Trait arborescence */}
-                                    <div className="flex items-center gap-2 relative">
-                                      <span className="absolute -left-4 top-1/2 -translate-y-1/2 w-3 h-px bg-border" />
-                                      <span className="font-mono text-[10px] text-muted-foreground group-hover:text-foreground transition-colors truncate max-w-[120px]">
-                                        {feed.name}
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-2 -mr-1.5">
-                                      <span className="font-mono text-[10px] text-foreground flex items-center justify-center">
-                                        {source.count}
-                                      </span>
-                                      <div className="bg-primary w-5 h-5 rounded-full font-mono text-[10px] text-primary-foreground flex items-center justify-center font-bold">
-                                        <span>+</span>
-                                        <span>2</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </>
-                );
-              })()}
-
-              <div className="h-px w-full bg-border" />
-
-              {/* Articles épinglés */}
-              <div className="px-5 pt-4 pb-2 flex items-center justify-between">
-                <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                  Épinglés
-                </p>
-                <span className="font-mono text-[10px] text-foreground">3</span>
-              </div>
-
-              <div className="flex flex-col">
-                {[
-                  {
-                    index: "01",
-                    title:
-                      "CVE-2009-0238 — Faille Excel 17 ans, activement exploitée",
-                    source: "CISA",
-                    date: "14 avr.",
-                  },
-                  {
-                    index: "02",
-                    title:
-                      "Meta licencie 5% de ses effectifs, focus sur l'IA générative",
-                    source: "The Verge",
-                    date: "12 avr.",
-                  },
-                  {
-                    index: "03",
-                    title: "Llama 4 : architecture MoE, 10M tokens de contexte",
-                    source: "Hacker News",
-                    date: "11 avr.",
-                  },
-                ].map((article) => (
-                  <a
-                    key={article.index}
-                    href="#"
-                    className="group relative flex gap-4 px-5 py-4 border-b border-border last:border-0 hover:bg-foreground/5 transition-colors"
-                  >
-                    {/* Numéro */}
-                    <span className="font-mono text-[11px] text-muted-foreground group-hover:text-muted-foreground/60 transition-colors pt-0.5 tabular-nums select-none">
-                      {article.index}
-                    </span>
-
-                    {/* Contenu */}
-                    <div className="flex flex-col gap-2 flex-1 min-w-0">
-                      <p className="text-sm leading-snug text-foreground group-hover:text-muted-foreground transition-colors">
-                        {article.title}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                          {article.source}
-                        </span>
-                        <span className="w-px h-2.5 bg-border" />
-                        <span className="font-mono text-[10px] text-muted-foreground">
-                          {article.date}
+                        <span className="font-mono text-[10px] text-foreground">
+                          {sources.length}
                         </span>
                       </div>
-                    </div>
 
-                    {/* Trait d'accroche gauche au hover */}
-                    <span className="absolute left-0 top-3 bottom-3 w-px bg-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </a>
-                ))}
-              </div>
+                      <div className="grid grid-cols-1">
+                        {sources.map((source) => {
+                          const isOpen = expanded.includes(source.name);
+                          return (
+                            <div
+                              key={source.name}
+                              className="border-b border-border last:border-0"
+                            >
+                              {/* Ligne source principale */}
+                              <div
+                                onClick={() => toggle(source.name)}
+                                className="group flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-foreground/5 transition-colors"
+                              >
+                                <div className="flex items-center gap-2">
+                                  {/* Chevron */}
+                                  <span
+                                    className={`font-mono text-[10px] text-muted-foreground/50 transition-transform duration-200 select-none  ${
+                                      isOpen ? "rotate-90" : ""
+                                    } inline-block`}
+                                  >
+                                    <ChevronRight size="16" />
+                                  </span>
+
+                                  {/* Text */}
+                                  <span
+                                    className={`flex items-center gap-2 before:rounded-full before:content-[''] before:block before:w-1.5 before:h-1.5 text-sm ${
+                                      source.active
+                                        ? "text-foreground before:bg-foreground"
+                                        : "text-muted-foreground before:bg-muted-foreground/30"
+                                    }`}
+                                  >
+                                    {source.name}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2 -mr-1.5">
+                                  <span className="font-mono text-[10px] text-foreground flex items-center justify-center">
+                                    {source.count}
+                                  </span>
+                                  <div className="bg-primary w-5 h-5 rounded-full font-mono text-[10px] font-bold text-primary-foreground flex items-center justify-center">
+                                    <span>+</span>
+                                    <span>2</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Sous-feeds */}
+                              {isOpen && (
+                                <div className="border-t border-border/50">
+                                  {source.feeds.map((feed, i) => (
+                                    <div
+                                      key={i}
+                                      className="flex items-center justify-between pl-10 pr-5 py-2 hover:bg-foreground/5 transition-colors cursor-default group"
+                                    >
+                                      {/* Trait arborescence */}
+                                      <div className="flex items-center gap-2 relative">
+                                        <span className="absolute -left-4 top-1/2 -translate-y-1/2 w-3 h-px bg-border" />
+                                        <span className="font-mono text-[10px] text-muted-foreground group-hover:text-foreground transition-colors truncate max-w-[120px]">
+                                          {feed.name}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center gap-2 -mr-1.5">
+                                        <span className="font-mono text-[10px] text-foreground flex items-center justify-center">
+                                          {source.count}
+                                        </span>
+                                        <div className="bg-primary w-5 h-5 rounded-full font-mono text-[10px] text-primary-foreground flex items-center justify-center font-bold">
+                                          <span>+</span>
+                                          <span>2</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  );
+                })()}
+              </section>
+
+              <section>
+                <div className="h-px w-full bg-border" />
+
+                {/* Articles épinglés */}
+                <div className="px-5 pt-4 pb-2 flex items-center justify-between">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                    Épinglés
+                  </p>
+                  <span className="font-mono text-[10px] text-foreground">
+                    3
+                  </span>
+                </div>
+
+                <div className="flex flex-col">
+                  {[
+                    {
+                      index: "01",
+                      title:
+                        "CVE-2009-0238 — Faille Excel 17 ans, activement exploitée",
+                      source: "CISA",
+                      date: "14 avr.",
+                    },
+                    {
+                      index: "02",
+                      title:
+                        "Meta licencie 5% de ses effectifs, focus sur l'IA générative",
+                      source: "The Verge",
+                      date: "12 avr.",
+                    },
+                    {
+                      index: "03",
+                      title:
+                        "Llama 4 : architecture MoE, 10M tokens de contexte",
+                      source: "Hacker News",
+                      date: "11 avr.",
+                    },
+                  ].map((article) => (
+                    <a
+                      key={article.index}
+                      href="#"
+                      className="group relative flex gap-4 px-5 py-4 border-b border-border last:border-0 hover:bg-foreground/5 transition-colors"
+                    >
+                      {/* Numéro */}
+                      <span className="font-mono text-[11px] text-muted-foreground group-hover:text-muted-foreground/60 transition-colors pt-0.5 tabular-nums select-none">
+                        {article.index}
+                      </span>
+
+                      {/* Contenu */}
+                      <div className="flex flex-col gap-2 flex-1 min-w-0">
+                        <p className="text-sm leading-snug text-foreground group-hover:text-muted-foreground transition-colors">
+                          {article.title}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                            {article.source}
+                          </span>
+                          <span className="w-px h-2.5 bg-border" />
+                          <span className="font-mono text-[10px] text-muted-foreground">
+                            {article.date}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Trait d'accroche gauche au hover */}
+                      <span className="absolute left-0 top-3 bottom-3 w-px bg-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  ))}
+                </div>
+              </section>
             </div>
           </div>
 
           {/* Colonne droite Desktop */}
-          <div className="border-r border-border py-0">
-            <ArticlesList data={data} loading={loading} />
-          </div>
+          <section id="list">
+            <div className="border-r border-border py-0">
+              <ArticlesList data={data} loading={loading} />
+            </div>
+          </section>
 
           {/* third Col */}
-          <div className="border-r border-border">
-            <div className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[calc(var(--header-height)_+_0.5rem)] h-[calc(100vh_-_var(--header-height)_-_0.5rem)]">
-              <div className="px-5 py-2 flex flex-col gap-5">
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  Articles et événements de la semaine
-                </p>
+          <section
+            ref={summaryRef}
+            id="summary"
+            className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] "
+          >
+            <div className="border-r border-border">
+              <div className="px-5 py-2 flex items-center justify-between">
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        className="text-sm -ml-3 cursor-pointer text-muted-foreground hover:text-foreground"
+                      >
+                        Summary generated with gemini 2.5
+                        <ChevronsUpDown size="16" />
+                      </Button>
+                    }
+                  ></DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="font-serif text-sm leading-relaxed text-muted-foreground"
+                    align="end"
+                  >
+                    <DropdownMenuItem
+                      onClick={() => console.log("summary")}
+                      className="gap-2"
+                    >
+                      Summary generated with gemini 2.5
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => console.log("summary")}
+                      className="gap-2"
+                    >
+                      Summary generated with claude opus
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => console.log("summary")}
+                      className="gap-2"
+                    >
+                      Summary generated with gpt 4.5
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <a className="text-muted-foreground" href="#">
+                  <Button
+                    variant="ghost"
+                    className="flex items-center gap-1 cursor-pointer"
+                  >
+                    original
+                    <ArrowUpRightIcon size="16" />
+                  </Button>
+                </a>
+              </div>
+              <div
+                onClick={() => {
+                  const section = summaryRef.current;
+                  if (section) section.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                className="px-5 py-2 flex flex-col gap-5"
+              >
                 <p className="leading-relaxed">
                   La Cybersecurity and Infrastructure Security Agency (CISA) a
                   ajouté la CVE-2009-0238 à sa liste Known Exploited
@@ -557,7 +668,7 @@ export function App() {
                 </p>
               </div>
             </div>
-          </div>
+          </section>
         </div>
 
         {/* Articles Mobile */}
@@ -568,19 +679,27 @@ export function App() {
         {/* Pied de page */}
         <footer className="px-0 lg:px-5 py-4 flex items-center justify-between pt-6 -mb-10 border-x border-t border-border">
           <div className="flex items-center gap-4">
-            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60">
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
               Veille Tech — 2026
             </span>
             <ModeToggle />
           </div>
 
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60">
+          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
             {new Date().toLocaleDateString("en", {
               day: "numeric",
               month: "long",
             })}
           </span>
         </footer>
+        <Button
+          style={{ left: `${leftOffsetContainerMain}px` }}
+          className={`fixed top-[calc(var(--header-height)_+_0.5rem)]`}
+          variant="ghost"
+          onClick={toggleCalendar}
+        >
+          <Fullscreen />
+        </Button>
       </div>
     </main>
   );
