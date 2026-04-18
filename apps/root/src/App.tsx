@@ -118,6 +118,7 @@ export function App() {
       .then((r) => {
         setData(r);
         setLoading(false);
+        console.log(r);
       })
       .catch((e) => {
         console.error(e);
@@ -206,65 +207,116 @@ export function App() {
         <div className="hidden lg:grid grid-cols-3 border-l border-border">
           {/* ── Colonne gauche sticky ── */}
           <div className="border-r border-border">
-            <div className="sticky overflow-y-auto scrollbar-hide top-[calc(var(--header-height)_+_0.5rem)] et h-[calc(100vh_-_var(--header-height)_-_0.5rem)]">
-              <header>
-                <div className="px-5 py-3 flex flex-col gap-5">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                    Collection
-                  </p>
-                  <h1 className="text-4xl font-normal leading-none tracking-tight text-foreground">
-                    Veille Tech
-                  </h1>
-                </div>
-              </header>
-              <div className="h-px w-full bg-[var(--border)]" />
+            <div className="sticky overflow-y-auto scrollbar-hide top-[calc(var(--header-height)_+_0.5rem)] h-[calc(100vh_-_var(--header-height)_-_0.5rem)]">
+              {/* Sources actives */}
 
-              <div className="px-5 py-0 py-3 flex flex-col gap-5">
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  Articles et événements de la semaine
+              <div className="px-5 pt-4 pb-2 flex items-center justify-between">
+                <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                  sources
                 </p>
-                <p className="leading-relaxed">
-                  La Cybersecurity and Infrastructure Security Agency (CISA) a
-                  ajouté la CVE-2009-0238 à sa liste Known Exploited
-                  Vulnerabilities (KEV) le 14 avril 2026, confirmant son
-                  exploitation active par des acteurs malveillants.
-                </p>
+                <span className="font-mono text-[10px] text-foreground">5</span>
+              </div>
 
-                <p className="leading-relaxed">
-                  Cette vulnérabilité critique dans Microsoft Excel, vieille de
-                  17 ans, possède un score CVSS v2 de 8.8/10 et permet une
-                  exécution de code à distance (RCE) via un débordement de
-                  tampon lors du traitement de formules dans des fichiers .xls
-                  malveillants.
-                </p>
+              <div className="grid grid-cols-1">
+                {[
+                  { name: "Hacker News", count: 18, active: true },
+                  { name: "The Verge", count: 9, active: true },
+                  { name: "Ars Technica", count: 11, active: true },
+                  { name: "MIT Tech Review", count: 5, active: false },
+                  { name: "Wired", count: 4, active: false },
+                ].map((source) => (
+                  <div
+                    key={source.name}
+                    className="group flex items-center justify-between px-5 py-3 border-b border-border last:border-0 cursor-default"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          source.active
+                            ? "bg-foreground"
+                            : "bg-muted-foreground/30"
+                        }`}
+                      />
+                      <span
+                        className={`text-sm ${
+                          source.active
+                            ? "text-foreground"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {source.name}
+                      </span>
+                    </div>
+                    <span className="bg-secondary w-5 h-5 rounded-full font-mono text-[10px] text-muted-foreground flex items-center justify-center">
+                      {source.count}
+                    </span>
+                  </div>
+                ))}
+              </div>
 
-                <p className="leading-relaxed">
-                  Les attaques se propagent principalement par phishing,
-                  utilisant des macros ou objets embarqués pour injecter du code
-                  arbitraire, compromettant totalement le système hôte et
-                  favorisant le déploiement de malwares comme les RATs ou
-                  stealers.
-                </p>
+              <div className="h-px w-full bg-border" />
 
-                <p className="leading-relaxed">
-                  Découverte en 2009 et patchée par Microsoft (MS09-017), elle
-                  persiste dans les environnements legacy non mis à jour, y
-                  compris Office 2007 et versions antérieures, ainsi que
-                  certains systèmes récents sans patches cumulatifs.
+              {/* Articles épinglés */}
+              <div className="px-5 pt-4 pb-2 flex items-center justify-between">
+                <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                  Épinglés
                 </p>
+                <span className="font-mono text-[10px] text-foreground">3</span>
+              </div>
 
-                <p className="leading-relaxed">
-                  CISA impose une deadline stricte aux agences fédérales US :
-                  appliquer les correctifs d'ici le 28 avril 2026, suite à une
-                  recrudescence d'attaques observée fin 2025 - début 2026
-                  [web:1][web:3][web:4].
-                </p>
+              <div className="flex flex-col">
+                {[
+                  {
+                    index: "01",
+                    title:
+                      "CVE-2009-0238 — Faille Excel 17 ans, activement exploitée",
+                    source: "CISA",
+                    date: "14 avr.",
+                  },
+                  {
+                    index: "02",
+                    title:
+                      "Meta licencie 5% de ses effectifs, focus sur l'IA générative",
+                    source: "The Verge",
+                    date: "12 avr.",
+                  },
+                  {
+                    index: "03",
+                    title: "Llama 4 : architecture MoE, 10M tokens de contexte",
+                    source: "Hacker News",
+                    date: "11 avr.",
+                  },
+                ].map((article) => (
+                  <a
+                    key={article.index}
+                    href="#"
+                    className="group relative flex gap-4 px-5 py-4 border-b border-border last:border-0 hover:bg-foreground/5 transition-colors"
+                  >
+                    {/* Numéro */}
+                    <span className="font-mono text-[11px] text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors pt-0.5 tabular-nums select-none">
+                      {article.index}
+                    </span>
 
-                <p className="leading-relaxed">
-                  <strong>Mitigations prioritaires </strong>- Patcher
-                  immédiatement tous les déploiements Office (y compris Extended
-                  Support).
-                </p>
+                    {/* Contenu */}
+                    <div className="flex flex-col gap-2 flex-1 min-w-0">
+                      <p className="text-sm leading-snug text-foreground group-hover:text-muted-foreground transition-colors">
+                        {article.title}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60">
+                          {article.source}
+                        </span>
+                        <span className="w-px h-2.5 bg-border" />
+                        <span className="font-mono text-[10px] text-muted-foreground/40">
+                          {article.date}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Trait d'accroche gauche au hover */}
+                    <span className="absolute left-0 top-3 bottom-3 w-px bg-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                ))}
               </div>
             </div>
           </div>
@@ -276,8 +328,8 @@ export function App() {
 
           {/* third Col */}
           <div className="border-r border-border">
-            <div className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[calc(var(--header-height)_+_0.5rem)] et h-[calc(100vh_-_var(--header-height)_-_0.5rem)]">
-              <div className="px-5 py-0 py-3 flex flex-col gap-5">
+            <div className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[calc(var(--header-height)_+_0.5rem)] h-[calc(100vh_-_var(--header-height)_-_0.5rem)]">
+              <div className="px-5 py-2 flex flex-col gap-5">
                 <p className="text-sm leading-relaxed text-muted-foreground">
                   Articles et événements de la semaine
                 </p>

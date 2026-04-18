@@ -19,9 +19,7 @@ app.get("/", (c) => {
 
 app.get("/rss", async ({ json, res }) => {
   try {
-    const response = await fetch(
-      "https://thehackernews.com/feeds/posts/default",
-    );
+    const response = await fetch("https://www.theverge.com/rss/index.xml");
     const xml = await response.text();
     const feed = await parser.parseString(xml);
     return json({
