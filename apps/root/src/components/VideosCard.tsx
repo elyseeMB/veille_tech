@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { Skeleton } from "./ui/skeleton.tsx";
+import { TimeRelative } from "./TimeRelative.tsx";
 
 // --- Types ---
 export type YoutubeVideo = {
@@ -55,8 +56,6 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
   const [dotSize, setDotSize] = useState(8);
   const [offset, setOffset] = useState(57);
   const [barHeight, setBarHeight] = useState<number | null>(null);
-
-  console.log(item);
 
   useLayoutEffect(() => {
     const bar = barRef.current;
@@ -144,10 +143,12 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
                   alt=""
                 />
               )}
+
               <span className="text-foreground text-sm">
                 {item.channelTitle}
               </span>
             </div>
+
             <span className="h-px flex-1 bg-foreground/10" />
             <time>
               {new Date(item.publishedAt).toLocaleDateString("en", {
@@ -157,7 +158,7 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
               })}
             </time>
           </div>
-
+          <TimeRelative date={item.publishedAt} />
           {/* Titre */}
           <h2 className="text-[17px] font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
             {item.title}
