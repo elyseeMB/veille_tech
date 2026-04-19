@@ -64,7 +64,7 @@ export function ArticlesList({
                 w-[calc(100%_+_2rem)] -mx-[1rem]
                 p-4
                 lg:w-full lg:mx-0
-                lg:py-5 lg:pl-0 lg:pr-10
+                lg:py-5 lg:pl-0 lg:pr-5
                 border-b border-border last:border-0
                 transition-colors hover:bg-foreground/5 overflow-hidden"
             >
