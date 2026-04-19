@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils.ts";
 import { timeMinute, timeHour, timeDay, timeMonth, timeYear } from "d3";
 
 const rtf = new Intl.RelativeTimeFormat(navigator.language, {
@@ -41,7 +42,7 @@ export function TimeRelative({
         hour: "2-digit",
         minute: "2-digit",
       })}
-      className={["text-sm", className].join(" ")}
+      className={cn("text-sm", className)}
     >
       {getRelativeTime(d)}
     </time>
