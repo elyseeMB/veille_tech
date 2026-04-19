@@ -86,7 +86,7 @@ export function App() {
           {/* Colonne droite Desktop List */}
           <section id="list">
             <div className="border-r border-border py-0">
-              {/* <ArticlesList data={data} loading={loading} /> */}
+              <ArticlesList data={data} loading={loading} />
               <VideosCard data={dateYT} loading={dateYTLoading} />
             </div>
           </section>

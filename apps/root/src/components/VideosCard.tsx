@@ -130,7 +130,7 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
   const thumbnail = item.thumbnail ?? item.snippet.thumbnails.high?.url;
 
   return (
-    <article className="group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:px-5 border-b border-border last:border-0 transition-colors hover:bg-foreground/5">
+    <article className="group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:px-5 border-b border-t border-border last:border-0 transition-colors hover:bg-foreground/5">
       <a
         href={`https://www.youtube.com/watch?v=${item.id.videoId}`}
         target="_blank"
@@ -214,7 +214,7 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
           {item.snippet.description && (
             <p
               ref={descRef}
-              className="relative ml-5 text-sm leading-relaxed text-muted-foreground"
+              className="ml-5 pl-1 text-sm leading-relaxed text-muted-foreground"
             >
               {item.snippet.description.slice(0, 120)}…
             </p>

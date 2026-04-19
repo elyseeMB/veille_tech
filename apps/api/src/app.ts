@@ -17,28 +17,28 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-// app.get("/rss", async ({ json, res }) => {
-//   try {
-//     const response = await fetch("https://www.theverge.com/rss/index.xml", {
-//       headers: {
-//         "User-Agent":
-//           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-//         Accept:
-//           "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-//         "Accept-Language": "en-US,en;q=0.9,fr;q=0.8",
-//       },
-//     });
+app.get("/rss", async ({ json, res }) => {
+  try {
+    const response = await fetch("https://www.theverge.com/rss/index.xml", {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9,fr;q=0.8",
+      },
+    });
 
-//     const xml = await response.text();
-//     const feed = await parser.parseString(xml);
+    const xml = await response.text();
+    const feed = await parser.parseString(xml);
 
-//     return json({
-//       hackerNews: feed,
-//     });
-//   } catch (error) {
-//     return json({ error: "RSS fetch failed", status: res.status });
-//   }
-// });
+    return json({
+      hackerNews: feed,
+    });
+  } catch (error) {
+    return json({ error: "RSS fetch failed", status: res.status });
+  }
+});
 
 // app.get("/yt-all", async (c) => {
 //   const channelId = "UCxH16958KSxT4Z9yL_9JYtw";
