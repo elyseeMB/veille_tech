@@ -1,3 +1,4 @@
+import { motion, AnimatePresence } from "framer-motion";
 import { useLayoutEffect, useRef, useState } from "react";
 import { Skeleton } from "./ui/skeleton.tsx";
 import { TimeRelative } from "./TimeRelative.tsx";
@@ -198,25 +199,32 @@ export function VideosCard({
   data?: { videos?: YoutubeVideo[] };
   loading: boolean;
 }) {
-  const videos = data?.videos ?? MOCK_VIDEOS;
+  const videos =
+    import.meta.env.APP_ENV === "dev" && !data?.videos
+      ? MOCK_VIDEOS
+      : (data?.videos ?? []);
 
   return (
     <div className="space-y-0">
-      {loading
-        ? Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className="grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 mb-9 border-b border-border"
-            >
-              <Skeleton className="h-full bg-muted" />
-              <div className="space-y-3">
-                <Skeleton className="h-3 w-20 bg-muted" />
-                <Skeleton className="h-5 w-4/5 bg-muted" />
-                <Skeleton className="h-40 w-full bg-muted" />
-              </div>
+      {loading ? (
+        Array.from({ length: 5 }).map((_, i) => (
+          <div
+            key={i}
+            className="grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 mb-9 border-b border-border"
+          >
+            <Skeleton className="h-full bg-muted" />
+            <div className="space-y-3">
+              <Skeleton className="h-3 w-20 bg-muted" />
+              <Skeleton className="h-5 w-4/5 bg-muted" />
+              <Skeleton className="h-40 w-full bg-muted" />
             </div>
-          ))
-        : videos.map((item, i) => <VideoItem key={item.id || i} item={item} />)}
+          </div>
+        ))
+      ) : videos.length === 0 ? (
+        <p className="text-sm text-muted-foreground py-5">No videos yet.</p>
+      ) : (
+        videos.map((item, i) => <VideoItem key={item.id || i} item={item} />)
+      )}
     </div>
   );
 }

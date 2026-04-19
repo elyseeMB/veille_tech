@@ -31,7 +31,10 @@ const RSS_FEEDS = [
   {
     name: "The Verge",
     categories: [
-      { url: "https://www.theverge.com/rss/index.xml", category: "all" },
+      {
+        url: "https://www.theverge.com/rss/index.xml",
+        category: "Today’s Stream",
+      },
       { url: "https://www.theverge.com/rss/tech/index.xml", category: "tech" },
       {
         url: "https://www.theverge.com/rss/science/index.xml",

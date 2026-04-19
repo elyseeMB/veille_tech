@@ -111,6 +111,7 @@ export function App() {
         {/* Articles Mobile */}
         <div className="lg:hidden space-y-0">
           <ArticlesList data={data} loading={loading} />
+          <VideosCard data={dateYT} loading={dateYTLoading} />
         </div>
 
         {/* ================================================================== */}
