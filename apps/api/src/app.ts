@@ -40,53 +40,98 @@ app.get("/rss", async ({ json, res }) => {
   }
 });
 
-// app.get("/yt-all", async (c) => {
-//   const channelId = "UCxH16958KSxT4Z9yL_9JYtw";
-//   const apiKey = process.env.YOUTUBE_API_KEY;
+const CHANNELS = [
+  "UCYnvxJ-PKiGXo_tYXpWAC-w", // Micode
+  "UCWedHS9qKebauVIK2J7383g", // Underscore
+  "UCYO_jab_esuFRV4b17AJtAw", // 3Blue1Brown
+  "UCsBjURrPoezykLs9EqgamOA", // Fireship
+  "UC9-y-6csu5WGm29I7JiwpnA", // Computerphile
+  "UCHnyfMqiRRG1u-2MsSQLbXA", // Veritasium
+  "UCsXVk37bltHxD1rDPwtNM8Q", // Kurzgesagt
+  "UCBa659QWEk1AI4Tg--mrJ2A", // Tom Scott
+  "UC9RM-iSvTu1uPJb8X5yp3EQ", // Wendover
+  "UCxH16958KSxT4Z9yL_9JYtw",
+];
 
-//   try {
-//     const [ytResponse, ytResponsePF] = await Promise.all([
-//       fetch(
-//         `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${channelId.replace(/^UC/, "UU")}&maxResults=10&key=${apiKey}`,
-//       ),
-//       fetch(
-//         `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${apiKey}`,
-//       ),
-//     ]);
+app.get("/avatar", async (c) => {
+  const url = c.req.query("url");
+  if (!url) {
+    return c.json({ error: "Missing url" }, 400);
+  }
+  try {
+    const response = await fetch(url);
+    const buffer = await response.arrayBuffer();
+    const contentType = response.headers.get("content-type") ?? "image/jpeg";
 
-//     const ytData = await ytResponse.json();
-//     const ytDataPF = await ytResponsePF.json();
+    return new Response(buffer, {
+      headers: {
+        "Content-Type": contentType,
+        "Cache-Control": "public max-age=86400",
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return c.json({ error: "Error avatar fetch failed" }, 500);
+  }
+});
 
-//     // ← Ajoute ça pour voir ce que YouTube renvoie vraiment
-//     console.log("ytData:", JSON.stringify(ytData, null, 2));
-//     console.log("ytDataPF:", JSON.stringify(ytDataPF, null, 2));
+app.get("/yt-all", async (c) => {
+  const apiKey = process.env.YOUTUBE_API_KEY;
 
-//     if (ytData.error) {
-//       return c.json(
-//         { error: ytData.error.message, code: ytData.error.code },
-//         500,
-//       );
-//     }
+  try {
+    const results = await Promise.all(
+      CHANNELS.map(async (channelId) => {
+        const [ytResponse, profileResponse] = await Promise.all([
+          fetch(
+            `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${channelId.replace(/^UC/, "UU")}&maxResults=5&key=${apiKey}`,
+          ),
+          fetch(
+            `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${apiKey}`,
+          ),
+        ]);
 
-//     const profile = ytDataPF.items?.[0]?.snippet?.thumbnails?.high?.url;
-//     const videos = ytData.items.map((item: any) => ({
-//       id: item.snippet.resourceId.videoId,
-//       title: item.snippet.title,
-//       description: item.snippet.description,
-//       channelTitle: item.snippet.channelTitle,
-//       thumbnail:
-//         item.snippet.thumbnails.high?.url ??
-//         item.snippet.thumbnails.medium?.url ??
-//         item.snippet.thumbnails.default?.url,
-//       publishedAt: item.snippet.publishedAt,
-//       channelAvatar: profile,
-//     }));
+        const ytData = await ytResponse.json();
+        const profileData = await profileResponse.json();
 
-//     return c.json({ videos });
-//   } catch (error) {
-//     console.error(error);
-//     return c.json({ error: error.message }, 500);
-//   }
-// });
+        if (ytData.error) {
+          throw new Error(ytData.error.message);
+        }
+
+        const avatar =
+          profileData.items?.[0]?.snippet?.thumbnails?.high?.url ??
+          profileData.items?.[0]?.snippet?.thumbnails?.medium?.url ??
+          profileData.items?.[0]?.snippet?.thumbnails?.default?.url;
+
+        const channelAvatar = avatar
+          ? `/avatar?url=${encodeURIComponent(avatar)}`
+          : undefined;
+
+        return (ytData.items ?? []).map((item: any) => ({
+          id: item.snippet.resourceId.videoId,
+          title: item.snippet.title,
+          description: item.snippet.description,
+          channelTitle: item.snippet.channelTitle,
+          thumbnail:
+            item.snippet.thumbnails.high?.url ??
+            item.snippet.thumbnails.medium?.url,
+          publishedAt: item.snippet.publishedAt,
+          channelAvatar,
+        }));
+      }),
+    );
+
+    const videos = results
+      .flat()
+      .sort(
+        (a, b) =>
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+      );
+
+    return c.json({ videos });
+  } catch (error) {
+    console.error(error);
+    return c.json({ error: error.message }, 500);
+  }
+});
 
 export default app;

@@ -3,86 +3,46 @@ import { Skeleton } from "./ui/skeleton.tsx";
 
 // --- Types ---
 export type YoutubeVideo = {
-  kind: string;
-  etag: string;
-  id: { kind: string; videoId: string };
-  snippet: {
-    publishedAt: string;
-    channelId: string;
-    title: string;
-    description: string;
-    thumbnails: {
-      default?: { url: string };
-      medium?: { url: string };
-      high?: { url: string };
-    };
-    channelTitle: string;
-  };
+  id: string;
+  title: string;
+  description: string;
+  channelTitle: string;
+  thumbnail: string;
+  publishedAt: string;
   channelAvatar?: string;
-  thumbnail?: string;
 };
 
 // --- Mock data ---
 export const MOCK_VIDEOS: YoutubeVideo[] = [
   {
-    kind: "youtube#searchResult",
-    etag: "mock1",
-    id: { kind: "youtube#video", videoId: "dQw4w9WgXcQ" },
-    snippet: {
-      publishedAt: "2026-04-15T14:00:00Z",
-      channelId: "UCxH16958KSxT4Z9yL_9JYtw",
-      title: "Making-of — FAKER 🐐",
-      description:
-        "Collaboration commerciale @AdobeFrance. Montage sous After Effects, motion design par @yionidas. Retour sur la création de ce projet ambitieux.",
-      thumbnails: {
-        default: { url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/default.jpg" },
-        medium: { url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/mqdefault.jpg" },
-        high: { url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg" },
-      },
-      channelTitle: "Micode",
-    },
-    channelAvatar: "https://i.pravatar.cc/150?img=1",
+    id: "dQw4w9WgXcQ",
+    title: "Making-of — FAKER 🐐",
+    description:
+      "Collaboration commerciale @AdobeFrance. Montage sous After Effects, motion design par @yionidas. Retour sur la création de ce projet ambitieux.",
+    channelTitle: "Micode",
     thumbnail: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+    publishedAt: "2026-04-15T14:00:00Z",
+    channelAvatar: "https://i.pravatar.cc/150?img=1",
   },
   {
-    kind: "youtube#searchResult",
-    etag: "mock2",
-    id: { kind: "youtube#video", videoId: "9bZkp7q19f0" },
-    snippet: {
-      publishedAt: "2026-04-10T10:30:00Z",
-      channelId: "UCxH16958KSxT4Z9yL_9JYtw",
-      title: "1089 pixels pour comprendre que vous n'existez pas.",
-      description:
-        "Hop un pixel. Hop un deuxième. Hop un mille quatre-vingt-neuvième. Une vidéo sur la simulation, la conscience et les limites de la perception humaine.",
-      thumbnails: {
-        default: { url: "https://i.ytimg.com/vi/9bZkp7q19f0/default.jpg" },
-        medium: { url: "https://i.ytimg.com/vi/9bZkp7q19f0/mqdefault.jpg" },
-        high: { url: "https://i.ytimg.com/vi/9bZkp7q19f0/hqdefault.jpg" },
-      },
-      channelTitle: "Micode",
-    },
-    channelAvatar: "https://i.pravatar.cc/150?img=1",
+    id: "9bZkp7q19f0",
+    title: "1089 pixels pour comprendre que vous n'existez pas.",
+    description:
+      "Hop un pixel. Hop un deuxième. Hop un mille quatre-vingt-neuvième. Une vidéo sur la simulation, la conscience et les limites de la perception humaine.",
+    channelTitle: "Micode",
     thumbnail: "https://i.ytimg.com/vi/9bZkp7q19f0/hqdefault.jpg",
+    publishedAt: "2026-04-10T10:30:00Z",
+    channelAvatar: "https://i.pravatar.cc/150?img=1",
   },
   {
-    kind: "youtube#searchResult",
-    etag: "mock3",
-    id: { kind: "youtube#video", videoId: "L_jWHffIx5E" },
-    snippet: {
-      publishedAt: "2026-04-01T09:00:00Z",
-      channelId: "UCxH16958KSxT4Z9yL_9JYtw",
-      title: "Le Jeu de la Vie 2.0",
-      description:
-        "Cellule cellule cellule. Le jeu de la vie de Conway revisité avec des règles modifiées. Émergence, complexité et auto-organisation expliquées simplement.",
-      thumbnails: {
-        default: { url: "https://i.ytimg.com/vi/L_jWHffIx5E/default.jpg" },
-        medium: { url: "https://i.ytimg.com/vi/L_jWHffIx5E/mqdefault.jpg" },
-        high: { url: "https://i.ytimg.com/vi/L_jWHffIx5E/hqdefault.jpg" },
-      },
-      channelTitle: "Micode",
-    },
-    channelAvatar: "https://i.pravatar.cc/150?img=1",
+    id: "L_jWHffIx5E",
+    title: "Le Jeu de la Vie 2.0",
+    description:
+      "Cellule cellule cellule. Le jeu de la vie de Conway revisité avec des règles modifiées. Émergence, complexité et auto-organisation expliquées simplement.",
+    channelTitle: "Micode",
     thumbnail: "https://i.ytimg.com/vi/L_jWHffIx5E/hqdefault.jpg",
+    publishedAt: "2026-04-01T09:00:00Z",
+    channelAvatar: "https://i.pravatar.cc/150?img=1",
   },
 ];
 
@@ -95,6 +55,8 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
   const [dotSize, setDotSize] = useState(8);
   const [offset, setOffset] = useState(57);
   const [barHeight, setBarHeight] = useState<number | null>(null);
+
+  console.log(item);
 
   useLayoutEffect(() => {
     const bar = barRef.current;
@@ -118,21 +80,27 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
     };
 
     update();
+
     const observer = new ResizeObserver(update);
-    observer.observe(desc);
+    observer.observe(container);
+
+    const images = container.querySelectorAll("img");
+    images.forEach((img) => img.addEventListener("load", update));
+
     window.addEventListener("resize", update);
     return () => {
       observer.disconnect();
+      images.forEach((img) => img.removeEventListener("load", update));
       window.removeEventListener("resize", update);
     };
   }, []);
 
-  const thumbnail = item.thumbnail ?? item.snippet.thumbnails.high?.url;
+  const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
   return (
     <article className="group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:px-5 border-t border-border transition-colors hover:bg-foreground/5">
       <a
-        href={`https://www.youtube.com/watch?v=${item.id.videoId}`}
+        href={`https://www.youtube.com/watch?v=${item.id}`}
         target="_blank"
         rel="noreferrer"
         className="before:absolute before:content-[''] before:inset-0 before:w-full before:h-full z-10"
@@ -140,7 +108,6 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
 
       <div ref={containerRef} className="flex gap-3">
         {/* Bar gauche */}
-
         <div
           ref={barRef}
           className="flex-shrink-0 relative"
@@ -149,21 +116,18 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
             width: "8px",
           }}
         >
-          {/* Dot de départ */}
           <div
             ref={dotRef}
             className="w-2 h-2 rounded-full mt-4 bg-foreground absolute top-0 left-1/2 -translate-x-1/2"
           />
-
-          {/* Courbe : part du bas du dot, descend et tourne à droite */}
           <div
             className="absolute border-l-2 border-b-2 border-secondary group-hover:border-foreground/30 transition-colors mt-4"
             style={{
-              top: `${dotSize}px`, // hauteur réelle du dot
-              left: `${barRef?.current?.getBoundingClientRect().width / 2 - 1}px`, // centre bar - 1px border
-              width: `${offset - dotSize / 2}px`, // jusqu'au bord gauche du §
+              top: `${dotSize}px`,
+              left: `${(barRef.current?.getBoundingClientRect().width ?? 8) / 2 - 1}px`,
+              width: `${offset - dotSize / 2}px`,
               height: `calc(100% - ${dotSize + 16}px)`,
-              borderRadius: "0 0 0 10px",
+              borderRadius: "0 0 0 18px",
             }}
           />
         </div>
@@ -176,17 +140,17 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
               {item.channelAvatar && (
                 <img
                   className="object-cover w-10 rounded-full inline-block"
-                  src={item.channelAvatar}
+                  src={`${API_URL}${item.channelAvatar}`}
                   alt=""
                 />
               )}
               <span className="text-foreground text-sm">
-                {item.snippet.channelTitle}
+                {item.channelTitle}
               </span>
             </div>
             <span className="h-px flex-1 bg-foreground/10" />
             <time>
-              {new Date(item.snippet.publishedAt).toLocaleDateString("en", {
+              {new Date(item.publishedAt).toLocaleDateString("en", {
                 year: "numeric",
                 day: "numeric",
                 month: "short",
@@ -196,27 +160,27 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
 
           {/* Titre */}
           <h2 className="text-[17px] font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
-            {item.snippet.title}
+            {item.title}
           </h2>
 
           {/* Thumbnail */}
-          {thumbnail && (
+          {item.thumbnail && (
             <div className="rounded overflow-hidden border border-border aspect-video w-full">
               <img
-                src={thumbnail}
-                alt={item.snippet.title}
+                src={item.thumbnail}
+                alt={item.title}
                 className="w-full h-full object-cover"
               />
             </div>
           )}
 
-          {/* Description + connecteur */}
-          {item.snippet.description && (
+          {/* Description */}
+          {item.description && (
             <p
               ref={descRef}
               className="ml-5 pl-1 text-sm leading-relaxed text-muted-foreground"
             >
-              {item.snippet.description.slice(0, 120)}…
+              {item.description.slice(0, 120)}…
             </p>
           )}
         </div>
@@ -251,9 +215,7 @@ export function VideosCard({
               </div>
             </div>
           ))
-        : videos.map((item, i) => (
-            <VideoItem key={item.id.videoId || i} item={item} />
-          ))}
+        : videos.map((item, i) => <VideoItem key={item.id || i} item={item} />)}
     </div>
   );
 }
