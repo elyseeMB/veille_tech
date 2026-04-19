@@ -64,7 +64,7 @@ export function SummaryPanel() {
           onClick={() =>
             sectionRef.current?.scrollTo({ top: 0, behavior: "smooth" })
           }
-          className="px-5 py-2 flex flex-col gap-5 cursor-pointer"
+          className="px-5 py-2 flex flex-col gap-5"
         >
           <p className="leading-relaxed">
             La Cybersecurity and Infrastructure Security Agency (CISA) a ajouté

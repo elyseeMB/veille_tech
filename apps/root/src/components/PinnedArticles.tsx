@@ -1,11 +1,55 @@
+import { Bookmark, Pin } from "lucide-react";
+
 const PINNED = [
-  { index: "01", title: "CVE-2009-0238 — Faille Excel 17 ans, activement exploitée",       source: "CISA",        date: "14 avr.", href: "#" },
-  { index: "02", title: "Meta licencie 5% de ses effectifs, focus sur l'IA générative",    source: "The Verge",   date: "12 avr.", href: "#" },
-  { index: "03", title: "Llama 4 : architecture MoE, 10M tokens de contexte",              source: "Hacker News", date: "11 avr.", href: "#" },
-  { index: "04", title: "Llama 4 : architecture MoE, 10M tokens de contexte",              source: "Hacker News", date: "11 avr.", href: "#" },
-  { index: "05", title: "Llama 4 : architecture MoE, 10M tokens de contexte",              source: "Hacker News", date: "11 avr.", href: "#" },
-  { index: "06", title: "Llama 4 : architecture MoE, 10M tokens de contexte",              source: "Hacker News", date: "11 avr.", href: "#" },
-  { index: "07", title: "Llama 4 : architecture MoE, 10M tokens de contexte",              source: "Hacker News", date: "11 avr.", href: "#" },
+  {
+    index: "01",
+    title: "CVE-2009-0238 — Faille Excel 17 ans, activement exploitée",
+    source: "CISA",
+    date: "14 avr.",
+    href: "#",
+  },
+  {
+    index: "02",
+    title: "Meta licencie 5% de ses effectifs, focus sur l'IA générative",
+    source: "The Verge",
+    date: "12 avr.",
+    href: "#",
+  },
+  {
+    index: "03",
+    title: "Llama 4 : architecture MoE, 10M tokens de contexte",
+    source: "Hacker News",
+    date: "11 avr.",
+    href: "#",
+  },
+  {
+    index: "04",
+    title: "Llama 4 : architecture MoE, 10M tokens de contexte",
+    source: "Hacker News",
+    date: "11 avr.",
+    href: "#",
+  },
+  {
+    index: "05",
+    title: "Llama 4 : architecture MoE, 10M tokens de contexte",
+    source: "Hacker News",
+    date: "11 avr.",
+    href: "#",
+  },
+  {
+    index: "06",
+    title: "Llama 4 : architecture MoE, 10M tokens de contexte",
+    source: "Hacker News",
+    date: "11 avr.",
+    href: "#",
+  },
+  {
+    index: "07",
+    title: "Llama 4 : architecture MoE, 10M tokens de contexte",
+    source: "Hacker News",
+    date: "11 avr.",
+    href: "#",
+  },
 ];
 
 export function PinnedArticles() {
@@ -33,9 +77,12 @@ export function PinnedArticles() {
               {article.index}
             </span>
             <div className="flex flex-col gap-2 flex-1 min-w-0">
-              <p className="text-sm leading-snug text-foreground group-hover:text-muted-foreground transition-colors">
-                {article.title}
-              </p>
+              <div className="flex items-start justify-start gap-1">
+                <p className="text-sm leading-snug text-foreground group-hover:text-muted-foreground transition-colors">
+                  {article.title}
+                </p>
+                <Pin size={16} />
+              </div>
               <div className="flex items-center gap-2">
                 <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
                   {article.source}

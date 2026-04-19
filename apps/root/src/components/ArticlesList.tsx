@@ -76,7 +76,7 @@ export function ArticlesList({
                     })}
                   </time>
                 </div>
-                
+
                 <a
                   href={item.link}
                   className="block before:absolute before:content-[''] before:inset-0 before:w-full before:h-full"

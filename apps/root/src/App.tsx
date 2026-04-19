@@ -10,12 +10,18 @@ import { useHeaderHeight } from "@/hooks/useHeaderHeight.ts";
 import { useContainerLeftOffset } from "@/hooks/useContainerLeftOffset.ts";
 import { useCalendarToggle } from "@/hooks/useCalendarToggle.ts";
 import { useArticles } from "@/hooks/useArticles.ts";
+import { VideosCard } from "./components/VideosCard.tsx";
 
 export function App() {
   const { desktopRef, mobileRef, height: headerHeight } = useHeaderHeight();
   const { ref: containerRef, left: buttonLeft } = useContainerLeftOffset();
   const { visible: calendarVisible, toggle } = useCalendarToggle();
   const { data, loading } = useArticles("http://localhost:4000/rss");
+  const { data: dateYT, loading: dateYTLoading } = useArticles(
+    "http://localhost:4000/yt-all",
+  );
+
+  console.log(dateYT);
 
   return (
     <main className="min-h-screen bg-background font-serif relative">
@@ -80,7 +86,8 @@ export function App() {
           {/* Colonne droite Desktop List */}
           <section id="list">
             <div className="border-r border-border py-0">
-              <ArticlesList data={data} loading={loading} />
+              {/* <ArticlesList data={data} loading={loading} /> */}
+              <VideosCard data={dateYT} loading={dateYTLoading} />
             </div>
           </section>
 
