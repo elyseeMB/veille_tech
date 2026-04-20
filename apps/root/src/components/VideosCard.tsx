@@ -1,5 +1,3 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useLayoutEffect, useRef, useState } from "react";
 import { Skeleton } from "./ui/skeleton.tsx";
 import { TimeRelative } from "./TimeRelative.tsx";
 
@@ -50,55 +48,10 @@ export const MOCK_VIDEOS: YoutubeVideo[] = [
 
 // --- Sous-composant ---
 function VideoItem({ item }: { item: YoutubeVideo }) {
-  const barRef = useRef<HTMLDivElement>(null);
-  const descRef = useRef<HTMLParagraphElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const dotRef = useRef<HTMLDivElement>(null);
-  const [dotSize, setDotSize] = useState(8);
-  const [offset, setOffset] = useState(57);
-  const [barHeight, setBarHeight] = useState<number | null>(null);
-
-  useLayoutEffect(() => {
-    const bar = barRef.current;
-    const desc = descRef.current;
-    const container = containerRef.current;
-    if (!bar || !desc || !container) return;
-
-    const update = () => {
-      const gap = parseFloat(getComputedStyle(container).gap);
-      const ml = parseFloat(getComputedStyle(desc).marginLeft);
-      const barWidth = bar.getBoundingClientRect().width;
-      setOffset(gap + ml + barWidth / 2);
-
-      if (dotRef.current) {
-        setDotSize(dotRef.current.getBoundingClientRect().height);
-      }
-
-      const barRect = bar.getBoundingClientRect();
-      const descRect = desc.getBoundingClientRect();
-      setBarHeight(descRect.top - barRect.top + descRect.height / 2);
-    };
-
-    update();
-
-    const observer = new ResizeObserver(update);
-    observer.observe(container);
-
-    const images = container.querySelectorAll("img");
-    images.forEach((img) => img.addEventListener("load", update));
-
-    window.addEventListener("resize", update);
-    return () => {
-      observer.disconnect();
-      images.forEach((img) => img.removeEventListener("load", update));
-      window.removeEventListener("resize", update);
-    };
-  }, []);
-
   const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
   return (
-    <article className="group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:px-5 border-t border-border transition-colors hover:bg-foreground/5">
+    <article className="group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:pl-0 lg:pr-5 border-t border-border transition-colors hover:bg-foreground/5">
       <a
         href={`https://www.youtube.com/watch?v=${item.id}`}
         target="_blank"
@@ -106,35 +59,16 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
         className="before:absolute before:content-[''] before:inset-0 before:w-full before:h-full z-10"
       />
 
-      <div ref={containerRef} className="flex gap-3">
-        {/* Bar gauche */}
-        <div
-          ref={barRef}
-          className="flex-shrink-0 relative"
-          style={{
-            height: barHeight != null ? `${barHeight}px` : "100%",
-            width: "8px",
-          }}
-        >
-          <div
-            ref={dotRef}
-            className="w-2 h-2 rounded-full mt-4 bg-foreground absolute top-0 left-1/2 -translate-x-1/2"
-          />
-          <div
-            className="absolute border-l-2 border-b-2 border-secondary group-hover:border-foreground/30 transition-colors mt-4"
-            style={{
-              top: `${dotSize}px`,
-              left: `${(barRef.current?.getBoundingClientRect().width ?? 8) / 2 - 1}px`,
-              width: `${offset - dotSize / 2}px`,
-              height: `calc(100% - ${dotSize + 16}px)`,
-              borderRadius: "0 0 0 18px",
-            }}
-          />
-        </div>
+      <div className="grid grid-cols-[1px_1fr] gap-5">
+        {/* ── Barre gauche 1px ── */}
+        <div className="bg-muted opacity-0 transition-colors group-hover:opacity-100 group-hover:bg-foreground" />
 
-        {/* Contenu */}
+        {/* ── Contenu ── */}
         <div className="flex flex-col gap-3 flex-1 min-w-0 pb-1">
-          {/* Header */}
+          {/* Timestamp relatif */}
+          <TimeRelative date={item.publishedAt} />
+
+          {/* Channel header */}
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             <div className="flex items-center gap-2 font-serif">
               {item.channelAvatar && (
@@ -144,12 +78,10 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
                   alt=""
                 />
               )}
-
               <span className="text-foreground text-sm">
                 {item.channelTitle}
               </span>
             </div>
-
             <span className="h-px flex-1 bg-foreground/10" />
             <time>
               {new Date(item.publishedAt).toLocaleDateString("en", {
@@ -159,7 +91,7 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
               })}
             </time>
           </div>
-          <TimeRelative date={item.publishedAt} />
+
           {/* Titre */}
           <h2 className="text-[17px] font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
             {item.title}
@@ -178,10 +110,7 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
 
           {/* Description */}
           {item.description && (
-            <p
-              ref={descRef}
-              className="ml-5 pl-1 text-sm leading-relaxed text-muted-foreground"
-            >
+            <p className="pl-1 text-sm leading-relaxed text-muted-foreground">
               {item.description.slice(0, 120)}…
             </p>
           )}

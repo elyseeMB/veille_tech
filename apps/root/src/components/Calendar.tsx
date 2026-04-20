@@ -82,7 +82,7 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
         .style("font-size", "10px")
         .style("letter-spacing", "0.2em")
         .style("text-transform", "uppercase")
-        .text(m.toLocaleString("fr", { month: "short" }));
+        .text(m.toLocaleString(navigator.language, { month: "short" }));
     });
   }, [monthXMap, months]);
 
@@ -176,7 +176,9 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
     }
     const axis = axisBottom(xFull)
       .tickValues(desktopMonths)
-      .tickFormat((d) => (d as Date).toLocaleString("fr", { month: "short" }));
+      .tickFormat((d) =>
+        (d as Date).toLocaleString(navigator.language, { month: "short" }),
+      );
 
     select(axisRef.current)
       .call(axis)
