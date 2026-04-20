@@ -66,7 +66,7 @@ const RSS_FEEDS = [
   {
     name: "MIT Tech Review",
     categories: [
-      { url: "https://www.technologyreview.com/feed", category: "all" },
+      { url: "https://www.technologyreview.com/feed", category: "All Topics" },
       {
         url: "https://www.technologyreview.com/topic/artificial-intelligence/feed",
         category: "ai",
@@ -88,7 +88,7 @@ const RSS_FEEDS = [
   {
     name: "Wired",
     categories: [
-      { url: "https://www.wired.com/feed/rss", category: "all" },
+      { url: "https://www.wired.com/feed/rss", category: "Today's Picks" },
       {
         url: "https://www.wired.com/feed/category/science/latest/rss",
         category: "science",
