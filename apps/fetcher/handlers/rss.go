@@ -16,10 +16,6 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
-var httpClient = &http.Client{
-	Timeout: 10 * time.Second,
-}
-
 func GetRSS() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(c.Request.Context(), 30*time.Second)

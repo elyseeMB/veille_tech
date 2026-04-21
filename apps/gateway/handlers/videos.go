@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
 	"gateway/models"
 	"gateway/repository"
+
+	"github.com/gin-gonic/gin"
 )
 
 func GetVideos() gin.HandlerFunc {
@@ -15,21 +16,22 @@ func GetVideos() gin.HandlerFunc {
 		page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 		perPage, _ := strconv.Atoi(c.DefaultQuery("per_page", "20"))
 
-		videos, total, err := repository.GetVideos(page, perPage)
+		videosDB, total, err := repository.GetVideos(page, perPage)
 		if err != nil {
 			slog.Error("get videos failed", "error", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		if videos == nil {
-			videos = []models.Video{}
+		dtos := make([]models.VideoDTO, len(videosDB))
+		for i, v := range videosDB {
+			dtos[i] = models.ToVideoDTO(v)
 		}
 
-		slog.Info("videos fetched", "count", len(videos), "total", total, "page", page)
+		slog.Info("videos fetched", "count", len(dtos), "total", total)
 
-		c.JSON(http.StatusOK, models.PaginatedResponse{
-			Data:    videos,
+		c.JSON(http.StatusOK, models.VideosResponse{
+			Videos:  dtos,
 			Total:   total,
 			Page:    page,
 			PerPage: perPage,

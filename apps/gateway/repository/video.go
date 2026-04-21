@@ -7,7 +7,7 @@ import (
 	"gateway/models"
 )
 
-func GetVideos(page, perPage int) ([]models.Video, int, error) {
+func GetVideos(page, perPage int) ([]models.VideoDB, int, error) {
 	if page == 0 {
 		page = 1
 	}
@@ -46,9 +46,9 @@ func GetVideos(page, perPage int) ([]models.Video, int, error) {
 	}
 	defer rows.Close()
 
-	var videos []models.Video
+	var videos []models.VideoDB
 	for rows.Next() {
-		var v models.Video
+		var v models.VideoDB
 		err := rows.Scan(
 			&v.ID, &v.ExternalID, &v.Title,
 			&v.Description, &v.ChannelTitle,
@@ -58,6 +58,10 @@ func GetVideos(page, perPage int) ([]models.Video, int, error) {
 			return nil, 0, err
 		}
 		videos = append(videos, v)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
 	}
 
 	return videos, total, nil

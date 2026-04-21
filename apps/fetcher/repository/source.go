@@ -51,5 +51,19 @@ func SeedSources() error {
 		}
 	}
 
+	for _, channel := range data.YOUTUBE_CHANNELS {
+		_, err := tx.Exec(
+			context.Background(),
+			`INSERT INTO sources (name, base_url, type)
+			VALUES ($1, $2, 'youtube')
+			ON CONFLICT (name) DO NOTHING`,
+			channel.Name,
+			"https://www.youtube.com/channel/"+channel.ID,
+		)
+		if err != nil {
+			return err
+		}
+	}
+
 	return tx.Commit(context.Background())
 }

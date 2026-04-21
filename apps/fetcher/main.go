@@ -34,6 +34,7 @@ func main() {
 	})
 
 	r.GET("/rss", handlers.GetRSS())
+	r.GET("/youtube", handlers.GetYouTube())
 
 	slog.Info("server starting", "port", "8080")
 	r.Run()

@@ -11,14 +11,17 @@ import { useContainerLeftOffset } from "@/hooks/useContainerLeftOffset.ts";
 import { useCalendarToggle } from "@/hooks/useCalendarToggle.ts";
 import { useArticles } from "@/hooks/useArticles.ts";
 import { VideosCard } from "./components/VideosCard.tsx";
+import { useInfiniteArticles } from "./hooks/useInfiniteArticles.ts";
 
 export function App() {
   const { desktopRef, mobileRef, height: headerHeight } = useHeaderHeight();
   const { ref: containerRef, left: buttonLeft } = useContainerLeftOffset();
   const { visible: calendarVisible, toggle } = useCalendarToggle();
-  const { data, loading } = useArticles("http://localhost:8081/v1/articles");
+  const { articles, loading, loadingMore, hasMore, loadMore } =
+    useInfiniteArticles("http://localhost:8081/v1/articles");
+
   const { data: dateYT, loading: dateYTLoading } = useArticles(
-    "http://localhost:4000/yt-all",
+    "http://localhost:8081/v1/videos",
   );
 
   console.log(dateYT);
@@ -86,7 +89,14 @@ export function App() {
           {/* Colonne droite Desktop List */}
           <section id="list">
             <div className="border-r border-border py-0">
-              <ArticlesList data={data} loading={loading} />
+              <ArticlesList
+                articles={articles}
+                loading={loading}
+                loadingMore={loadingMore}
+                hasMore={hasMore}
+                loadMore={loadMore}
+              />
+              ;
               <VideosCard data={dateYT} loading={dateYTLoading} />
             </div>
           </section>
@@ -110,7 +120,13 @@ export function App() {
 
         {/* Articles Mobile */}
         <div className="lg:hidden space-y-0">
-          <ArticlesList data={data} loading={loading} />
+          <ArticlesList
+            articles={articles}
+            loading={loading}
+            loadingMore={loadingMore}
+            hasMore={hasMore}
+            loadMore={loadMore}
+          />
           <VideosCard data={dateYT} loading={dateYTLoading} />
         </div>
 

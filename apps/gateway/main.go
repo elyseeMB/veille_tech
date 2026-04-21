@@ -3,7 +3,6 @@ package main
 import (
 	"log/slog"
 	"net/http"
-	"os"
 
 	"gateway/config"
 	"gateway/handlers"
@@ -16,14 +15,17 @@ import (
 func main() {
 	godotenv.Load()
 
+	config.InitLogger()
 	config.Init()
-
-	if os.Getenv("GIN_MODE") == "release" {
-		slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
-	}
+	defer config.DB.Close()
 
 	r := gin.Default()
-	r.Use(cors.Default())
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"GET"},
+		AllowHeaders: []string{"Content-Type", "Authorization"},
+	}))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "pong"})
@@ -34,8 +36,9 @@ func main() {
 		v1.GET("/articles", handlers.GetArticles())
 		v1.GET("/articles/:id", handlers.GetArticleByID())
 		v1.GET("/videos", handlers.GetVideos())
+		v1.GET("/graph", handlers.GetGraph())
 	}
 
-	slog.Info("server starting", "port", "8081")
+	slog.Info("gateway starting", "port", "8081")
 	r.Run(":8081")
 }

@@ -11,11 +11,12 @@ import (
 type ArticleFilter struct {
 	Source   string
 	Category string
+	Date     string
 	Page     int
 	PerPage  int
 }
 
-func GetArticles(f ArticleFilter) ([]models.Article, int, error) {
+func GetArticles(f ArticleFilter) ([]models.ArticleDB, int, error) {
 	if f.Page == 0 {
 		f.Page = 1
 	}
@@ -24,9 +25,17 @@ func GetArticles(f ArticleFilter) ([]models.Article, int, error) {
 	}
 	offset := (f.Page - 1) * f.PerPage
 
-	where := "WHERE a.published_at >= NOW() - INTERVAL '24 hours'"
+	var where string
 	args := []any{}
 	argIdx := 1
+
+	if f.Date != "" {
+		where = fmt.Sprintf("WHERE a.published_at::date = $%d", argIdx)
+		args = append(args, f.Date)
+		argIdx++
+	} else {
+		where = "WHERE a.published_at >= NOW() - INTERVAL '24 hours'"
+	}
 
 	if f.Source != "" {
 		where += fmt.Sprintf(" AND s.name = $%d", argIdx)
@@ -79,9 +88,9 @@ func GetArticles(f ArticleFilter) ([]models.Article, int, error) {
 	}
 	defer rows.Close()
 
-	var articles []models.Article
+	var articles []models.ArticleDB
 	for rows.Next() {
-		var a models.Article
+		var a models.ArticleDB
 		err := rows.Scan(
 			&a.ID, &a.ExternalID, &a.Title, &a.URL,
 			&a.Author, &a.Content, &a.Summary,
@@ -93,11 +102,15 @@ func GetArticles(f ArticleFilter) ([]models.Article, int, error) {
 		articles = append(articles, a)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+
 	return articles, total, nil
 }
 
-func GetArticleByID(id string) (*models.Article, error) {
-	var a models.Article
+func GetArticleByID(id string) (*models.ArticleDB, error) {
+	var a models.ArticleDB
 	err := config.DB.QueryRow(
 		context.Background(),
 		`SELECT

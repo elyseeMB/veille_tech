@@ -30,7 +30,13 @@ export function TimeRelative({
   date: string | Date;
   className?: string;
 }) {
+  console.log("TimeRelative date:", date); // ← ajoute ça temporairement
+
+  if (!date) return null;
   const d = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(d.getTime())) {
+    return null;
+  }
 
   return (
     <time
