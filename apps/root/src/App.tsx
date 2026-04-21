@@ -1,6 +1,5 @@
 import { Fullscreen } from "lucide-react";
 import { Calendar } from "@/components/Calendar.tsx";
-import { ArticlesList } from "@/components/ArticlesList.tsx";
 import { SourcesPanel } from "@/components/SourcesPanel.tsx";
 import { PinnedArticles } from "@/components/PinnedArticles.tsx";
 import { SummaryPanel } from "@/components/SummaryPanel.tsx";
@@ -9,22 +8,16 @@ import { Button } from "@/components/ui/button.tsx";
 import { useHeaderHeight } from "@/hooks/useHeaderHeight.ts";
 import { useContainerLeftOffset } from "@/hooks/useContainerLeftOffset.ts";
 import { useCalendarToggle } from "@/hooks/useCalendarToggle.ts";
-import { useArticles } from "@/hooks/useArticles.ts";
-import { VideosCard } from "./components/VideosCard.tsx";
-import { useInfiniteArticles } from "./hooks/useInfiniteArticles.ts";
+import { useFeed } from "@/hooks/useFeed.ts";
+import { Feed } from "@/components/Feed.tsx";
 
 export function App() {
   const { desktopRef, mobileRef, height: headerHeight } = useHeaderHeight();
   const { ref: containerRef, left: buttonLeft } = useContainerLeftOffset();
   const { visible: calendarVisible, toggle } = useCalendarToggle();
-  const { articles, loading, loadingMore, hasMore, loadMore } =
-    useInfiniteArticles("http://localhost:8081/v1/articles");
-
-  const { data: dateYT, loading: dateYTLoading } = useArticles(
-    "http://localhost:8081/v1/videos",
+  const { items, loading, loadingMore, hasMore, loadMore } = useFeed(
+    "http://localhost:8081/v1",
   );
-
-  console.log(dateYT);
 
   return (
     <main className="min-h-screen bg-background font-serif relative">
@@ -86,18 +79,16 @@ export function App() {
             </div>
           </div>
 
-          {/* Colonne droite Desktop List */}
+          {/* Colonne droite Desktop Feed */}
           <section id="list">
             <div className="border-r border-border py-0">
-              <ArticlesList
-                articles={articles}
+              <Feed
+                items={items}
                 loading={loading}
                 loadingMore={loadingMore}
                 hasMore={hasMore}
                 loadMore={loadMore}
               />
-              ;
-              <VideosCard data={dateYT} loading={dateYTLoading} />
             </div>
           </section>
 
@@ -118,16 +109,15 @@ export function App() {
           </h1>
         </div>
 
-        {/* Articles Mobile */}
+        {/* Feed Mobile */}
         <div className="lg:hidden space-y-0">
-          <ArticlesList
-            articles={articles}
+          <Feed
+            items={items}
             loading={loading}
             loadingMore={loadingMore}
             hasMore={hasMore}
             loadMore={loadMore}
           />
-          <VideosCard data={dateYT} loading={dateYTLoading} />
         </div>
 
         {/* ================================================================== */}
