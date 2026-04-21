@@ -16,7 +16,7 @@ export function App() {
   const { desktopRef, mobileRef, height: headerHeight } = useHeaderHeight();
   const { ref: containerRef, left: buttonLeft } = useContainerLeftOffset();
   const { visible: calendarVisible, toggle } = useCalendarToggle();
-  const { data, loading } = useArticles("http://localhost:4000/rss");
+  const { data, loading } = useArticles("http://localhost:8081/v1/articles");
   const { data: dateYT, loading: dateYTLoading } = useArticles(
     "http://localhost:4000/yt-all",
   );
