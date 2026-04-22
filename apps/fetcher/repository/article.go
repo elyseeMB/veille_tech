@@ -62,17 +62,21 @@ func InsertArticles(articles []models.Article) error {
 			pubDate = time.Now()
 		}
 
-		_, err = tx.Exec(
+		// Insert article — RETURNING id pour le sync feed_items
+		var articleID string
+		err = tx.QueryRow(
 			context.Background(),
 			`INSERT INTO articles (external_id, source_id, title, url, author, content, category, published_at)
 			VALUES($1, (SELECT id FROM sources WHERE name = $2), $3, $4, $5, $6, $7, $8)
-			ON CONFLICT (external_id) DO NOTHING`,
+			ON CONFLICT DO NOTHING
+			RETURNING id`,
 			a.ID, a.Source, a.Title, a.Link, a.Author, a.Content, a.Category, pubDate,
-		)
+		).Scan(&articleID)
 		if err != nil {
 			return err
 		}
 
+		// sync_log — inchangé
 		_, err = tx.Exec(
 			context.Background(),
 			`INSERT INTO sync_log (external_id, source_id)
@@ -82,6 +86,19 @@ func InsertArticles(articles []models.Article) error {
 		)
 		if err != nil {
 			return err
+		}
+
+		if articleID != "" {
+			_, err = tx.Exec(
+				context.Background(),
+				`INSERT INTO feed_items (type, ref_id, published_at)
+				VALUES ('article', $1, $2)
+				ON CONFLICT (type, ref_id) DO NOTHING`,
+				articleID, pubDate,
+			)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

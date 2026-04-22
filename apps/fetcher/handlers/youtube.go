@@ -207,10 +207,15 @@ func GetYouTube() gin.HandlerFunc {
 			"skipped", len(unique)-len(newVideos),
 		)
 
+		if newVideos == nil {
+			newVideos = []models.Video{}
+		}
+
 		c.JSON(http.StatusOK, gin.H{
-			"videos":   unique,
-			"inserted": len(newVideos),
-			"total":    len(unique),
+			"newVideos":    newVideos,
+			"uniqueVideos": unique,
+			"inserted":     len(newVideos),
+			"total":        len(unique),
 		})
 	}
 }

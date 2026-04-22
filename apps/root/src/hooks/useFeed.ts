@@ -43,23 +43,15 @@ type GatewayVideo = {
   publishedAt: string;
 };
 
-type ArticlesResponse = {
-  articles: GatewayArticle[];
-  total: number;
-  page: number;
-  per_page: number;
-};
-
-type VideosResponse = {
-  videos: GatewayVideo[];
-  total: number;
-  page: number;
-  per_page: number;
+export type VideoCarouselItemGroup = {
+  pubDate: string;
+  items: YoutubeVideo[];
 };
 
 export type FeedItem =
   | { type: "article"; date: Date; data: Article }
-  | { type: "video"; date: Date; data: YoutubeVideo };
+  | { type: "video"; date: Date; data: YoutubeVideo }
+  | { type: "video_carousel"; date: Date; data: YoutubeVideo[] };
 
 function toArticle(a: GatewayArticle): Article {
   return {
@@ -99,33 +91,41 @@ export function useFeed(baseUrl: string) {
     pageToFetch === 1 ? setLoading(true) : setLoadingMore(true);
 
     try {
-      const [articlesRes, videosRes] = await Promise.all([
-        fetch(`${baseUrl}/articles?page=${pageToFetch}&per_page=${PER_PAGE}`).then(r => r.json()) as Promise<ArticlesResponse>,
-        pageToFetch === 1
-          ? fetch(`${baseUrl}/videos`).then(r => r.json()) as Promise<VideosResponse>
-          : Promise.resolve(null),
-      ]);
+      const feedRes = await fetch(
+        `${baseUrl}/feed?page=${pageToFetch}&per_page=${PER_PAGE}&video_format=carousel`,
+      ).then((r) => r.json());
 
-      const articleItems: FeedItem[] = articlesRes.articles.map(a => ({
-        type: "article",
-        date: new Date(a.pubDate || Date.now()),
-        data: toArticle(a),
-      }));
+      const mapped: FeedItem[] = [];
 
-      const videoItems: FeedItem[] = videosRes
-        ? videosRes.videos.map(v => ({
+      for (const item of feedRes.items) {
+        if (item.type === "article") {
+          mapped.push({
+            type: "article",
+            date: new Date(item.date),
+            data: toArticle(item.data),
+          });
+        }
+
+        if (item.type === "video") {
+          mapped.push({
             type: "video",
-            date: new Date(v.publishedAt || Date.now()),
-            data: toVideo(v),
-          }))
-        : [];
+            date: new Date(item.date),
+            data: toVideo(item.data),
+          });
+        }
 
-      const merged = [...articleItems, ...videoItems].sort(
-        (a, b) => b.date.getTime() - a.date.getTime()
-      );
+        if (item.type === "video_carousel") {
+          mapped.push({
+            type: "video_carousel",
+            date: new Date(item.date),
+            data: item.data.items.map(toVideo),
+          });
+        }
+      }
 
-      setItems(prev => pageToFetch === 1 ? merged : [...prev, ...merged]);
-      setHasMore(articlesRes.page * articlesRes.per_page < articlesRes.total);
+      setItems((prev) => (pageToFetch === 1 ? mapped : [...prev, ...mapped]));
+
+      setHasMore(feedRes.page * feedRes.per_page < feedRes.total);
     } catch (err) {
       console.error("feed fetch failed", err);
     } finally {

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"fetcher/config"
 	"fetcher/models"
@@ -58,21 +59,18 @@ func InsertVideos(videos []models.Video) error {
 	defer tx.Rollback(context.Background())
 
 	for _, v := range videos {
-		_, err := tx.Exec(
+		// Insert vidéo — RETURNING id pour le sync feed_items
+		var videoID string
+		err := tx.QueryRow(
 			context.Background(),
 			`INSERT INTO videos
 				(external_id, source_id, title, description, channel_title, channel_avatar, thumbnail, published_at)
 			VALUES ($1, (SELECT id FROM sources WHERE name = $2), $3, $4, $5, $6, $7, $8::timestamptz)
-			ON CONFLICT (external_id) DO NOTHING`,
-			v.ExternalID,
-			v.ChannelTitle,
-			v.Title,
-			v.Description,
-			v.ChannelTitle,
-			v.ChannelAvatar,
-			v.Thumbnail,
-			v.PublishedAt,
-		)
+			ON CONFLICT (external_id) DO UPDATE SET external_id = EXCLUDED.external_id
+			RETURNING id`,
+			v.ExternalID, v.ChannelTitle, v.Title, v.Description,
+			v.ChannelTitle, v.ChannelAvatar, v.Thumbnail, v.PublishedAt,
+		).Scan(&videoID)
 		if err != nil {
 			return err
 		}
@@ -84,6 +82,22 @@ func InsertVideos(videos []models.Video) error {
 			ON CONFLICT (external_id, source_id) DO NOTHING`,
 			v.ExternalID,
 			v.ChannelTitle,
+		)
+		if err != nil {
+			return err
+		}
+
+		pubDate, err := time.Parse(time.RFC3339, v.PublishedAt)
+		if err != nil {
+			pubDate = time.Now()
+		}
+
+		_, err = tx.Exec(
+			context.Background(),
+			`INSERT INTO feed_items (type, ref_id, published_at)
+			VALUES ('video', $1, $2)
+			ON CONFLICT (type, ref_id) DO NOTHING`,
+			videoID, pubDate,
 		)
 		if err != nil {
 			return err

@@ -11,10 +11,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// handlers/videos.go
+
 func GetVideos() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 		perPage, _ := strconv.Atoi(c.DefaultQuery("per_page", "20"))
+		format := c.DefaultQuery("format", "list")
 
 		videosDB, total, err := repository.GetVideos(page, perPage)
 		if err != nil {
@@ -29,6 +32,17 @@ func GetVideos() gin.HandlerFunc {
 		}
 
 		slog.Info("videos fetched", "count", len(dtos), "total", total)
+
+		if format == "carousel" {
+			groups := models.ChunkVideosIntoCarousel(dtos, 5)
+			c.JSON(http.StatusOK, models.VideosCarouselResponse{
+				Groups:  groups,
+				Total:   total,
+				Page:    page,
+				PerPage: perPage,
+			})
+			return
+		}
 
 		c.JSON(http.StatusOK, models.VideosResponse{
 			Videos:  dtos,

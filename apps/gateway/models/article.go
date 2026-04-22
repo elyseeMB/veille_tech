@@ -1,8 +1,11 @@
 package models
 
-import "time"
+import (
+	"net/url"
+	"strings"
+	"time"
+)
 
-// ArticleDB reflète exactement les colonnes de la DB
 type ArticleDB struct {
 	ID          string
 	ExternalID  string
@@ -49,36 +52,6 @@ type VideoDTO struct {
 	PublishedAt   string `json:"publishedAt"`
 }
 
-func ToArticleDTO(a ArticleDB) ArticleDTO {
-	content := a.Content
-	if a.Summary != nil && *a.Summary != "" {
-		content = *a.Summary
-	}
-	return ArticleDTO{
-		ID:       a.ID,
-		Title:    a.Title,
-		Link:     a.URL,
-		Author:   a.Author,
-		PubDate:  a.PublishedAt.Format(time.RFC3339),
-		Content:  content,
-		Source:   a.Source,
-		Category: a.Category,
-		Summary:  a.Summary,
-	}
-}
-
-func ToVideoDTO(v VideoDB) VideoDTO {
-	return VideoDTO{
-		ID:            v.ExternalID,
-		Title:         v.Title,
-		Description:   v.Description,
-		ChannelTitle:  v.ChannelTitle,
-		ChannelAvatar: v.ChannelAvatar,
-		Thumbnail:     v.Thumbnail,
-		PublishedAt:   v.PublishedAt.Format(time.RFC3339),
-	}
-}
-
 type ArticlesResponse struct {
 	Articles []ArticleDTO `json:"articles"`
 	Total    int          `json:"total"`
@@ -108,4 +81,46 @@ type GraphEdge struct {
 type GraphResponse struct {
 	Nodes []GraphNode `json:"nodes"`
 	Edges []GraphEdge `json:"edges"`
+}
+
+type VideosCarouselResponse struct {
+	Groups  []VideoCarouselGroup `json:"groups"`
+	Total   int                  `json:"total"`
+	Page    int                  `json:"page"`
+	PerPage int                  `json:"per_page"`
+}
+
+func ToArticleDTO(a ArticleDB) ArticleDTO {
+	content := a.Content
+	if a.Summary != nil && *a.Summary != "" {
+		content = *a.Summary
+	}
+	return ArticleDTO{
+		ID:       a.ID,
+		Title:    a.Title,
+		Link:     a.URL,
+		Author:   a.Author,
+		PubDate:  a.PublishedAt.Format(time.RFC3339),
+		Content:  content,
+		Source:   a.Source,
+		Category: a.Category,
+		Summary:  a.Summary,
+	}
+}
+
+func ToVideoDTO(v VideoDB) VideoDTO {
+	avatar := v.ChannelAvatar
+	if strings.HasPrefix(avatar, "http") {
+		avatar = "/v1/avatar?url=" + url.QueryEscape(avatar)
+	}
+
+	return VideoDTO{
+		ID:            v.ExternalID,
+		Title:         v.Title,
+		Description:   v.Description,
+		ChannelTitle:  v.ChannelTitle,
+		ChannelAvatar: avatar,
+		Thumbnail:     v.Thumbnail,
+		PublishedAt:   v.PublishedAt.Format(time.RFC3339),
+	}
 }

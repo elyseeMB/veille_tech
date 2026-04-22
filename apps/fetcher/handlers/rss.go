@@ -183,10 +183,15 @@ func GetRSS() gin.HandlerFunc {
 
 		slog.Info("rss fetch completed", "inserted", len(newArticles), "returned", len(filtered))
 
+		if filtered == nil {
+			filtered = []models.Article{}
+		}
+
 		c.JSON(http.StatusOK, gin.H{
-			"articles": filtered,
-			"inserted": len(newArticles),
-			"total":    len(unique),
+			"uniqueArticles": unique,
+			"newArticles":    filtered,
+			"inserted":       len(newArticles),
+			"total":          len(unique),
 		})
 	}
 }

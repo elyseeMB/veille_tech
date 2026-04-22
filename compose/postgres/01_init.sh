@@ -17,6 +17,7 @@ GRANT ALL ON SCHEMA public TO veille;
 CREATE EXTENSION IF NOT EXISTS vector;
 
 CREATE TYPE content_type AS ENUM ('rss', 'youtube');
+CREATE TYPE feed_item_type AS ENUM ('article', 'video');
 
 CREATE TABLE sources (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -92,6 +93,14 @@ CREATE TABLE graph_edges (
     UNIQUE(article_a, article_b)
 );
 
+CREATE TABLE feed_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    type feed_item_type NOT NULL,
+    ref_id UUID NOT NULL,
+    published_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 CREATE INDEX idx_articles_published_at ON articles(published_at DESC);
 CREATE INDEX idx_articles_source_id ON articles(source_id);
 CREATE INDEX idx_articles_category ON articles(category);
@@ -106,5 +115,9 @@ CREATE INDEX idx_sync_source_id ON sync_log(source_id);
 CREATE INDEX idx_graph_article_a ON graph_edges(article_a);
 CREATE INDEX idx_graph_article_b ON graph_edges(article_b);
 CREATE INDEX idx_graph_similarity ON graph_edges(similarity DESC);
+
+CREATE INDEX idx_feed_items_published_at ON feed_items(published_at DESC);
+CREATE INDEX idx_feed_items_type ON feed_items(type);
+CREATE INDEX idx_feed_items_ref_id ON feed_items(ref_id);
 
 EOF

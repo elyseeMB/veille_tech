@@ -33,6 +33,8 @@ func main() {
 
 	v1 := r.Group("/v1")
 	{
+		v1.GET("/feed", handlers.GetFeed())
+		v1.GET("/avatar", handlers.ProxyAvatar())
 		v1.GET("/articles", handlers.GetArticles())
 		v1.GET("/articles/:id", handlers.GetArticleByID())
 		v1.GET("/videos", handlers.GetVideos())

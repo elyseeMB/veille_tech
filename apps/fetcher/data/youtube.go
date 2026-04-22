@@ -15,5 +15,7 @@ var YOUTUBE_CHANNELS = []YouTubeChannel{
 	{ID: "UCsXVk37bltHxD1rDPwtNM8Q", Name: "Kurzgesagt"},
 	{ID: "UCBa659QWEk1AI4Tg--mrJ2A", Name: "Tom Scott"},
 	{ID: "UC9RM-iSvTu1uPJb8X5yp3EQ", Name: "Wendover"},
-	{ID: "UCxH16958KSxT4Z9yL_9JYtw", Name: "Unknown"},
+	{ID: "UCUyeluBRhGPCW4rPe_UvBZQ", Name: "The PrimeTime"},
+	{ID: "UCbRP3c757lWg9M-U7TyEkXA", Name: "Theo - t3․gg"},
+	{ID: "UCFbNIlppjAuEX4znoulh0Cw", Name: "Web Dev Simplified"},
 }

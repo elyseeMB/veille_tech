@@ -1,5 +1,6 @@
 package handlers
 
+
 import (
 	"log/slog"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
 
 func GetArticles() gin.HandlerFunc {
 	return func(c *gin.Context) {

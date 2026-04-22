@@ -22,13 +22,17 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
               {item.channelAvatar && (
                 <img
                   className="object-cover w-10 rounded-full inline-block"
-                  src={item.channelAvatar.startsWith("http")
-                    ? item.channelAvatar
-                    : `${API_URL}${item.channelAvatar}`}
+                  src={
+                    item.channelAvatar.startsWith("http")
+                      ? item.channelAvatar
+                      : `${API_URL}${item.channelAvatar}`
+                  }
                   alt=""
                 />
               )}
-              <span className="text-foreground text-sm">{item.channelTitle}</span>
+              <span className="text-foreground text-sm">
+                {item.channelTitle}
+              </span>
             </div>
             <span className="h-px flex-1 bg-foreground/10" />
             <time>
@@ -46,12 +50,16 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
 
           {item.thumbnail && (
             <div className="rounded overflow-hidden border border-border aspect-video w-full">
-              <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
+              <img
+                src={item.thumbnail}
+                alt={item.title}
+                className="w-full h-full object-cover"
+              />
             </div>
           )}
 
           {item.description && (
-            <p className="pl-1 text-sm leading-relaxed text-muted-foreground">
+            <p className="pl-1 text-sm h-20 leading-relaxed text-muted-foreground">
               {item.description.slice(0, 120)}…
             </p>
           )}

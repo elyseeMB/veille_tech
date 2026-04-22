@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { TimeRelative } from "./TimeRelative.tsx";
 import type { Article } from "@/hooks/useFeed.ts";
 
@@ -12,7 +11,7 @@ const SOURCE_COLORS: Record<string, string> = {
 
 export function ArticleItem({ article: item }: { article: Article }) {
   return (
-    <motion.article
+    <article
       key={item.id}
       className="
         group relative grid grid-cols-1 lg:grid-cols-[1px_1fr]
@@ -29,7 +28,9 @@ export function ArticleItem({ article: item }: { article: Article }) {
         <div className="flex flex-col items-start gap-1">
           <TimeRelative date={item.pubDate} />
           <div className="flex items-center gap-2">
-            <span className={`text-xs uppercase tracking-widest ${SOURCE_COLORS[item.source] ?? "text-muted-foreground"}`}>
+            <span
+              className={`text-xs uppercase tracking-widest ${SOURCE_COLORS[item.source] ?? "text-muted-foreground"}`}
+            >
               {item.source}
             </span>
             <span className="text-xs text-muted-foreground/50">·</span>
@@ -68,6 +69,6 @@ export function ArticleItem({ article: item }: { article: Article }) {
           </p>
         )}
       </div>
-    </motion.article>
+    </article>
   );
 }

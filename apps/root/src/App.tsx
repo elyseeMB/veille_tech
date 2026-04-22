@@ -81,7 +81,7 @@ export function App() {
 
           {/* Colonne droite Desktop Feed */}
           <section id="list">
-            <div className="border-r border-border py-0">
+            <div className="border-r border-border">
               <Feed
                 items={items}
                 loading={loading}
