@@ -4,6 +4,7 @@ import type { FeedItem } from "@/hooks/useFeed.ts";
 import { ArticleItem } from "./ArticleItem.tsx";
 import { VideoItem } from "./VideoItem.tsx";
 import { Spinner } from "./ui/spinner.tsx";
+import { Button } from "./ui/button.tsx";
 
 export function Feed({
   items,
@@ -91,7 +92,12 @@ export function Feed({
               ref={sentinelRef}
               className="flex justify-center items-center py-2"
             >
-              {loadingMore && <Spinner />}
+              {loadingMore && (
+                <Button variant="ghost" disabled size="sm">
+                  <Spinner data-icon="inline-start" />
+                  Please wait
+                </Button>
+              )}
             </div>
           ) : null}
 
@@ -104,12 +110,6 @@ export function Feed({
               </div>
             </div>
           )}
-
-          {/* {!hasMore && items.length > 0 && (
-              <p className="text-center text-xs text-muted-foreground/40 font-mono uppercase tracking-widest py-8">
-                — fin —
-              </p>
-            )} */}
         </>
       )}
     </section>

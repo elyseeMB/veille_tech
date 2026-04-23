@@ -84,11 +84,16 @@ export function useFeed(baseUrl: string) {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const PER_PAGE = 20;
 
   const fetchPage = async (pageToFetch: number) => {
-    pageToFetch === 1 ? setLoading(true) : setLoadingMore(true);
+    if (pageToFetch === 1) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
 
     try {
       const feedRes = await fetch(
@@ -125,9 +130,12 @@ export function useFeed(baseUrl: string) {
 
       setItems((prev) => (pageToFetch === 1 ? mapped : [...prev, ...mapped]));
 
+      setPage(pageToFetch);
       setHasMore(feedRes.page * feedRes.per_page < feedRes.total);
     } catch (err) {
       console.error("feed fetch failed", err);
+      setError("Connexion perdue. Réessaie plus tard.");
+      setHasMore(false);
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -139,11 +147,15 @@ export function useFeed(baseUrl: string) {
   }, [baseUrl]);
 
   const loadMore = () => {
-    if (loadingMore || !hasMore) return;
-    const next = page + 1;
-    setPage(next);
-    fetchPage(next);
+    if (loadingMore || !hasMore || error) return;
+    fetchPage(page + 1);
   };
 
-  return { items, loading, loadingMore, hasMore, loadMore };
+  const retry = () => {
+    setError(null);
+    setHasMore(true);
+    fetchPage(page + 1);
+  };
+
+  return { items, loading, loadingMore, hasMore, error, loadMore, retry };
 }

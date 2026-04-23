@@ -20,6 +20,18 @@ var RSS_FEEDS = []models.RSSFeed{
 		},
 	},
 	{
+		Name: "Nasdaq Nordic News Releases",
+		Categories: []models.Category{
+			{URL: "https://api.news.eu.nasdaq.com/news/rss/nasdaqNordicNews", Category: "Press Releases"},
+		},
+	},
+	{
+		Name: "TechCrunch",
+		Categories: []models.Category{
+			{URL: "https://techcrunch.com/feed/", Category: "Startup and Technology News"},
+		},
+	},
+	{
 		Name: "The Verge",
 		Categories: []models.Category{
 			{URL: "https://www.theverge.com/rss/index.xml", Category: "Today's Stream"},

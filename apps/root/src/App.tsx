@@ -15,9 +15,8 @@ export function App() {
   const { desktopRef, mobileRef, height: headerHeight } = useHeaderHeight();
   const { ref: containerRef, left: buttonLeft } = useContainerLeftOffset();
   const { visible: calendarVisible, toggle } = useCalendarToggle();
-  const { items, loading, loadingMore, hasMore, loadMore } = useFeed(
-    "http://localhost:8081/v1",
-  );
+  const { items, loading, loadingMore, hasMore, loadMore, error, retry } =
+    useFeed("http://localhost:8081/v1");
 
   return (
     <main className="min-h-screen bg-background font-serif relative">
@@ -89,6 +88,17 @@ export function App() {
                 hasMore={hasMore}
                 loadMore={loadMore}
               />
+              {error && (
+                <div className="p-2 flex items-center justify-center">
+                  <Button
+                    className="cursor-pointer"
+                    variant="outline"
+                    onClick={retry}
+                  >
+                    No connection. Tap to try again
+                  </Button>
+                </div>
+              )}
             </div>
           </section>
 

@@ -6,6 +6,8 @@ import (
 
 	"fetcher/config"
 	"fetcher/models"
+
+	"github.com/jackc/pgx/v5"
 )
 
 func FilterNew(articles []models.Article) ([]models.Article, error) {
@@ -67,12 +69,12 @@ func InsertArticles(articles []models.Article) error {
 		err = tx.QueryRow(
 			context.Background(),
 			`INSERT INTO articles (external_id, source_id, title, url, author, content, category, published_at)
-			VALUES($1, (SELECT id FROM sources WHERE name = $2), $3, $4, $5, $6, $7, $8)
-			ON CONFLICT DO NOTHING
-			RETURNING id`,
+VALUES($1, (SELECT id FROM sources WHERE name = $2), $3, $4, $5, $6, $7, $8)
+ON CONFLICT (url) DO NOTHING
+RETURNING id`,
 			a.ID, a.Source, a.Title, a.Link, a.Author, a.Content, a.Category, pubDate,
 		).Scan(&articleID)
-		if err != nil {
+		if err != nil && err != pgx.ErrNoRows {
 			return err
 		}
 

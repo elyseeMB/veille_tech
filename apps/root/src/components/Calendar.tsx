@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { axisBottom, scaleUtc, timeYear, timeMonth, timeDay, select } from "d3";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip.tsx";
 
@@ -169,8 +169,12 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
 export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const axisRef = useRef<SVGGElement | null>(null);
+  const [data, setData] = useState<Record<string, { count: string }>>({});
 
   useEffect(() => {
+    fetch("http://localhost:8081/v1/calendar").then((r) =>
+      r.json().then((r) => setData(r)),
+    );
     if (scrollable || !axisRef.current) {
       return;
     }
@@ -221,6 +225,10 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
     );
   }
 
+  console.log(typeof data);
+  // console.log(data);
+  // console.log(data?.[i]);
+
   return (
     <svg
       viewBox={`0 0 ${D_W} ${D_H}`}
@@ -238,6 +246,10 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
               day: "numeric",
               month: "short",
             });
+            const dateKey = d.toLocaleDateString("en-CA");
+            const articleForDate = data?.[dateKey];
+            const isArticleForDate = !!articleForDate;
+
             return (
               <Tooltip key={+d}>
                 <TooltipTrigger
@@ -260,12 +272,16 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
                         className="dark:fill-emerald-400"
                       />
                     </a>
-                  ) : isPast ? (
+                  ) : isPast && isArticleForDate ? (
                     <a href={`/date/${d.toISOString().slice(0, 10)}`}>
                       <circle
                         r={D_CELL / 2 - 1}
-                        fill="currentColor"
-                        opacity={0.2}
+                        fill={
+                          isArticleForDate
+                            ? "var(--color-amber-500)"
+                            : "currentColor"
+                        }
+                        opacity={isArticleForDate ? 1 : 0.2}
                         cx={getDCx(d)}
                         cy={getDCy(d)}
                       />
@@ -275,14 +291,19 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
                       className="cursor-default"
                       r={D_CELL / 2 - 1}
                       fill="currentColor"
-                      opacity={0.8}
+                      opacity={isPast ? 0.2 : 1}
                       cx={getDCx(d)}
                       cy={getDCy(d)}
                     />
                   )}
                 </TooltipTrigger>
                 <TooltipContent className="pointer-events-none">
-                  <p className="font-serif text-sm">{label}</p>
+                  <div className="flex flex-col gap-0.5 items-center">
+                    <p className="font-serif text-sm">{label}</p>
+                    {articleForDate?.count && (
+                      <span>article {articleForDate?.count} (s) </span>
+                    )}
+                  </div>
                 </TooltipContent>
               </Tooltip>
             );

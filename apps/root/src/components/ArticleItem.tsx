@@ -7,6 +7,8 @@ const SOURCE_COLORS: Record<string, string> = {
   "Ars Technica": "text-red-400",
   "MIT Tech Review": "text-blue-400",
   Wired: "text-emerald-400",
+  "Nasdaq Nordic News Releases": "text-[#0098b9]",
+  TechCrunch: "text-[#68f176]",
 };
 
 export function ArticleItem({ article: item }: { article: Article }) {
