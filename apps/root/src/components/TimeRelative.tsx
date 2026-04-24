@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils.ts";
 import { timeMinute, timeHour, timeDay, timeMonth, timeYear } from "d3";
+import { useState, useEffect, useMemo } from "react";
 
 const rtf = new Intl.RelativeTimeFormat(navigator.language, {
   numeric: "auto",
@@ -8,17 +9,28 @@ const rtf = new Intl.RelativeTimeFormat(navigator.language, {
 function getRelativeTime(date: Date): string {
   const now = new Date();
 
-  const minutes = timeMinute.count(date, now);
-  if (minutes < 60) return rtf.format(-minutes, "minute");
+  const minutes = Math.max(0, timeMinute.count(date, now));
+  if (minutes < 1) {
+    return rtf.format(0, "second");
+  }
+  if (minutes < 60) {
+    return rtf.format(-minutes, "minute");
+  }
 
   const hours = timeHour.count(date, now);
-  if (hours < 24) return rtf.format(-hours, "hour");
+  if (hours < 24) {
+    return rtf.format(-hours, "hour");
+  }
 
   const days = timeDay.count(date, now);
-  if (days < 30) return rtf.format(-days, "day");
+  if (days < 30) {
+    return rtf.format(-days, "day");
+  }
 
   const months = timeMonth.count(date, now);
-  if (months < 12) return rtf.format(-months, "month");
+  if (months < 12) {
+    return rtf.format(-months, "month");
+  }
 
   return rtf.format(-timeYear.count(date, now), "year");
 }
@@ -30,16 +42,36 @@ export function TimeRelative({
   date: string | Date;
   className?: string;
 }) {
-  if (!date) return null;
-  const d = typeof date === "string" ? new Date(date) : date;
-  if (isNaN(d.getTime())) {
-    return null;
-  }
+  const d = useMemo(
+    () => (typeof date === "string" ? new Date(date) : date),
+    [date],
+  );
+
+  const [label, setLabel] = useState(() => getRelativeTime(d));
+
+  useEffect(() => {
+    const getInterval = () => {
+      const minutes = timeMinute.count(d, new Date());
+      if (minutes < 1) return 10_000;
+      if (minutes < 60) return 30_000;
+      return 60_000;
+    };
+
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const tick = () => {
+      setLabel(getRelativeTime(d));
+      timeout = setTimeout(tick, getInterval());
+    };
+
+    timeout = setTimeout(tick, getInterval());
+    return () => clearTimeout(timeout);
+  }, [d]);
 
   return (
     <time
-      dateTime={d.toISOString()}
-      title={d.toLocaleDateString("en", {
+      dateTime={d!.toISOString()}
+      title={d!.toLocaleDateString("en", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -48,7 +80,7 @@ export function TimeRelative({
       })}
       className={cn("text-sm", className)}
     >
-      {getRelativeTime(d)}
+      {label}
     </time>
   );
 }

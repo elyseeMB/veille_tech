@@ -100,7 +100,7 @@ func GetArticlesFeedByIDs(ids []string) (map[string]models.ArticleDB, error) {
 			s.name AS source,
 			a.published_at
 		FROM articles a
-		JOIN sources s ON s.id = a.source_id
+		JOIN sources s ON s.id = a.source_id AND active = true
 		WHERE a.id = ANY(ARRAY[%s]::uuid[])`,
 		strings.Join(placeholders, ", "),
 	)

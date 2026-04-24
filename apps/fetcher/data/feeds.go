@@ -9,12 +9,12 @@ var RSS_HEADERS = map[string]string{
 }
 
 var RSS_FEEDS = []models.RSSFeed{
-	{
-		Name: "abduzeedo",
-		Categories: []models.Category{
-			{URL: "https://abduzeedo.com/rss.xml", Category: "abdz—do - Thoughts on design, inspiration, UX career"},
-		},
-	},
+	// {
+	// 	Name: "abduzeedo",
+	// 	Categories: []models.Category{
+	// 		{URL: "https://abduzeedo.com/rss.xml", Category: "abdz—do - Thoughts on design, inspiration, UX career"},
+	// 	},
+	// },
 	{
 		Name: "OFF Brand by Koto",
 		Categories: []models.Category{

@@ -22,7 +22,10 @@ func FilterNew(articles []models.Article) ([]models.Article, error) {
 
 	rows, err := config.DB.Query(
 		context.Background(),
-		"SELECT external_id FROM sync_log WHERE external_id = ANY($1)",
+		`SELECT a.external_id
+         FROM sync_log a
+         JOIN sources s ON s.id = a.source_id
+         WHERE a.external_id = ANY($1) OR s.active = false`,
 		ids,
 	)
 	if err != nil {
@@ -69,9 +72,9 @@ func InsertArticles(articles []models.Article) error {
 		err = tx.QueryRow(
 			context.Background(),
 			`INSERT INTO articles (external_id, source_id, title, url, author, content, category, published_at)
-VALUES($1, (SELECT id FROM sources WHERE name = $2), $3, $4, $5, $6, $7, $8)
-ON CONFLICT (url) DO NOTHING
-RETURNING id`,
+			VALUES($1, (SELECT id FROM sources WHERE name = $2 AND active = true), $3, $4, $5, $6, $7, $8)
+			ON CONFLICT (url) DO NOTHING
+			RETURNING id`,
 			a.ID, a.Source, a.Title, a.Link, a.Author, a.Content, a.Category, pubDate,
 		).Scan(&articleID)
 		if err != nil && err != pgx.ErrNoRows {
@@ -82,7 +85,7 @@ RETURNING id`,
 		_, err = tx.Exec(
 			context.Background(),
 			`INSERT INTO sync_log (external_id, source_id)
-			VALUES ($1, (SELECT id FROM sources WHERE name = $2))
+			VALUES ($1, (SELECT id FROM sources WHERE name = $2 AND active = true))
 			ON CONFLICT (external_id, source_id) DO NOTHING`,
 			a.ID, a.Source,
 		)
