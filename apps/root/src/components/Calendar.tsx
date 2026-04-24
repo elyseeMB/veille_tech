@@ -301,7 +301,7 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
                   <div className="flex flex-col gap-0.5 items-center">
                     <p className="font-serif text-sm">{label}</p>
                     {articleForDate?.count && (
-                      <span>article {articleForDate?.count} (s) </span>
+                      <span>article (s) {articleForDate?.count} </span>
                     )}
                   </div>
                 </TooltipContent>

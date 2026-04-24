@@ -8,6 +8,7 @@ const SOURCE_COLORS: Record<string, string> = {
   "MIT Tech Review": "text-blue-400",
   Wired: "text-emerald-400",
   "Nasdaq Nordic News Releases": "text-[#0098b9]",
+  abduzeedo: "text-[#dddddd]",
   TechCrunch: "text-[#68f176]",
 };
 
@@ -36,7 +37,7 @@ export function ArticleItem({ article: item }: { article: Article }) {
               {item.source}
             </span>
             <span className="text-xs text-muted-foreground/50">·</span>
-            <span className="text-xs text-muted-foreground/60 capitalize">
+            <span className="text-xs max-w-60 truncate text-muted-foreground/60 capitalize">
               {item.category}
             </span>
           </div>

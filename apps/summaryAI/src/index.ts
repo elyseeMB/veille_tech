@@ -11,8 +11,7 @@ app.get("/", (c) => {
 });
 
 app.get("/text", async (c) => {
-  const url =
-    "https://www.wired.com/story/rednote-draws-a-line-between-china-and-the-world/";
+  const url = "https://drobinin.com/posts/my-phone-replaced-a-brass-plug/";
 
   try {
     const res = await fetch(url, {

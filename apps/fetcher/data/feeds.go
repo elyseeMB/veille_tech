@@ -10,6 +10,18 @@ var RSS_HEADERS = map[string]string{
 
 var RSS_FEEDS = []models.RSSFeed{
 	{
+		Name: "abduzeedo",
+		Categories: []models.Category{
+			{URL: "https://abduzeedo.com/rss.xml", Category: "abdz—do - Thoughts on design, inspiration, UX career"},
+		},
+	},
+	{
+		Name: "OFF Brand by Koto",
+		Categories: []models.Category{
+			{URL: "https://offbrandkoto.substack.com/feed", Category: "Sharp, practical insights on building and scaling your brand."},
+		},
+	},
+	{
 		Name: "Hacker News",
 		Categories: []models.Category{
 			{URL: "https://hnrss.org/frontpage", Category: "frontpage"},
