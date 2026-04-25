@@ -4,8 +4,9 @@
     "dev": "bun run --hot src/index.ts"
   },
   "dependencies": {
-    "@mozilla/readability": "^0.6.0",
-    "cheerio": "^1.2.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.1037.0",
+    "@smithy/node-http-handler": "^4.6.1",
+    "defuddle": "^0.18.1",
     "hono": "^4.12.14",
     "linkedom": "^0.18.12",
     "parse5-htmlparser2-tree-adapter": "^8.0.1"

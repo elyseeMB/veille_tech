@@ -29,7 +29,7 @@ export function Feed({
           loadMore();
         }
       },
-      { threshold: 0, rootMargin: "500px" },
+      { threshold: 0, rootMargin: "700px" },
     );
     observer.observe(sentinelRef.current);
     return () => observer.disconnect();
