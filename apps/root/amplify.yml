@@ -10,7 +10,7 @@ applications:
           commands:
             - npx turbo run build --filter=root
       artifacts:
-        baseDirectory: apps/root/dist
+        baseDirectory: dist
         files:
           - "**/*"
       cache:
