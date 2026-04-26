@@ -57,6 +57,7 @@ export function App() {
       <div
         style={{
           viewTransitionName: "main-content",
+          // @ts-ignore
           "--header-height": `${calendarVisible ? headerHeight : 0}px`,
         }}
         className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 pt-[var(--header-height)] pb-10 transition-[padding-top] transition-height duration-150 ease-out"
