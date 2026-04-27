@@ -7,6 +7,7 @@ export type Article = {
   author: string;
   pubDate: string;
   content?: string;
+  summary?: string | null;
   source: string;
   category: string;
 };
@@ -60,7 +61,8 @@ function toArticle(a: GatewayArticle): Article {
     link: a.link,
     author: a.author,
     pubDate: a.pubDate || new Date().toISOString(),
-    content: a.summary ?? a.content ?? "",
+    content: a.content,
+    summary: a.summary,
     source: a.source,
     category: a.category,
   };
