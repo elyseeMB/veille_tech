@@ -1,4 +1,4 @@
-import { Fullscreen } from "lucide-react";
+import { ArrowDown, Fullscreen, X } from "lucide-react";
 import { Calendar } from "@/components/Calendar.tsx";
 import { SourcesPanel } from "@/components/SourcesPanel.tsx";
 import { PinnedArticles } from "@/components/PinnedArticles.tsx";
@@ -10,6 +10,7 @@ import { useContainerLeftOffset } from "@/hooks/useContainerLeftOffset.ts";
 import { useCalendarToggle } from "@/hooks/useCalendarToggle.ts";
 import { useFeed } from "@/hooks/useFeed.ts";
 import { Feed } from "@/components/Feed.tsx";
+import { Banner } from "./components/BannerContext.tsx";
 
 export function App() {
   const { desktopRef, mobileRef, height: headerHeight } = useHeaderHeight();
@@ -62,6 +63,8 @@ export function App() {
         }}
         className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 pt-[var(--header-height)] pb-10 transition-[padding-top] transition-height duration-150 ease-out"
       >
+        <Banner />
+
         {/* ================================================================== */}
         {/* ================================================================== */}
         {/* ================================================================== */}
@@ -71,13 +74,12 @@ export function App() {
           className="hidden lg:grid grid-cols-3 border-l border-border"
         >
           {/* Colonne gauche sticky */}
-          <div className="border-r border-border">
-            <div className="sticky overflow-y-auto scrollbar-hide top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] pt-2">
-              {/* Sources actives */}
+          {/* <div className="border-r border-border">
+            <div className="sticky overflow-y-auto scrollbar-hide top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))]">
               <SourcesPanel />
               <PinnedArticles />
             </div>
-          </div>
+          </div> */}
 
           {/* Colonne droite Desktop Feed */}
           <section id="list">
@@ -138,7 +140,7 @@ export function App() {
         <Footer />
         <Button
           style={{ left: `${buttonLeft}px` }}
-          className={`fixed top-[calc(var(--header-height)_+_0.5rem)]`}
+          className={`fixed top-[calc(var(--header-height)_+_0.5rem)] z-100`}
           variant="ghost"
           onClick={toggle}
         >

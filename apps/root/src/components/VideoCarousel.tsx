@@ -37,12 +37,12 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
       <CarouselPrevious
         variant="default"
         size="icon-lg"
-        className="hidden sm:flex left-1 z-50 transform-none hover:bg-accent-foreground"
+        className="hidden sm:flex left-1 z-30 transform-none hover:bg-accent-foreground"
       />
       <CarouselNext
         variant="default"
         size="icon-lg"
-        className="hidden sm:flex right-1 z-50 transform-none hover:bg-accent-foreground"
+        className="hidden sm:flex right-1 z-30 transform-none hover:bg-accent-foreground"
       />
     </Carousel>
   );

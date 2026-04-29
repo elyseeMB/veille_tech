@@ -25,10 +25,10 @@ export function SummaryPanel() {
     <section
       ref={sectionRef}
       id="summary"
-      className="sticky overflow-y-auto pt-2 scrollbar-hide overscroll-contain top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] border-r border-border"
+      className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] border-r border-border col-span-2"
     >
       {/* Header */}
-      <div className="px-5 py-2 flex items-center justify-between">
+      <div className="px-5 py-3 flex items-center justify-between">
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
@@ -93,7 +93,8 @@ export function SummaryPanel() {
             {selectedArticle.title}
           </p>
           <div
-            className="prose dark:prose-invert prose-headings:font-sans prose-headings:text-lg text-primary "
+            style={{ width: 600 }}
+            className="prose m-auto dark:prose-invert prose-headings:font-sans prose-headings:text-lg text-primary "
             dangerouslySetInnerHTML={{
               __html: marked.parse(selectedArticle?.content ?? ""),
             }}
