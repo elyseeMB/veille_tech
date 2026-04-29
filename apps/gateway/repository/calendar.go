@@ -10,8 +10,9 @@ import (
 func GetMeta() (map[string]models.CalendarMeta, error) {
 	query := `
         SELECT TO_CHAR(published_at, 'YYYY-MM-DD') as day, COUNT(*)
-        FROM articles
-        WHERE published_at >= DATE_TRUNC('year', CURRENT_DATE)
+        FROM articles a
+		JOIN sources s ON s.id = a.source_id AND active = true
+        WHERE s.active = true AND a.published_at >= DATE_TRUNC('year', CURRENT_DATE)
         GROUP BY day
         ORDER BY day DESC`
 

@@ -12,8 +12,8 @@ func GetCalendarMeta() gin.HandlerFunc {
 		articles, err := repository.GetMeta()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
-
 		c.JSON(http.StatusOK, articles)
 	}
 }

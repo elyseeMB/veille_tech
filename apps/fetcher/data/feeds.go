@@ -9,55 +9,17 @@ var RSS_HEADERS = map[string]string{
 }
 
 var RSS_FEEDS = []models.RSSFeed{
-	// {
-	// 	Name: "abduzeedo",
-	// 	Categories: []models.Category{
-	// 		{URL: "https://abduzeedo.com/rss.xml", Category: "abdz—do - Thoughts on design, inspiration, UX career"},
-	// 	},
-	// },
-	{
-		Name: "OFF Brand by Koto",
-		Categories: []models.Category{
-			{URL: "https://offbrandkoto.substack.com/feed", Category: "Sharp, practical insights on building and scaling your brand."},
-		},
-	},
+	// Tech & News
 	{
 		Name: "Hacker News",
 		Categories: []models.Category{
-			{URL: "https://hnrss.org/frontpage", Category: "frontpage"},
 			{URL: "https://hnrss.org/newest?points=100", Category: "top"},
-			{URL: "https://hnrss.org/ask", Category: "ask"},
-			{URL: "https://hnrss.org/show", Category: "show"},
-			{URL: "https://hnrss.org/jobs", Category: "jobs"},
-		},
-	},
-	{
-		Name: "Nasdaq Nordic News Releases",
-		Categories: []models.Category{
-			{URL: "https://api.news.eu.nasdaq.com/news/rss/nasdaqNordicNews", Category: "Press Releases"},
-		},
-	},
-	{
-		Name: "TechCrunch",
-		Categories: []models.Category{
-			{URL: "https://techcrunch.com/feed/", Category: "Startup and Technology News"},
-		},
-	},
-	{
-		Name: "The Verge",
-		Categories: []models.Category{
-			{URL: "https://www.theverge.com/rss/index.xml", Category: "Today's Stream"},
-			{URL: "https://www.theverge.com/rss/tech/index.xml", Category: "tech"},
-			{URL: "https://www.theverge.com/rss/science/index.xml", Category: "science"},
-			{URL: "https://www.theverge.com/rss/cyber-security/index.xml", Category: "security"},
-			{URL: "https://www.theverge.com/rss/space/index.xml", Category: "space"},
+			{URL: "https://hnrss.org/show?points=101", Category: "show"},
 		},
 	},
 	{
 		Name: "Ars Technica",
 		Categories: []models.Category{
-			{URL: "https://feeds.arstechnica.com/arstechnica/index", Category: "all"},
-			{URL: "https://arstechnica.com/ai/feed", Category: "ai"},
 			{URL: "https://arstechnica.com/security/feed", Category: "security"},
 			{URL: "https://arstechnica.com/science/feed", Category: "science"},
 			{URL: "https://arstechnica.com/space/feed", Category: "space"},
@@ -66,20 +28,34 @@ var RSS_FEEDS = []models.RSSFeed{
 	{
 		Name: "MIT Tech Review",
 		Categories: []models.Category{
-			{URL: "https://www.technologyreview.com/feed", Category: "All Topics"},
 			{URL: "https://www.technologyreview.com/topic/artificial-intelligence/feed", Category: "ai"},
 			{URL: "https://www.technologyreview.com/topic/computing/feed", Category: "computing"},
 			{URL: "https://www.technologyreview.com/topic/climate/feed", Category: "climate"},
-			{URL: "https://www.technologyreview.com/topic/space/feed", Category: "space"},
+		},
+	},
+
+	{
+		Name: "Y Combinator Blog",
+		Categories: []models.Category{
+			{URL: "https://www.ycombinator.com/blog/rss.xml", Category: "startup"},
 		},
 	},
 	{
-		Name: "Wired",
+		Name: "Simon Willison",
 		Categories: []models.Category{
-			{URL: "https://www.wired.com/feed/rss", Category: "Today's Picks"},
-			{URL: "https://www.wired.com/feed/category/science/latest/rss", Category: "science"},
-			{URL: "https://www.wired.com/feed/category/security/latest/rss", Category: "security"},
-			{URL: "https://www.wired.com/feed/tag/ai/latest/rss", Category: "ai"},
+			{URL: "https://simonwillison.net/atom/everything/", Category: "ai"},
+		},
+	},
+	{
+		Name: "Pragmatic Engineer",
+		Categories: []models.Category{
+			{URL: "https://newsletter.pragmaticengineer.com/feed", Category: "engineering"},
+		},
+	},
+	{
+		Name: "OFF Brand by Koto",
+		Categories: []models.Category{
+			{URL: "https://offbrandkoto.substack.com/feed", Category: "brand/design"},
 		},
 	},
 }

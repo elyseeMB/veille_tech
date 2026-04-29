@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ArrowUpRight, ChevronsUpDown } from "lucide-react";
 import { Button } from "./ui/button.tsx";
 import {
@@ -12,14 +12,50 @@ import {
   MODEL_LABELS,
   type AIModel,
 } from "@/store/summaryStore.ts";
-
 import { marked } from "marked";
 
-export function SummaryPanel() {
+import { TemporalForceGraph } from "./Graph.tsx";
+import type { FeedItem } from "@/hooks/useFeed.ts";
+
+export function SummaryPanel({ data }: { data: FeedItem }) {
+  console.log(data);
+
   const sectionRef = useRef<HTMLElement>(null);
   const { selectedArticle, activeModel, setActiveModel } = useSummaryStore();
 
-  console.log(selectedArticle);
+  useEffect(() => {
+    if (!selectedArticle?.content || !sectionRef.current) {
+      return;
+    }
+
+    const highlightCode = async () => {
+      try {
+        const { codeToHtml } = await import("shiki");
+
+        const preElements = sectionRef.current?.querySelectorAll("pre");
+
+        if (preElements && preElements.length > 0) {
+          for (const pre of Array.from(preElements)) {
+            const code = pre.innerText;
+
+            const langClass = pre.querySelector("code")?.className || "";
+            const lang = langClass.replace("language-", "") || "javascript";
+
+            const html = await codeToHtml(code, {
+              lang,
+              theme: "catppuccin-latte",
+            });
+
+            pre.outerHTML = html;
+          }
+        }
+      } catch (error) {
+        console.error("Shiki highlighting failed:", error);
+      }
+    };
+
+    highlightCode();
+  }, [selectedArticle?.content]);
 
   return (
     <section
@@ -27,6 +63,8 @@ export function SummaryPanel() {
       id="summary"
       className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] border-r border-border col-span-2"
     >
+      <TemporalForceGraph feedData={Array.isArray(data) ? data : [data]} />
+
       {/* Header */}
       <div className="px-5 py-3 flex items-center justify-between">
         <DropdownMenu>
@@ -76,6 +114,7 @@ export function SummaryPanel() {
       </div>
 
       {/* Contenu */}
+
       {!selectedArticle ? (
         <div className="px-5 py-8">
           <p className="text-sm text-muted-foreground">
@@ -99,7 +138,6 @@ export function SummaryPanel() {
               __html: marked.parse(selectedArticle?.content ?? ""),
             }}
           />
-          {/* {selectedArticle.content} */}
         </div>
       ) : (
         <div className="px-5 py-8">

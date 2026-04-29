@@ -8,6 +8,7 @@ import {
 } from "react";
 import { Button } from "./ui/button.tsx";
 import { ArrowDown, X } from "lucide-react";
+import { useSummaryStore } from "@/store/summaryStore.ts";
 
 type BannerData = {
   title: string;
@@ -42,6 +43,7 @@ export function useBanner() {
 export function Banner() {
   const [banner, setBanner] = useState<BannerData>(null);
   const { setBannerRef } = useContext(BannerContext);
+  const { setSelectedArticle } = useSummaryStore();
   setBannerRef.current = ({ ...props }) => {
     setBanner(props);
   };
@@ -54,11 +56,11 @@ export function Banner() {
 
   return (
     <div
-      className="hidden lg:flex sticky z-40 items-center gap-3 px-5 py-2 bg-primary-foreground border-x border-b border-border animate-banner"
+      className="hidden lg:flex sticky z-40 items-center gap-3 pl-0 px-5 py-2 bg-primary-foreground border-x border-b border-border animate-banner"
       style={{ top: "calc(var(--header-height))" }}
     >
       <div className="w-0.5 h-6 rounded-full bg-foreground shrink-0" />
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 pl-1">
         <p className="text-xs text-muted-foreground truncate">
           {banner.source} ·{" "}
           {new Date(banner.pubDate).toLocaleDateString("en", {
@@ -88,7 +90,10 @@ export function Banner() {
         <Button
           variant="ghost"
           className="text-xs flex gap-1 items-center text-muted-foreground cursor-pointer"
-          onClick={() => setBanner(null)}
+          onClick={() => {
+            setBanner(null);
+            setSelectedArticle(null);
+          }}
         >
           <X size="12" />
         </Button>

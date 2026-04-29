@@ -13,7 +13,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
     if (!node) return;
 
     const isInsideElement = node.closest('[data-slot="carousel-item"]');
-    setInsideCarousel(!!isInsideElement); // ← isInsideElement, pas isInsideCarousel
+    setInsideCarousel(!!isInsideElement);
   }, []);
 
   return (
@@ -48,7 +48,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
                   alt=""
                 />
               )}
-              <span className="text-foreground text-sm">
+              <span className="text-foreground text-[10px]">
                 {item.channelTitle}
               </span>
             </div>
@@ -62,7 +62,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
             </time>
           </div>
 
-          <h2 className="text-[17px] font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
+          <h2 className="text-sm font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
             {item.title}
           </h2>
 
