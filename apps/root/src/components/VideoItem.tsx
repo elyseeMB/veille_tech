@@ -1,11 +1,29 @@
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { TimeRelative } from "./TimeRelative.tsx";
 import type { YoutubeVideo } from "@/hooks/useFeed.ts";
+import clsx from "clsx";
 
 export function VideoItem({ video: item }: { video: YoutubeVideo }) {
+  const articleRef = useRef<HTMLElement>(null);
+  const [isInsideCarousel, setInsideCarousel] = useState(false);
   const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8081";
 
+  useEffect(() => {
+    const node = articleRef.current;
+    if (!node) return;
+
+    const isInsideElement = node.closest('[data-slot="carousel-item"]');
+    setInsideCarousel(!!isInsideElement); // ← isInsideElement, pas isInsideCarousel
+  }, []);
+
   return (
-    <article className="group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:pl-0 lg:pr-5 border-b border-border transition-colors hover:bg-foreground/5">
+    <article
+      ref={articleRef}
+      className={clsx(
+        isInsideCarousel && "border-none",
+        "group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:pl-0 lg:pr-5 border-b border-border transition-colors hover:bg-foreground/5",
+      )}
+    >
       <a
         href={`https://www.youtube.com/watch?v=${item.id}`}
         target="_blank"
@@ -56,12 +74,6 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
                 className="w-full h-full object-cover"
               />
             </div>
-          )}
-
-          {item.description && (
-            <p className="pl-1 text-sm h-20 leading-relaxed text-muted-foreground">
-              {item.description.slice(0, 120)}…
-            </p>
           )}
         </div>
       </div>

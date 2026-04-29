@@ -7,16 +7,44 @@ import { db } from "./config/conn.js";
 const app = new Hono();
 
 app.get("/all", async (c) => {
+  const now = new Date();
+
+  const start = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      0,
+      0,
+      0,
+      0,
+    ),
+  );
+
+  const end = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      23,
+      59,
+      59,
+      999,
+    ),
+  );
+
   const articles = await db
     .selectFrom("articles")
-    .select(["id", "url"])
-    // .where((eb) =>
-    //   eb.or([
-    //     eb("content", "is", null),
-    //     eb("content", "=", ""),
-    //     eb(eb.fn("length", ["content"]), "<", eb.val(200)),
-    //   ]),
-    // )
+    .select(["id", "url", "published_at"])
+    .where("published_at", ">=", start)
+    .where("published_at", "<=", end)
+    .where((eb) =>
+      eb.or([
+        // eb("content", "is", null),
+        eb("source_id", "=", "a2243302-847d-4fbb-8065-013aec7068cf"),
+        eb(eb.fn("length", ["content"]), "<", eb.val(200)),
+      ]),
+    )
     .execute();
 
   const BATCH_SIZE = 10;
