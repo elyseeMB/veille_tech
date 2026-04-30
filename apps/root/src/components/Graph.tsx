@@ -91,8 +91,8 @@ export function TemporalForceGraph({ feedData = [] }: { feedData: any[] }) {
       svg
         .append("g")
         .attr("class", "links-group")
-        .attr("stroke", "#94a3b8")
-        .attr("stroke-opacity", 0.3);
+        .attr("stroke", "var(--secondary-foreground)")
+        .attr("stroke-opacity", 0.2);
       svg.append("g").attr("class", "nodes-group");
     }
 
@@ -177,9 +177,11 @@ export function TemporalForceGraph({ feedData = [] }: { feedData: any[] }) {
           g.append("circle")
             .attr("r", 7)
             .attr("fill", (d: any) =>
-              d.type === "video_carousel" ? "#e11d48" : "#2563eb",
+              d.type === "video_carousel"
+                ? "#e11d48"
+                : "var(--color-amber-500)",
             )
-            .attr("stroke", "#fff")
+            .attr("stroke", "var(--background)")
             .attr("stroke-width", 1.5);
 
           g.append("text")

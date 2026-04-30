@@ -21,7 +21,8 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
       ref={articleRef}
       className={clsx(
         isInsideCarousel && "border-none",
-        "group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:pl-0 lg:pr-5 border-b border-border transition-colors hover:bg-foreground/5",
+        "group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:pl-0 lg:pr-5 border-b border-border transition-colors",
+        !isInsideCarousel && "hover:bg-foreground/5",
       )}
     >
       <a
@@ -31,7 +32,12 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
         className="before:absolute before:content-[''] before:inset-0 before:w-full before:h-full z-10"
       />
       <div className="grid grid-cols-[1px_1fr] gap-5">
-        <div className="bg-muted opacity-0 transition-colors group-hover:opacity-100 group-hover:bg-foreground" />
+        <div
+          className={clsx(
+            !isInsideCarousel &&
+              "bg-muted opacity-0 transition-colors group-hover:opacity-100 group-hover:bg-foreground",
+          )}
+        />
         <div className="flex flex-col gap-3 flex-1 min-w-0 pb-1">
           <TimeRelative date={item.publishedAt} />
 
@@ -62,10 +68,6 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
             </time>
           </div>
 
-          <h2 className="text-sm font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
-            {item.title}
-          </h2>
-
           {item.thumbnail && (
             <div className="rounded overflow-hidden border border-border aspect-video w-full">
               <img
@@ -75,6 +77,9 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
               />
             </div>
           )}
+          <h2 className="font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
+            {item.title}
+          </h2>
         </div>
       </div>
     </article>

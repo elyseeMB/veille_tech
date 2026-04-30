@@ -3,99 +3,37 @@ import { Hono } from "hono";
 import { parseHTML } from "linkedom";
 import { GetContent } from "./actions/getContent.js";
 import { db } from "./config/conn.js";
+import {
+  AIFactory,
+  AIProvider,
+} from "./infrastructure/summaryIA/ai-factory.js";
+import { SummaryDocument } from "./infrastructure/summaryIA/summary-document.js";
 
 const app = new Hono();
 
-app.get("/all", async (c) => {
-  const now = new Date();
-
-  const start = new Date(
-    Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate(),
-      0,
-      0,
-      0,
-      0,
-    ),
-  );
-
-  const end = new Date(
-    Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate(),
-      23,
-      59,
-      59,
-      999,
-    ),
-  );
-
-  const articles = await db
-    .selectFrom("articles")
-    .select(["id", "url", "published_at"])
-    .where("published_at", ">=", start)
-    .where("published_at", "<=", end)
-    .where((eb) =>
-      eb.or([
-        // eb("content", "is", null),
-        eb("source_id", "=", "a2243302-847d-4fbb-8065-013aec7068cf"),
-        eb(eb.fn("length", ["content"]), "<", eb.val(200)),
-      ]),
-    )
-    .execute();
-
-  const BATCH_SIZE = 10;
-  const DELAY_MS = 2000;
-  const results = [];
-
-  for (let i = 0; i < articles.length; i += BATCH_SIZE) {
-    const batch = articles.slice(i, i + BATCH_SIZE);
-
-    const batchResults = await Promise.allSettled(
-      batch.map(async (article) => {
-        try {
-          const scraper = new GetContent(article.url);
-          const content = await scraper.getOriginalContent();
-
-          if (!content?.content) return { id: article.id, status: "empty" };
-
-          // Transaction — si l'update échoue, rien n'est écrit
-          await db.transaction().execute(async (trx) => {
-            await trx
-              .updateTable("articles")
-              .set({ content: content.content })
-              .where("id", "=", article.id)
-              .execute();
-          });
-
-          return { id: article.id, status: "ok" };
-        } catch (err) {
-          console.error(`Error scraping ${article.url}:`, err);
-          return { id: article.id, status: "error" };
-        }
-      }),
-    );
-
-    results.push(
-      ...batchResults.map((r) =>
-        r.status === "fulfilled" ? r.value : { status: "error" },
-      ),
-    );
-
-    if (i + BATCH_SIZE < articles.length) {
-      console.log(`Batch ${i / BATCH_SIZE + 1} done, waiting ${DELAY_MS}ms...`);
-      await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
-    }
+app.on(["POST"], "/summary", async (c) => {
+  const { url } = await c.req.json();
+  if (!url) {
+    return c.json({ error: "id not found" });
   }
-
-  const ok = results.filter((r) => r.status === "ok").length;
-  const errors = results.filter((r) => r.status === "error").length;
-  const empty = results.filter((r) => r.status === "empty").length;
-
-  return c.json({ total: results.length, ok, errors, empty });
+  const res = new GetContent(url);
+  const content = await res.getOriginalContent();
+  if (!content) {
+    throw new Error("scrapping failed");
+    return;
+  }
+  const provider = process.env.AI_PROVIDER as AIProvider;
+  const AI = AIFactory.create(provider);
+  const summary = await AI.summary(
+    new SummaryDocument(
+      content.title,
+      content.author,
+      content.date,
+      content.content,
+    ),
+  );
+  console.log(summary);
+  return c.json(summary.getResponse());
 });
 
 // app.on(["GET", "POST"], "/summary/:articleId", async (c) => {
