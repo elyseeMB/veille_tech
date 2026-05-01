@@ -1,7 +1,10 @@
 import { SummaryAIInterface } from "../contracts/summary-ai-interface.js";
 import { SummaryResultInterface } from "../contracts/summary-result-interface.js";
 import { SummaryDocument } from "../summary-document.js";
-import { ResultCloudflareAI, CloudflareAIResult } from "./cloudflare-ai-result.js";
+import {
+  ResultCloudflareAI,
+  CloudflareAIResult,
+} from "./cloudflare-ai-result.js";
 
 export class CloudflareAIWorker implements SummaryAIInterface {
   CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID;
@@ -10,7 +13,7 @@ export class CloudflareAIWorker implements SummaryAIInterface {
   async summary(d: SummaryDocument): Promise<SummaryResultInterface> {
     try {
       const res = await fetch(
-        `https://api.cloudflare.com/client/v4/accounts/${this.CF_ACCOUNT_ID}/ai/run/@cf/meta/llama-3.3-70b-instruct-fp8-fast`,
+        `https://api.cloudflare.com/client/v4/accounts/${this.CF_ACCOUNT_ID}/ai/run/@cf/meta/llama-3.1-8b-instruct`,
         {
           method: "POST",
           headers: {
@@ -45,6 +48,7 @@ export class CloudflareAIWorker implements SummaryAIInterface {
                 content: d.toJSON(),
               },
             ],
+            max_tokens: 1024,
           }),
         },
       );

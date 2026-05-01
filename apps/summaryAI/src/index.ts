@@ -33,7 +33,36 @@ app.on(["POST"], "/summary", async (c) => {
     ),
   );
   console.log(summary);
-  return c.json(summary.getResponse());
+
+  const summaryText = summary.getResponse();
+
+  // 2. Embedding du résumé
+  const embeddingRes = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${process.env.CF_ACCOUNT_ID}/ai/run/@cf/baai/bge-m3`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.CF_API_TOKEN_CLOUDFLARE_AI}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: summaryText, // on embed le résumé, pas l'article brut
+      }),
+    },
+  );
+
+  const embeddingData = (await embeddingRes.json()) as {
+    result: { data: number[][] };
+  };
+  const vector = embeddingData.result.data[0]; // tableau de ~384 floats
+
+  console.log("summary:", summaryText);
+  console.log("vector length:", vector.length);
+
+  return c.json({
+    summary: summaryText,
+    embedding: vector,
+  });
 });
 
 // app.on(["GET", "POST"], "/summary/:articleId", async (c) => {

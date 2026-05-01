@@ -14,24 +14,19 @@ const client = new BedrockRuntimeClient({
 async function main() {
   const response = await client.send(
     new InvokeModelCommand({
-      modelId: "huggingface-textgeneration2-gpt-neox-20b-fp16",
+      modelId: "us.meta.llama3-8b-instruct-v1:0", // ← préfixe us.
       contentType: "application/json",
       accept: "application/json",
       body: JSON.stringify({
-        anthropic_version: "bedrock-2023-05-31",
-        max_tokens: 512,
-        messages: [
-          {
-            role: "user",
-            content: "Dis moi bonjour en une phrase.",
-          },
-        ],
+        prompt:
+          "<|begin_of_text|><|start_header_id|>user<|end_header_id|>\nDis moi bonjour en une phrase.<|eot_id|><|start_header_id|>assistant<|end_header_id|>",
+        max_gen_len: 512,
+        temperature: 0.7,
       }),
     }),
   );
-
   const result = JSON.parse(new TextDecoder().decode(response.body));
-  console.log(result.content[0].text);
+  console.log(result.generation); // ← Llama retourne "generation", pas "content"
 }
 
 main();
