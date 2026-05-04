@@ -1,35 +1,36 @@
-.PHONY: build build-backfill zip run clean api-dev
+.PHONY: build build-gateway build-backfill deploy deploy-fetcher deploy-gateway run-fetcher run-gateway api-dev clean
 
-# Build Lambda fetcher (Linux amd64)
 build:
-	cd apps/fetcher && \
-	set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0&& \
-	go build -o ../../bootstrap main.go
+	cd apps/fetcher && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap main.go
 
-# Build backfill tool
+build-gateway:
+	cd apps/gateway && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap main.go
+
 build-backfill:
+	cd apps/fetcher && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o backfill ./cmd/backfill/main.go
+
+deploy-fetcher: build
 	cd apps/fetcher && \
-	set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0&& \
-	go build -o ../../backfill ./cmd/backfill/main.go
+	powershell Compress-Archive -Force bootstrap bootstrap.zip && \
+	aws lambda update-function-code --function-name veille-fetcher --zip-file fileb://bootstrap.zip --region us-east-1
 
-# Zip pour déployer sur Lambda
-# zip: build
-# 	powershell Compress-Archive -Force bootstrap bootstrap.zip
+deploy-gateway: build-gateway
+	cd apps/gateway && \
+	powershell Compress-Archive -Force bootstrap bootstrap.zip && \
+	aws lambda update-function-code --function-name veille-gateway --zip-file fileb://bootstrap.zip --region us-east-1
 
-# Run local (dev)
+deploy: deploy-fetcher deploy-gateway
+
 run-fetcher:
 	cd apps/fetcher && go run main.go
 
 run-gateway:
 	cd apps/gateway && go run main.go
 
-
-# Dev mode complet
 api-dev:
 	cd apps/fetcher && go run main.go & \
 	cd apps/gateway && go run main.go & \
 	pnpm -C apps/root/ run dev
 
-# Clean
 clean:
-	del -f bootstrap backfill bootstrap.zip
+	rm -f apps/fetcher/bootstrap apps/fetcher/bootstrap.zip apps/gateway/bootstrap apps/gateway/bootstrap.zip backfill

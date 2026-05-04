@@ -11,8 +11,44 @@ import (
 	"fetcher/repository"
 
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
+
 	"github.com/joho/godotenv"
 )
+
+func loadSecrets() {
+	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" {
+		return
+	}
+
+	ctx := context.TODO()
+	cfg, err := awsconfig.LoadDefaultConfig(ctx)
+	if err != nil {
+		slog.Error("unable to load SDK config", "error", err)
+		return
+	}
+
+	client := ssm.NewFromConfig(cfg)
+
+	params := map[string]string{
+		"DATABASE_URL":    os.Getenv("DB_PARAM_NAME"),
+		"YOUTUBE_API_KEY": os.Getenv("YT_PARAM_NAME"),
+	}
+
+	for envKey, ssmPath := range params {
+		out, err := client.GetParameter(ctx, &ssm.GetParameterInput{
+			Name:           aws.String(ssmPath),
+			WithDecryption: aws.Bool(true),
+		})
+		if err != nil {
+			slog.Error("failed to get ssm param", "path", ssmPath, "error", err)
+			continue
+		}
+		os.Setenv(envKey, *out.Parameter.Value)
+	}
+}
 
 func handler(ctx context.Context) error {
 	config.InitLogger()
@@ -43,6 +79,8 @@ func handler(ctx context.Context) error {
 
 func main() {
 	godotenv.Load()
+
+	loadSecrets()
 
 	// Local ou Lambda ?
 	if os.Getenv("AWS_LAMBDA_RUNTIME_API") != "" {

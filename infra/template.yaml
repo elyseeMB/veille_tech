@@ -21,8 +21,11 @@ Resources:
         - x86_64
       Environment:
         Variables:
-          DATABASE_URL: !Sub "{{resolve:ssm:/veille/database_url}}"
-          YOUTUBE_API_KEY: !Sub "{{resolve:ssm:/veille/youtube_api_key}}"
+          DB_PARAM_NAME: "/veille/database_url"
+          YT_PARAM_NAME: "/veille/youtube_api_key"
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: "veille/*"
       Events:
         ScheduledFetch:
           Type: Schedule
@@ -32,10 +35,27 @@ Resources:
             Enabled: true
 
   # ─── Lambda Gateway API (à venir) ───────────────────────────────
-  # GatewayFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     FunctionName: veille-gateway
-  #     CodeUri: ../apps/gateway/dist
-  #     Handler: bootstrap
-  #     Runtime: provided.al2023
+  GatewayFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      FunctionName: veille-gateway
+      CodeUri: ../apps/gateway/
+      Handler: bootstrap
+      Runtime: provided.al2023
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          DB_PARAM_NAME: "/veille/database_url"
+          GIN_MODE: "release"
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: "veille/*"
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
