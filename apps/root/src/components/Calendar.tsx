@@ -46,6 +46,7 @@ function weeksInMonth(m: Date): number {
 }
 
 function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
+  const [data, setData] = useState<Record<string, { count: string }>>({});
   const axisRef = useRef<SVGGElement | null>(null);
   const months = timeMonth.range(start, end);
 
@@ -69,6 +70,10 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
     (DAYS_IN_WEEK - 1 - ((d.getDay() + 6) % 7)) * QC + QC / 2 + QM.t;
 
   useEffect(() => {
+    fetch("https://api.veille.safecoffi.app/v1/calendar").then((r) =>
+      r.json().then((r) => setData(r)),
+    );
+
     if (!axisRef.current) return;
     const g = select(axisRef.current);
     g.selectAll("*").remove();
@@ -106,6 +111,9 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
               day: "numeric",
               month: "short",
             });
+            const dateKey = d.toLocaleDateString("en-CA");
+            const articleForDate = data?.[dateKey];
+            const isArticleForDate = !!articleForDate;
 
             return (
               <Tooltip key={+d}>
@@ -133,8 +141,12 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
                     <a href={`/date/${dateStr}`}>
                       <circle
                         r={QC / 2 - 1.5}
-                        fill="currentColor"
-                        opacity={0.2}
+                        fill={
+                          isArticleForDate
+                            ? "var(--color-amber-500)"
+                            : "currentColor"
+                        }
+                        opacity={isArticleForDate ? 1 : 0.2}
                         cx={cx}
                         cy={cy}
                       />
