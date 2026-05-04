@@ -1,17 +1,41 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 
+Globals:
+  Function:
+    Timeout: 300
+    MemorySize: 128
+
 Resources:
-  VeilleTechApiFunction:
+  # ─── Lambda Fetcher RSS + YouTube ───────────────────────────────
+  FetcherFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
-      FunctionName: veille-tech-api
-      CodeUri: ../apps/api/dist
-      Handler: dist/index.handler
-      Runtime: nodejs22.x
+      FunctionName: veille-fetcher
+      CodeUri: ../apps/fetcher/
+      Handler: bootstrap
+      Runtime: provided.al2023
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          DATABASE_URL: !Sub "{{resolve:ssm:/veille/database_url}}"
+          YOUTUBE_API_KEY: !Sub "{{resolve:ssm:/veille/youtube_api_key}}"
       Events:
-        Api:
-          Type: HttpApi
+        ScheduledFetch:
+          Type: Schedule
           Properties:
-            Path: $default
-            Method: ANY
+            Schedule: rate(1 hour)
+            Name: veille-fetch-schedule
+            Enabled: true
+
+  # ─── Lambda Gateway API (à venir) ───────────────────────────────
+  # GatewayFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     FunctionName: veille-gateway
+  #     CodeUri: ../apps/gateway/dist
+  #     Handler: bootstrap
+  #     Runtime: provided.al2023

@@ -1,19 +1,17 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
-	"net/http"
 	"os"
 	"sync"
 
 	"fetcher/data"
 	"fetcher/models"
 	"fetcher/repository"
-
-	"github.com/gin-gonic/gin"
 )
 
 type ytPlaylistResponse struct {
@@ -47,177 +45,160 @@ type ytChannelResponse struct {
 	} `json:"items"`
 }
 
-func GetYouTube() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		apiKey := os.Getenv("YOUTUBE_API_KEY")
-		if apiKey == "" {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "YOUTUBE_API_KEY not set"})
-			return
-		}
+func FetchYouTube(ctx context.Context) error {
+	apiKey := os.Getenv("YOUTUBE_API_KEY")
+	if apiKey == "" {
+		return fmt.Errorf("YOUTUBE_API_KEY not set")
+	}
 
-		type Result struct {
-			videos []models.Video
-			err    error
-		}
+	type Result struct {
+		videos []models.Video
+		err    error
+	}
 
-		results := make(chan Result, len(data.YOUTUBE_CHANNELS))
-		var wg sync.WaitGroup
+	results := make(chan Result, len(data.YOUTUBE_CHANNELS))
+	var wg sync.WaitGroup
 
-		for _, channel := range data.YOUTUBE_CHANNELS {
-			wg.Add(1)
-			go func(ch data.YouTubeChannel) {
-				defer wg.Done()
+	for _, channel := range data.YOUTUBE_CHANNELS {
+		wg.Add(1)
+		go func(ch data.YouTubeChannel) {
+			defer wg.Done()
 
-				playlistID := "UU" + ch.ID[2:]
-				ytURL := fmt.Sprintf(
-					"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=%s&maxResults=5&key=%s",
-					playlistID, apiKey,
-				)
-				chURL := fmt.Sprintf(
-					"https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s",
-					ch.ID, apiKey,
-				)
+			playlistID := "UU" + ch.ID[2:]
+			ytURL := fmt.Sprintf(
+				"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=%s&maxResults=5&key=%s",
+				playlistID, apiKey,
+			)
+			chURL := fmt.Sprintf(
+				"https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s",
+				ch.ID, apiKey,
+			)
 
-				type apiResult struct {
-					body []byte
-					err  error
-				}
-				ytCh := make(chan apiResult, 1)
-				chCh := make(chan apiResult, 1)
+			type apiResult struct {
+				body []byte
+				err  error
+			}
+			ytCh := make(chan apiResult, 1)
+			chCh := make(chan apiResult, 1)
 
-				go func() {
-					b, err := fetchJSON(ytURL)
-					ytCh <- apiResult{b, err}
-				}()
-				go func() {
-					b, err := fetchJSON(chURL)
-					chCh <- apiResult{b, err}
-				}()
+			go func() {
+				b, err := fetchJSON(ytURL)
+				ytCh <- apiResult{b, err}
+			}()
+			go func() {
+				b, err := fetchJSON(chURL)
+				chCh <- apiResult{b, err}
+			}()
 
-				ytRes := <-ytCh
-				chRes := <-chCh
+			ytRes := <-ytCh
+			chRes := <-chCh
 
-				if ytRes.err != nil {
-					slog.Warn("youtube playlist fetch failed",
-						"channel", ch.Name,
-						"error", ytRes.err,
-					)
-					results <- Result{videos: nil}
-					return
-				}
-
-				var playlist ytPlaylistResponse
-				if err := json.Unmarshal(ytRes.body, &playlist); err != nil {
-					results <- Result{err: err}
-					return
-				}
-				if playlist.Error != nil {
-					slog.Warn("youtube api error",
-						"channel", ch.Name,
-						"error", playlist.Error.Message,
-					)
-					results <- Result{videos: nil}
-					return
-				}
-
-				avatar := ""
-				if chRes.err == nil {
-					var channelData ytChannelResponse
-					if err := json.Unmarshal(chRes.body, &channelData); err == nil && len(channelData.Items) > 0 {
-						t := channelData.Items[0].Snippet.Thumbnails
-						switch {
-						case t.High != nil:
-							avatar = t.High.URL
-						case t.Medium != nil:
-							avatar = t.Medium.URL
-						case t.Default != nil:
-							avatar = t.Default.URL
-						}
-					}
-				}
-
-				var videos []models.Video
-				for _, item := range playlist.Items {
-					s := item.Snippet
-					thumbnail := ""
-					if s.Thumbnails.High != nil {
-						thumbnail = s.Thumbnails.High.URL
-					} else if s.Thumbnails.Medium != nil {
-						thumbnail = s.Thumbnails.Medium.URL
-					}
-
-					videos = append(videos, models.Video{
-						ExternalID:    s.ResourceID.VideoID,
-						Title:         s.Title,
-						Description:   s.Description,
-						ChannelTitle:  ch.Name,
-						ChannelAvatar: avatar,
-						Thumbnail:     thumbnail,
-						PublishedAt:   s.PublishedAt,
-					})
-				}
-
-				slog.Debug("youtube channel fetched",
+			if ytRes.err != nil {
+				slog.Warn("youtube playlist fetch failed",
 					"channel", ch.Name,
-					"count", len(videos),
+					"error", ytRes.err,
 				)
-
-				results <- Result{videos: videos}
-			}(channel)
-		}
-
-		go func() {
-			wg.Wait()
-			close(results)
-		}()
-
-		var allVideos []models.Video
-		for result := range results {
-			if result.err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": result.err.Error()})
+				results <- Result{videos: nil}
 				return
 			}
-			allVideos = append(allVideos, result.videos...)
-		}
 
-		seen := make(map[string]bool)
-		var unique []models.Video
-		for _, v := range allVideos {
-			if !seen[v.ExternalID] {
-				seen[v.ExternalID] = true
-				unique = append(unique, v)
+			var playlist ytPlaylistResponse
+			if err := json.Unmarshal(ytRes.body, &playlist); err != nil {
+				results <- Result{err: err}
+				return
 			}
-		}
+			if playlist.Error != nil {
+				slog.Warn("youtube api error",
+					"channel", ch.Name,
+					"error", playlist.Error.Message,
+				)
+				results <- Result{videos: nil}
+				return
+			}
 
-		newVideos, err := repository.FilterNewVideos(unique)
-		if err != nil {
-			slog.Error("filter new videos failed", "error", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+			avatar := ""
+			if chRes.err == nil {
+				var channelData ytChannelResponse
+				if err := json.Unmarshal(chRes.body, &channelData); err == nil && len(channelData.Items) > 0 {
+					t := channelData.Items[0].Snippet.Thumbnails
+					switch {
+					case t.High != nil:
+						avatar = t.High.URL
+					case t.Medium != nil:
+						avatar = t.Medium.URL
+					case t.Default != nil:
+						avatar = t.Default.URL
+					}
+				}
+			}
 
-		if err := repository.InsertVideos(newVideos); err != nil {
-			slog.Error("insert videos failed", "error", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+			var videos []models.Video
+			for _, item := range playlist.Items {
+				s := item.Snippet
+				thumbnail := ""
+				if s.Thumbnails.High != nil {
+					thumbnail = s.Thumbnails.High.URL
+				} else if s.Thumbnails.Medium != nil {
+					thumbnail = s.Thumbnails.Medium.URL
+				}
 
-		slog.Info("youtube sync completed",
-			"new", len(newVideos),
-			"skipped", len(unique)-len(newVideos),
-		)
+				videos = append(videos, models.Video{
+					ExternalID:    s.ResourceID.VideoID,
+					Title:         s.Title,
+					Description:   s.Description,
+					ChannelTitle:  ch.Name,
+					ChannelAvatar: avatar,
+					Thumbnail:     thumbnail,
+					PublishedAt:   s.PublishedAt,
+				})
+			}
 
-		if newVideos == nil {
-			newVideos = []models.Video{}
-		}
+			slog.Debug("youtube channel fetched",
+				"channel", ch.Name,
+				"count", len(videos),
+			)
 
-		c.JSON(http.StatusOK, gin.H{
-			"newVideos":    newVideos,
-			"uniqueVideos": unique,
-			"inserted":     len(newVideos),
-			"total":        len(unique),
-		})
+			results <- Result{videos: videos}
+		}(channel)
 	}
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	var allVideos []models.Video
+	for result := range results {
+		if result.err != nil {
+			return result.err
+		}
+		allVideos = append(allVideos, result.videos...)
+	}
+
+	seen := make(map[string]bool)
+	var unique []models.Video
+	for _, v := range allVideos {
+		if !seen[v.ExternalID] {
+			seen[v.ExternalID] = true
+			unique = append(unique, v)
+		}
+	}
+
+	newVideos, err := repository.FilterNewVideos(unique)
+	if err != nil {
+		return fmt.Errorf("filter new videos failed: %w", err)
+	}
+
+	if err := repository.InsertVideos(newVideos); err != nil {
+		return fmt.Errorf("insert videos failed: %w", err)
+	}
+
+	slog.Info("youtube sync completed",
+		"new", len(newVideos),
+		"skipped", len(unique)-len(newVideos),
+	)
+
+	return nil
 }
 
 func fetchJSON(url string) ([]byte, error) {
@@ -226,6 +207,5 @@ func fetchJSON(url string) ([]byte, error) {
 		return nil, err
 	}
 	defer res.Body.Close()
-
 	return io.ReadAll(res.Body)
 }
