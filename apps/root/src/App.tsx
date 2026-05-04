@@ -17,7 +17,7 @@ export function App() {
   const { ref: containerRef, left: buttonLeft } = useContainerLeftOffset();
   const { visible: calendarVisible, toggle } = useCalendarToggle();
   const { items, loading, loadingMore, hasMore, loadMore, error, retry } =
-    useFeed("http://localhost:8081/v1");
+    useFeed("https://api.veille.safecoffi.app/v1");
 
   return (
     <main className="min-h-screen bg-background font-serif relative">

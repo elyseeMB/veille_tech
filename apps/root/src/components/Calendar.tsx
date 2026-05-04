@@ -172,7 +172,7 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
   const [data, setData] = useState<Record<string, { count: string }>>({});
 
   useEffect(() => {
-    fetch("http://localhost:8081/v1/calendar").then((r) =>
+    fetch("https://api.veille.safecoffi.app/v1/calendar").then((r) =>
       r.json().then((r) => setData(r)),
     );
     if (scrollable || !axisRef.current) {
