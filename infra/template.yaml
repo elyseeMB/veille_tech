@@ -5,13 +5,21 @@ Globals:
   Function:
     Timeout: 300
     MemorySize: 128
+  HttpApi:
+    CorsConfiguration:
+      AllowOrigins:
+        - "https://veille.safecoffi.app"
+      AllowMethods:
+        - GET
+        - OPTIONS
+      AllowHeaders:
+        - Content-Type
+        - Authorization
 
 Resources:
   # ─── Lambda Fetcher RSS + YouTube ───────────────────────────────
   FetcherFunction:
     Type: AWS::Serverless::Function
-    # Metadata:
-    #   BuildMethod: makefile
     Properties:
       FunctionName: veille-fetcher
       CodeUri: ../apps/fetcher/
@@ -19,6 +27,7 @@ Resources:
       Runtime: provided.al2023
       Architectures:
         - x86_64
+      MemorySize: 256
       Environment:
         Variables:
           DB_PARAM_NAME: "/veille/database_url"
@@ -42,15 +51,13 @@ Resources:
         NightSchedule:
           Type: Schedule
           Properties:
-            Schedule: rate(4 hours)
+            Schedule: cron(0 19-6 ? * * *)
             Name: tech-watch-night-4h
             Enabled: true
 
-  # ─── Lambda Gateway API (à venir) ───────────────────────────────
+  # ─── Lambda Gateway API ──────────────────────────────────────────
   GatewayFunction:
     Type: AWS::Serverless::Function
-    # Metadata:
-    #   BuildMethod: makefile
     Properties:
       FunctionName: veille-gateway
       CodeUri: ../apps/gateway/
@@ -58,6 +65,7 @@ Resources:
       Runtime: provided.al2023
       Architectures:
         - x86_64
+      Timeout: 30
       Environment:
         Variables:
           DB_PARAM_NAME: "/veille/database_url"

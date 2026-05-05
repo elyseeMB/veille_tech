@@ -65,10 +65,14 @@ func loadSecrets() {
 func setupRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{"GET"},
+		AllowOrigins: []string{"https://veille.safecoffi.app"},
+		AllowMethods: []string{"GET", "OPTIONS"},
 		AllowHeaders: []string{"Content-Type", "Authorization"},
 	}))
+
+	r.OPTIONS("/*any", func(c *gin.Context) {
+		c.Status(http.StatusNoContent)
+	})
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "pong"})
@@ -77,13 +81,15 @@ func setupRouter() *gin.Engine {
 	v1 := r.Group("/v1")
 	{
 		// Cache 30 min
-		v1.GET("/calendar", cacheControl("public, max-age=1800"), handlers.GetCalendarMeta())
-		v1.GET("/graph", cacheControl("public, max-age=1800"), handlers.GetGraph())
+		v1.GET("/feed", cacheControl("public, max-age=1800, stale-while-revalidate=3600"), handlers.GetFeed())
+
+		// Cache 30 min
+		v1.GET("/videos", cacheControl("public, max-age=1800"), handlers.GetVideos())
 		v1.GET("/articles", cacheControl("public, max-age=1800"), handlers.GetArticles())
 
-		// Cache 5 min
-		v1.GET("/feed", cacheControl("public, max-age=300, stale-while-revalidate=900"), handlers.GetFeed())
-		v1.GET("/videos", cacheControl("public, max-age=300, stale-while-revalidate=900"), handlers.GetVideos())
+		// Cache 30 min
+		v1.GET("/calendar", cacheControl("public, max-age=1800"), handlers.GetCalendarMeta())
+		v1.GET("/graph", cacheControl("public, max-age=1800"), handlers.GetGraph())
 
 		// Cache 24h
 		v1.GET("/articles/:id", cacheControl("public, max-age=86400"), handlers.GetArticleByID())
