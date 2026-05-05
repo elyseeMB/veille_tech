@@ -1,17 +1,81 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 
+Globals:
+  Function:
+    Timeout: 300
+    MemorySize: 128
+  HttpApi:
+    CorsConfiguration:
+      AllowOrigins:
+        - "https://veille.safecoffi.app"
+      AllowMethods:
+        - GET
+        - OPTIONS
+      AllowHeaders:
+        - Content-Type
+        - Authorization
+
 Resources:
-  VeilleTechApiFunction:
+  # ─── Lambda Fetcher RSS + YouTube ───────────────────────────────
+  FetcherFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: veille-tech-api
-      CodeUri: ../apps/api/dist
-      Handler: dist/index.handler
-      Runtime: nodejs22.x
+      FunctionName: veille-fetcher
+      CodeUri: ../apps/fetcher/
+      Handler: bootstrap
+      Runtime: provided.al2023
+      Architectures:
+        - x86_64
+      MemorySize: 256
+      Environment:
+        Variables:
+          DB_PARAM_NAME: "/veille/database_url"
+          YT_PARAM_NAME: "/veille/youtube_api_key"
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: "veille/*"
+      Events:
+        WeeklySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0/30 7-18 ? * MON-FRI *)
+            Name: tech-watch-weekday-30min
+            Enabled: true
+        WeekendSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 9-20 ? * SAT-SUN *)
+            Name: tech-watch-weekend-1h
+            Enabled: true
+        NightSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 19-6 ? * * *)
+            Name: tech-watch-night-4h
+            Enabled: true
+
+  # ─── Lambda Gateway API ──────────────────────────────────────────
+  GatewayFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: veille-gateway
+      CodeUri: ../apps/gateway/
+      Handler: bootstrap
+      Runtime: provided.al2023
+      Architectures:
+        - x86_64
+      Timeout: 30
+      Environment:
+        Variables:
+          DB_PARAM_NAME: "/veille/database_url"
+          GIN_MODE: "release"
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: "veille/*"
       Events:
         Api:
           Type: HttpApi
           Properties:
-            Path: $default
+            Path: /{proxy+}
             Method: ANY

@@ -1,4 +1,12 @@
 version = 0.1
 
-[default.local_start_api.parameters]
-warm_containers = "LAZY"
+[default.global.parameters]
+stack_name = "veille-tech"
+region = "us-east-1"
+confirm_changeset = true
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+resolve_s3 = true
+s3_prefix = "veille-tech"
+image_repositories = []

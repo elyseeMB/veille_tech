@@ -2,9 +2,8 @@ package repository
 
 import (
 	"context"
+	"fetcher/config"
 	"time"
-
-	"gateway/config"
 )
 
 type FeedFilter struct {

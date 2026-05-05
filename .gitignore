@@ -2,3 +2,5 @@ node_modules/
 .turbo
 .vscode
 .turbo
+dump.sql
+bootstrap

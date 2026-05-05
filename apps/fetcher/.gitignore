@@ -1,6 +1,8 @@
 # prod
 dist/
 lambda.zip
+bootstrap
+bootstrap.zip
 
 # dev
 .yarn/

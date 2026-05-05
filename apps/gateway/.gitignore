@@ -1,7 +1,9 @@
 # prod
 dist/
 lambda.zip
-
+bootstrap-gateway
+bootstrap
+bootstrap.zip
 # dev
 .yarn/
 !.yarn/releases

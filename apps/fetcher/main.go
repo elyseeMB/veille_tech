@@ -1,23 +1,57 @@
 package main
 
 import (
+	"context"
 	"log/slog"
-	"net/http"
 	"os"
+	"time"
 
 	"fetcher/config"
 	"fetcher/handlers"
 	"fetcher/repository"
 
-	"github.com/gin-gonic/gin"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
+
 	"github.com/joho/godotenv"
 )
 
-func main() {
-	godotenv.Load()
+func loadSecrets() {
+	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" {
+		return
+	}
 
+	ctx := context.TODO()
+	cfg, err := awsconfig.LoadDefaultConfig(ctx)
+	if err != nil {
+		slog.Error("unable to load SDK config", "error", err)
+		return
+	}
+
+	client := ssm.NewFromConfig(cfg)
+
+	params := map[string]string{
+		"DATABASE_URL":    os.Getenv("DB_PARAM_NAME"),
+		"YOUTUBE_API_KEY": os.Getenv("YT_PARAM_NAME"),
+	}
+
+	for envKey, ssmPath := range params {
+		out, err := client.GetParameter(ctx, &ssm.GetParameterInput{
+			Name:           aws.String(ssmPath),
+			WithDecryption: aws.Bool(true),
+		})
+		if err != nil {
+			slog.Error("failed to get ssm param", "path", ssmPath, "error", err)
+			continue
+		}
+		os.Setenv(envKey, *out.Parameter.Value)
+	}
+}
+
+func handler(ctx context.Context) error {
 	config.InitLogger()
-
 	config.InitDB()
 	defer config.DB.Close()
 
@@ -27,15 +61,36 @@ func main() {
 	}
 	slog.Info("sources seeded")
 
-	r := gin.Default()
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+	defer cancel()
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
-	})
+	if err := handlers.FetchRSS(ctx); err != nil {
+		slog.Error("rss fetch failed", "error", err)
+		return err
+	}
 
-	r.GET("/rss", handlers.GetRSS())
-	r.GET("/youtube", handlers.GetYouTube())
+	if err := handlers.FetchYouTube(ctx); err != nil {
+		slog.Error("youtube fetch failed", "error", err)
+		return err
+	}
 
-	slog.Info("server starting", "port", "8080")
-	r.Run()
+	return nil
+}
+
+func main() {
+	godotenv.Load()
+
+	loadSecrets()
+
+	// Local ou Lambda ?
+	if os.Getenv("AWS_LAMBDA_RUNTIME_API") != "" {
+		// Sur Lambda → mode Lambda
+		lambda.Start(handler)
+	} else {
+		// En local → exécution directe
+		if err := handler(context.Background()); err != nil {
+			slog.Error("handler failed", "error", err)
+			os.Exit(1)
+		}
+	}
 }
