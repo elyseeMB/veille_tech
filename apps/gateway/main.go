@@ -24,6 +24,13 @@ import (
 
 var ginLambda *httpadapter.HandlerAdapterV2
 
+func cacheControl(value string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Header("Cache-Control", value)
+		c.Next()
+	}
+}
+
 func loadSecrets() {
 	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" {
 		return
@@ -62,6 +69,8 @@ func setupRouter() *gin.Engine {
 		AllowMethods: []string{"GET"},
 		AllowHeaders: []string{"Content-Type", "Authorization"},
 	}))
+
+	r.Use(cacheControl("public, max-age=1800"))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "pong"})
