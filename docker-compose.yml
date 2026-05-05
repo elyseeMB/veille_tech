@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: "pgvector/pgvector:pg17" 
+    shm_size: "1g"
+    command: >
+      postgres -c "shared_buffers=1GB"
+               -c "max_connections=50"
+               -c "log_statement=all"
+    ports:
+      - "5432:5432" 
+    volumes:
+      - "./compose/postgres:/docker-entrypoint-initdb.d:ro"
+      - "postgres-data-veille-tech:/var/lib/postgresql/data:rw"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+
+
+volumes:
+  postgres-data-veille-tech:

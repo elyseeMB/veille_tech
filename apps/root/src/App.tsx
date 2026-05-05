@@ -1,27 +1,23 @@
 import { Fullscreen } from "lucide-react";
 import { Calendar } from "@/components/Calendar.tsx";
-import { ArticlesList } from "@/components/ArticlesList.tsx";
-import { SourcesPanel } from "@/components/SourcesPanel.tsx";
-import { PinnedArticles } from "@/components/PinnedArticles.tsx";
 import { SummaryPanel } from "@/components/SummaryPanel.tsx";
 import { Footer } from "@/components/Footer.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useHeaderHeight } from "@/hooks/useHeaderHeight.ts";
 import { useContainerLeftOffset } from "@/hooks/useContainerLeftOffset.ts";
 import { useCalendarToggle } from "@/hooks/useCalendarToggle.ts";
-import { useArticles } from "@/hooks/useArticles.ts";
-import { VideosCard } from "./components/VideosCard.tsx";
+import { useCalendarData } from "@/hooks/useCalendarData.ts";
+import { useFeed } from "@/hooks/useFeed.ts";
+import { Feed } from "@/components/Feed.tsx";
+import { Banner } from "./components/BannerContext.tsx";
 
 export function App() {
   const { desktopRef, mobileRef, height: headerHeight } = useHeaderHeight();
   const { ref: containerRef, left: buttonLeft } = useContainerLeftOffset();
   const { visible: calendarVisible, toggle } = useCalendarToggle();
-  const { data, loading } = useArticles("http://localhost:4000/rss");
-  const { data: dateYT, loading: dateYTLoading } = useArticles(
-    "http://localhost:4000/yt-all",
-  );
-
-  console.log(dateYT);
+  const { items, loading, loadingMore, hasMore, loadMore, error, retry } =
+    useFeed("https://api.veille.safecoffi.app/v1");
+  const calendarData = useCalendarData();
 
   return (
     <main className="min-h-screen bg-background font-serif relative">
@@ -34,7 +30,7 @@ export function App() {
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground px-4 mb-2">
             Calendrier
           </p>
-          <Calendar scrollable />
+          <Calendar scrollable data={calendarData} />
         </div>
       </div>
 
@@ -49,54 +45,54 @@ export function App() {
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">
               Calendrier
             </p>
-            <Calendar />
+            <Calendar data={calendarData} />
           </section>
         </div>
       </div>
-
-      {/* ================================================================== */}
-      {/* ================================================================== */}
-      {/* ================================================================== */}
 
       {/* CONTENU PRINCIPAL */}
       <div
         style={{
           viewTransitionName: "main-content",
+          // @ts-ignore
           "--header-height": `${calendarVisible ? headerHeight : 0}px`,
         }}
         className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 pt-[var(--header-height)] pb-10 transition-[padding-top] transition-height duration-150 ease-out"
       >
-        {/* ================================================================== */}
-        {/* ================================================================== */}
-        {/* ================================================================== */}
+        <Banner />
+
         {/* Grille Desktop */}
         <div
           ref={containerRef}
           className="hidden lg:grid grid-cols-3 border-l border-border"
         >
-          {/* Colonne gauche sticky */}
-          <div className="border-r border-border">
-            <div className="sticky overflow-y-auto scrollbar-hide top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] pt-2">
-              {/* Sources actives */}
-              <SourcesPanel />
-              <PinnedArticles />
-            </div>
-          </div>
-
-          {/* Colonne droite Desktop List */}
+          {/* Colonne droite Desktop Feed */}
           <section id="list">
-            <div className="border-r border-border py-0">
-              <ArticlesList data={data} loading={loading} />
-              <VideosCard data={dateYT} loading={dateYTLoading} />
+            <div className="border-r border-border">
+              <Feed
+                items={items}
+                loading={loading}
+                loadingMore={loadingMore}
+                hasMore={hasMore}
+                loadMore={loadMore}
+              />
+              {error && (
+                <div className="p-2 flex items-center justify-center">
+                  <Button
+                    className="cursor-pointer"
+                    variant="outline"
+                    onClick={retry}
+                  >
+                    No connection. Tap to try again
+                  </Button>
+                </div>
+              )}
             </div>
           </section>
 
           {/* Colonne droite Summary */}
-          <SummaryPanel />
+          <SummaryPanel data={items} />
         </div>
-        {/* ================================================================== */}
-        {/* ================================================================== */}
-        {/* ================================================================== */}
 
         {/* Header Mobile */}
         <div className="lg:hidden mb-8 pt-5">
@@ -108,28 +104,27 @@ export function App() {
           </h1>
         </div>
 
-        {/* Articles Mobile */}
+        {/* Feed Mobile */}
         <div className="lg:hidden space-y-0">
-          <ArticlesList data={data} loading={loading} />
-          <VideosCard data={dateYT} loading={dateYTLoading} />
+          <Feed
+            items={items}
+            loading={loading}
+            loadingMore={loadingMore}
+            hasMore={hasMore}
+            loadMore={loadMore}
+          />
         </div>
 
-        {/* ================================================================== */}
-        {/* ================================================================== */}
-        {/* ================================================================== */}
         {/* Pied de page */}
         <Footer />
         <Button
           style={{ left: `${buttonLeft}px` }}
-          className={`fixed top-[calc(var(--header-height)_+_0.5rem)]`}
+          className={`fixed top-[calc(var(--header-height)_+_0.5rem)] z-100`}
           variant="ghost"
           onClick={toggle}
         >
           <Fullscreen />
         </Button>
-        {/* ================================================================== */}
-        {/* ================================================================== */}
-        {/* ================================================================== */}
       </div>
     </main>
   );

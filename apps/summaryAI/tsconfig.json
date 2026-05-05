@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "module": "NodeNext",
+    "ignoreDeprecations": "5.0",
+    "strict": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx"
+  }
+}

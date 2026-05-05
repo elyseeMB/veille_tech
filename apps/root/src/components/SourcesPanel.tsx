@@ -90,7 +90,7 @@ export function SourcesPanel() {
 
   return (
     <section id="sources">
-      <div className="px-5 pt-4 pb-2 flex items-center justify-between">
+      <div className="px-5 pt-6 pb-2 flex items-center justify-between">
         <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
           Sources
         </p>

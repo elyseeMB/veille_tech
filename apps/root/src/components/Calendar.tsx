@@ -45,7 +45,17 @@ function weeksInMonth(m: Date): number {
   return Math.ceil((days + startDay) / DAYS_IN_WEEK);
 }
 
-function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
+export type CalendarData = Record<string, { count: string }>;
+
+function QuarterCalendar({
+  start,
+  end,
+  data,
+}: {
+  start: Date;
+  end: Date;
+  data: CalendarData;
+}) {
   const axisRef = useRef<SVGGElement | null>(null);
   const months = timeMonth.range(start, end);
 
@@ -101,6 +111,9 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
             const cx = getCx(d);
             const cy = getCy(d);
             const dateStr = d.toISOString().slice(0, 10);
+            const dateKey = d.toLocaleDateString("en-CA");
+            const articleForDate = data?.[dateKey];
+            const isArticleForDate = !!articleForDate;
             const label = d.toLocaleDateString("fr", {
               weekday: "short",
               day: "numeric",
@@ -133,8 +146,12 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
                     <a href={`/date/${dateStr}`}>
                       <circle
                         r={QC / 2 - 1.5}
-                        fill="currentColor"
-                        opacity={0.2}
+                        fill={
+                          isArticleForDate
+                            ? "var(--color-amber-500)"
+                            : "currentColor"
+                        }
+                        opacity={isArticleForDate ? 1 : 0.2}
                         cx={cx}
                         cy={cy}
                       />
@@ -150,7 +167,12 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
                   )}
                 </TooltipTrigger>
                 <TooltipContent className="pointer-events-none">
-                  <p className="font-serif text-sm">{label}</p>
+                  <div className="flex flex-col gap-0.5 items-center">
+                    <p className="font-serif text-sm">{label}</p>
+                    {articleForDate?.count && (
+                      <span>article(s) {articleForDate.count}</span>
+                    )}
+                  </div>
                 </TooltipContent>
               </Tooltip>
             );
@@ -166,14 +188,20 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
   );
 }
 
-export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
+export function Calendar({
+  scrollable = false,
+  data,
+}: {
+  scrollable?: boolean;
+  data: CalendarData;
+}) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const axisRef = useRef<SVGGElement | null>(null);
 
+  // ── Axis D3 desktop
   useEffect(() => {
-    if (scrollable || !axisRef.current) {
-      return;
-    }
+    if (scrollable || !axisRef.current) return;
+
     const axis = axisBottom(xFull)
       .tickValues(desktopMonths)
       .tickFormat((d) =>
@@ -194,10 +222,9 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
       .attr("class", "text-muted-foreground");
   }, [scrollable]);
 
+  // ── Scroll vers le trimestre courant (mobile)
   useEffect(() => {
-    if (!scrollable || !scrollRef.current) {
-      return;
-    }
+    if (!scrollable || !scrollRef.current) return;
     const currentQ = Math.floor(now.getMonth() / 3);
     (scrollRef.current.children[currentQ] as HTMLElement)?.scrollIntoView({
       behavior: "instant",
@@ -214,7 +241,7 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
       >
         {QUARTERS.map((q, i) => (
           <div key={i} className="snap-start shrink-0 w-full px-4">
-            <QuarterCalendar start={q.start} end={q.end} />
+            <QuarterCalendar start={q.start} end={q.end} data={data} />
           </div>
         ))}
       </div>
@@ -238,6 +265,10 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
               day: "numeric",
               month: "short",
             });
+            const dateKey = d.toLocaleDateString("en-CA");
+            const articleForDate = data?.[dateKey];
+            const isArticleForDate = !!articleForDate;
+
             return (
               <Tooltip key={+d}>
                 <TooltipTrigger
@@ -260,12 +291,12 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
                         className="dark:fill-emerald-400"
                       />
                     </a>
-                  ) : isPast ? (
+                  ) : isPast && isArticleForDate ? (
                     <a href={`/date/${d.toISOString().slice(0, 10)}`}>
                       <circle
                         r={D_CELL / 2 - 1}
-                        fill="currentColor"
-                        opacity={0.2}
+                        fill="var(--color-amber-500)"
+                        opacity={1}
                         cx={getDCx(d)}
                         cy={getDCy(d)}
                       />
@@ -275,14 +306,19 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
                       className="cursor-default"
                       r={D_CELL / 2 - 1}
                       fill="currentColor"
-                      opacity={0.8}
+                      opacity={isPast ? 0.2 : 1}
                       cx={getDCx(d)}
                       cy={getDCy(d)}
                     />
                   )}
                 </TooltipTrigger>
                 <TooltipContent className="pointer-events-none">
-                  <p className="font-serif text-sm">{label}</p>
+                  <div className="flex flex-col gap-0.5 items-center">
+                    <p className="font-serif text-sm">{label}</p>
+                    {articleForDate?.count && (
+                      <span>article(s) {articleForDate.count}</span>
+                    )}
+                  </div>
                 </TooltipContent>
               </Tooltip>
             );
