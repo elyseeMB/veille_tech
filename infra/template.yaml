@@ -10,8 +10,8 @@ Resources:
   # ─── Lambda Fetcher RSS + YouTube ───────────────────────────────
   FetcherFunction:
     Type: AWS::Serverless::Function
-    Metadata:
-      BuildMethod: makefile
+    # Metadata:
+    #   BuildMethod: makefile
     Properties:
       FunctionName: veille-fetcher
       CodeUri: ../apps/fetcher/
@@ -27,18 +27,30 @@ Resources:
         - SSMParameterReadPolicy:
             ParameterName: "veille/*"
       Events:
-        ScheduledFetch:
+        WeeklySchedule:
           Type: Schedule
           Properties:
-            Schedule: rate(1 hour)
-            Name: veille-fetch-schedule
+            Schedule: cron(0/30 7-18 ? * MON-FRI *)
+            Name: tech-watch-weekday-30min
+            Enabled: true
+        WeekendSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 9-20 ? * SAT-SUN *)
+            Name: tech-watch-weekend-1h
+            Enabled: true
+        NightSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: rate(4 hours)
+            Name: tech-watch-night-4h
             Enabled: true
 
   # ─── Lambda Gateway API (à venir) ───────────────────────────────
   GatewayFunction:
     Type: AWS::Serverless::Function
-    Metadata:
-      BuildMethod: makefile
+    # Metadata:
+    #   BuildMethod: makefile
     Properties:
       FunctionName: veille-gateway
       CodeUri: ../apps/gateway/
