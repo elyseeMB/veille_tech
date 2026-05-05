@@ -70,23 +70,20 @@ func setupRouter() *gin.Engine {
 		AllowHeaders: []string{"Content-Type", "Authorization"},
 	}))
 
-	r.Use(cacheControl("public, max-age=1800"))
-
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
 
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/calendar", handlers.GetCalendarMeta())
-		v1.GET("/feed", handlers.GetFeed())
-		v1.GET("/avatar", handlers.ProxyAvatar())
-		v1.GET("/articles", handlers.GetArticles())
-		v1.GET("/articles/:id", handlers.GetArticleByID())
-		v1.GET("/videos", handlers.GetVideos())
-		v1.GET("/graph", handlers.GetGraph())
-	}
+		v1.GET("/feed", cacheControl("public, max-age=300"), handlers.GetFeed())
+		v1.GET("/videos", cacheControl("public, max-age=300"), handlers.GetVideos())
 
+		v1.GET("/calendar", cacheControl("public, max-age=1800"), handlers.GetCalendarMeta())
+		v1.GET("/articles", cacheControl("public, max-age=1800"), handlers.GetArticles())
+
+		v1.GET("/articles/:id", cacheControl("public, max-age=86400"), handlers.GetArticleByID())
+	}
 	return r
 }
 
