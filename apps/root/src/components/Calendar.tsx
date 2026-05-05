@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { axisBottom, scaleUtc, timeYear, timeMonth, timeDay, select } from "d3";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip.tsx";
 
@@ -45,8 +45,17 @@ function weeksInMonth(m: Date): number {
   return Math.ceil((days + startDay) / DAYS_IN_WEEK);
 }
 
-function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
-  const [data, setData] = useState<Record<string, { count: string }>>({});
+export type CalendarData = Record<string, { count: string }>;
+
+function QuarterCalendar({
+  start,
+  end,
+  data,
+}: {
+  start: Date;
+  end: Date;
+  data: CalendarData;
+}) {
   const axisRef = useRef<SVGGElement | null>(null);
   const months = timeMonth.range(start, end);
 
@@ -70,10 +79,6 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
     (DAYS_IN_WEEK - 1 - ((d.getDay() + 6) % 7)) * QC + QC / 2 + QM.t;
 
   useEffect(() => {
-    fetch("https://api.veille.safecoffi.app/v1/calendar").then((r) =>
-      r.json().then((r) => setData(r)),
-    );
-
     if (!axisRef.current) return;
     const g = select(axisRef.current);
     g.selectAll("*").remove();
@@ -106,14 +111,14 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
             const cx = getCx(d);
             const cy = getCy(d);
             const dateStr = d.toISOString().slice(0, 10);
+            const dateKey = d.toLocaleDateString("en-CA");
+            const articleForDate = data?.[dateKey];
+            const isArticleForDate = !!articleForDate;
             const label = d.toLocaleDateString("fr", {
               weekday: "short",
               day: "numeric",
               month: "short",
             });
-            const dateKey = d.toLocaleDateString("en-CA");
-            const articleForDate = data?.[dateKey];
-            const isArticleForDate = !!articleForDate;
 
             return (
               <Tooltip key={+d}>
@@ -162,7 +167,12 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
                   )}
                 </TooltipTrigger>
                 <TooltipContent className="pointer-events-none">
-                  <p className="font-serif text-sm">{label}</p>
+                  <div className="flex flex-col gap-0.5 items-center">
+                    <p className="font-serif text-sm">{label}</p>
+                    {articleForDate?.count && (
+                      <span>article(s) {articleForDate.count}</span>
+                    )}
+                  </div>
                 </TooltipContent>
               </Tooltip>
             );
@@ -178,18 +188,20 @@ function QuarterCalendar({ start, end }: { start: Date; end: Date }) {
   );
 }
 
-export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
+export function Calendar({
+  scrollable = false,
+  data,
+}: {
+  scrollable?: boolean;
+  data: CalendarData;
+}) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const axisRef = useRef<SVGGElement | null>(null);
-  const [data, setData] = useState<Record<string, { count: string }>>({});
 
+  // ── Axis D3 desktop
   useEffect(() => {
-    fetch("https://api.veille.safecoffi.app/v1/calendar").then((r) =>
-      r.json().then((r) => setData(r)),
-    );
-    if (scrollable || !axisRef.current) {
-      return;
-    }
+    if (scrollable || !axisRef.current) return;
+
     const axis = axisBottom(xFull)
       .tickValues(desktopMonths)
       .tickFormat((d) =>
@@ -210,10 +222,9 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
       .attr("class", "text-muted-foreground");
   }, [scrollable]);
 
+  // ── Scroll vers le trimestre courant (mobile)
   useEffect(() => {
-    if (!scrollable || !scrollRef.current) {
-      return;
-    }
+    if (!scrollable || !scrollRef.current) return;
     const currentQ = Math.floor(now.getMonth() / 3);
     (scrollRef.current.children[currentQ] as HTMLElement)?.scrollIntoView({
       behavior: "instant",
@@ -230,16 +241,12 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
       >
         {QUARTERS.map((q, i) => (
           <div key={i} className="snap-start shrink-0 w-full px-4">
-            <QuarterCalendar start={q.start} end={q.end} />
+            <QuarterCalendar start={q.start} end={q.end} data={data} />
           </div>
         ))}
       </div>
     );
   }
-
-  console.log(typeof data);
-  // console.log(data);
-  // console.log(data?.[i]);
 
   return (
     <svg
@@ -288,12 +295,8 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
                     <a href={`/date/${d.toISOString().slice(0, 10)}`}>
                       <circle
                         r={D_CELL / 2 - 1}
-                        fill={
-                          isArticleForDate
-                            ? "var(--color-amber-500)"
-                            : "currentColor"
-                        }
-                        opacity={isArticleForDate ? 1 : 0.2}
+                        fill="var(--color-amber-500)"
+                        opacity={1}
                         cx={getDCx(d)}
                         cy={getDCy(d)}
                       />
@@ -313,7 +316,7 @@ export function Calendar({ scrollable = false }: { scrollable?: boolean }) {
                   <div className="flex flex-col gap-0.5 items-center">
                     <p className="font-serif text-sm">{label}</p>
                     {articleForDate?.count && (
-                      <span>article (s) {articleForDate?.count} </span>
+                      <span>article(s) {articleForDate.count}</span>
                     )}
                   </div>
                 </TooltipContent>
