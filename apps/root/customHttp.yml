@@ -1,4 +1,3 @@
-version: 1
 customHeaders:
   - pattern: "**/*.html"
     headers:
