@@ -9,8 +9,11 @@ import { VideoItem } from "./VideoItem.tsx";
 
 import Autoplay from "embla-carousel-autoplay";
 import type { YoutubeVideo } from "./VideosCard.tsx";
+import { useMobile } from "@/hooks/useMobile.ts";
+import clsx from "clsx";
 
 export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
+  const isMobile = useMobile();
   return (
     <Carousel
       className="w-full overflow-hidden border-b"
@@ -27,7 +30,10 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
       <CarouselContent>
         {group.map((video, index) => (
           <CarouselItem
-            className="basis-[85%] border-r first:-ml-0 -ml-5"
+            className={clsx(
+              "basis-[85%] border-r first:-ml-0 -ml-5",
+              isMobile && "border-none pr-5 -ml-0",
+            )}
             key={index}
           >
             <VideoItem key={video.id} video={video} />
