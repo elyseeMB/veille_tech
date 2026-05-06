@@ -95,14 +95,14 @@ export function App() {
         </div>
 
         {/* Header Mobile */}
-        <div className="lg:hidden mb-8 pt-5">
+        {/* <div className="lg:hidden mb-8 pt-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
             Collection
           </p>
           <h1 className="text-3xl sm:text-4xl font-normal leading-none tracking-tight text-foreground">
             Veille Tech
           </h1>
-        </div>
+        </div> */}
 
         {/* Feed Mobile */}
         <div className="lg:hidden space-y-0">
