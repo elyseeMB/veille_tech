@@ -11,12 +11,16 @@ import { useFeed } from "@/hooks/useFeed.ts";
 import { Feed } from "@/components/Feed.tsx";
 import { Banner } from "./components/BannerContext.tsx";
 
+const url = import.meta.env.PROD
+  ? "https://api.veille.safecoffi.app/v1"
+  : "http://localhost:8081/v1";
+
 export function App() {
   const { desktopRef, mobileRef, height: headerHeight } = useHeaderHeight();
   const { ref: containerRef, left: buttonLeft } = useContainerLeftOffset();
   const { visible: calendarVisible, toggle } = useCalendarToggle();
   const { items, loading, loadingMore, hasMore, loadMore, error, retry } =
-    useFeed("https://api.veille.safecoffi.app/v1");
+    useFeed(url);
   const calendarData = useCalendarData();
 
   return (

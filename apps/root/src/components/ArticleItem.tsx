@@ -1,10 +1,9 @@
 import type { Article } from "@/hooks/useFeed.ts";
 import { useSummaryStore } from "@/store/summaryStore.ts";
-import { useEffect, useRef, useState, type MouseEventHandler } from "react";
-import { TimeRelative } from "./TimeRelative.tsx";
-import { ArrowDown } from "lucide-react";
-import { Button } from "./ui/button.tsx";
+import { useRef, type MouseEventHandler } from "react";
 import { useBanner } from "./BannerContext.tsx";
+import { TimeRelative } from "./TimeRelative.tsx";
+import { useMobile } from "@/hooks/useMobile.ts";
 
 const SOURCE_COLORS: Record<string, string> = {
   "Hacker News": "text-orange-400",
@@ -18,6 +17,7 @@ const SOURCE_COLORS: Record<string, string> = {
 };
 
 export function ArticleItem({ article: item }: { article: Article }) {
+  const isMobile = useMobile();
   const articleRef = useRef<HTMLElement>(null);
   const { selectedArticle, setSelectedArticle } = useSummaryStore();
   const isSelected = selectedArticle?.id === item.id;
@@ -112,9 +112,12 @@ export function ArticleItem({ article: item }: { article: Article }) {
         ${isSelected ? "bg-foreground/10" : "hover:bg-foreground/5"}
       `}
       >
-        <div
-          className={`opacity-0 transition-colors group-hover:opacity-100 group-hover:bg-foreground ${isSelected ? "opacity-100 bg-foreground" : "bg-muted"}`}
-        />
+        {!isMobile && (
+          <div
+            className={`opacity-0 transition-colors group-hover:opacity-100 group-hover:bg-foreground ${isSelected ? "opacity-100 bg-foreground" : "bg-muted"}`}
+          />
+        )}
+
         <div className="space-y-3 w-full">
           <div className="flex flex-col items-start gap-1">
             <TimeRelative date={item.pubDate} />
