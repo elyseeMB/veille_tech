@@ -58,4 +58,14 @@ var RSS_FEEDS = []models.RSSFeed{
 			{URL: "https://offbrandkoto.substack.com/feed", Category: "brand/design"},
 		},
 	},
+	{
+		Name: "Wired",
+		Categories: []models.Category{
+			{URL: "https://www.wired.com/feed/category/science/latest/rss", Category: "science"},
+			{URL: "https://www.wired.com/feed/category/security/latest/rss", Category: "security"},
+			{URL: "https://www.wired.com/feed/category/business/latest/rss", Category: "business"},
+			{URL: "https://www.wired.com/feed/category/backchannel/latest/rss", Category: "backchannel"},
+			{URL: "https://www.wired.com/feed/category/ideas/latest/rss", Category: "ideas"},
+		},
+	},
 }

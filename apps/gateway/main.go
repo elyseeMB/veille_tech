@@ -64,8 +64,18 @@ func loadSecrets() {
 
 func setupRouter() *gin.Engine {
 	r := gin.Default()
+
+	allowOrigins := []string{"https://veille.safecoffi.app"}
+
+	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" {
+		allowOrigins = append(allowOrigins,
+			"http://localhost:5173",
+			"http://127.0.0.1:5173",
+		)
+	}
+
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"https://veille.safecoffi.app"},
+		AllowOrigins: allowOrigins,
 		AllowMethods: []string{"GET", "OPTIONS"},
 		AllowHeaders: []string{"Content-Type", "Authorization"},
 	}))
