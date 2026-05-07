@@ -20,9 +20,11 @@ Resources:
   # ─── Lambda Fetcher RSS + YouTube ───────────────────────────────
   FetcherFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       FunctionName: veille-fetcher
-      CodeUri: ../apps/fetcher/
+      CodeUri: ../services/fetcher/function/
       Handler: bootstrap
       Runtime: provided.al2023
       Architectures:
@@ -58,9 +60,11 @@ Resources:
   # ─── Lambda Gateway API ──────────────────────────────────────────
   GatewayFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
       FunctionName: veille-gateway
-      CodeUri: ../apps/gateway/
+      CodeUri: ../services/gateway/function/
       Handler: bootstrap
       Runtime: provided.al2023
       Architectures:
