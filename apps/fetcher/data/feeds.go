@@ -33,7 +33,14 @@ var RSS_FEEDS = []models.RSSFeed{
 			{URL: "https://www.technologyreview.com/topic/climate/feed", Category: "climate"},
 		},
 	},
-
+	{
+		Name: "Lobsters",
+		Categories: []models.Category{
+			{URL: "https://lobste.rs/top/1d.rss", Category: "top"},
+			{URL: "https://lobste.rs/top/1w.rss", Category: "top"},
+			{URL: "https://lobste.rs/top/1m.rss", Category: "top"},
+		},
+	},
 	{
 		Name: "Y Combinator Blog",
 		Categories: []models.Category{

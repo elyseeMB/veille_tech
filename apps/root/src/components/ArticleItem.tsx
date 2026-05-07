@@ -10,10 +10,11 @@ const SOURCE_COLORS: Record<string, string> = {
   "The Verge": "text-violet-400",
   "Ars Technica": "text-red-400",
   "MIT Tech Review": "text-blue-400",
-  Wired: "text-emerald-400",
+  Wired: "text-sky-500",
   "Nasdaq Nordic News Releases": "text-[#0098b9]",
   abduzeedo: "text-[#dddddd]",
   TechCrunch: "text-[#68f176]",
+  Lobsters: "text-red-300",
 };
 
 export function ArticleItem({ article: item }: { article: Article }) {
@@ -159,11 +160,13 @@ export function ArticleItem({ article: item }: { article: Article }) {
             </h2>
           </a>
 
-          {item.content && !item.content.includes("Comments URL:") && (
-            <p className="text-sm leading-relaxed text-muted-foreground line-clamp-3">
-              {item.content.replace(/<[^>]*>/g, "").slice(0, 140)}
-            </p>
-          )}
+          {item.content &&
+            !item.content.includes("Comments URL:") &&
+            !item.source.includes("Lobsters") && (
+              <p className="text-sm leading-relaxed text-muted-foreground line-clamp-3">
+                {item.content.replace(/<[^>]*>/g, "").slice(0, 140)}
+              </p>
+            )}
         </div>
       </article>
     </>
