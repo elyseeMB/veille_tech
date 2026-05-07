@@ -85,12 +85,16 @@ func FetchRSS(ctx context.Context) error {
 				if len(item.Authors) > 0 {
 					author = item.Authors[0].Name
 				}
+				pubDate := time.Now().UTC()
+				if item.PublishedParsed != nil {
+					pubDate = item.PublishedParsed.UTC()
+				}
 				articles = append(articles, models.Article{
 					ID:       id,
 					Title:    item.Title,
 					Link:     item.Link,
 					Author:   author,
-					PubDate:  item.Published,
+					PubDate:  pubDate,
 					Content:  item.Description,
 					Source:   t.Source,
 					Category: t.Category,

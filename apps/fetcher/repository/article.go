@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"time"
 
 	"fetcher/config"
 	"fetcher/models"
@@ -62,10 +61,6 @@ func InsertArticles(articles []models.Article) error {
 	defer tx.Rollback(context.Background())
 
 	for _, a := range articles {
-		pubDate, err := parseDate(a.PubDate)
-		if err != nil {
-			pubDate = time.Now()
-		}
 
 		// Insert article — RETURNING id pour le sync feed_items
 		var articleID string
@@ -75,7 +70,7 @@ func InsertArticles(articles []models.Article) error {
 			VALUES($1, (SELECT id FROM sources WHERE name = $2 AND active = true), $3, $4, $5, $6, $7, $8)
 			ON CONFLICT (url) DO NOTHING
 			RETURNING id`,
-			a.ID, a.Source, a.Title, a.Link, a.Author, a.Content, a.Category, pubDate,
+			a.ID, a.Source, a.Title, a.Link, a.Author, a.Content, a.Category, a.PubDate,
 		).Scan(&articleID)
 		if err != nil && err != pgx.ErrNoRows {
 			return err
@@ -99,7 +94,7 @@ func InsertArticles(articles []models.Article) error {
 				`INSERT INTO feed_items (type, ref_id, published_at)
 				VALUES ('article', $1, $2)
 				ON CONFLICT (type, ref_id) DO NOTHING`,
-				articleID, pubDate,
+				articleID, a.PubDate,
 			)
 			if err != nil {
 				return err
@@ -108,18 +103,4 @@ func InsertArticles(articles []models.Article) error {
 	}
 
 	return tx.Commit(context.Background())
-}
-
-func parseDate(raw string) (time.Time, error) {
-	formats := []string{
-		time.RFC1123Z,
-		time.RFC1123,
-		time.RFC3339,
-	}
-	for _, format := range formats {
-		if t, err := time.Parse(format, raw); err == nil {
-			return t, nil
-		}
-	}
-	return time.Time{}, nil
 }
