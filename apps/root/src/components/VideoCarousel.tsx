@@ -18,7 +18,7 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
     <section
       aria-labelledby="carousel-video-yt"
       role="region"
-      className="border-b"
+      className={clsx(isMobile && "-mx-4 px-4", "border-b")}
     >
       <Carousel
         className="w-full overflow-hidden "
