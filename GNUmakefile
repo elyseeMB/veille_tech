@@ -1,7 +1,8 @@
 .PHONY: build build-gateway build-backfill \
         deploy-fetcher deploy-gateway deploy \
         run-fetcher run-gateway \
-        sam-build sam-deploy clean
+        sam-build sam-deploy clean \
+		dev-back
 
 build:
 	cd services/fetcher && \
@@ -47,6 +48,8 @@ sam-build:
 
 sam-deploy:
 	cd infra && sam deploy
+
+dev-back: run-fetcher run-gateway 
 
 clean:
 	rm -f services/fetcher/function/bootstrap \
