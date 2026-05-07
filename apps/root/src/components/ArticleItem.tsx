@@ -139,7 +139,6 @@ export function ArticleItem({ article: item }: { article: Article }) {
             <span className="h-px flex-1 bg-foreground/10" />
             <time>
               {new Date(item.pubDate).toLocaleDateString("en", {
-                year: "numeric",
                 day: "numeric",
                 month: "short",
               })}

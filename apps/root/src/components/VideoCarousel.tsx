@@ -18,7 +18,7 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
     <section
       aria-labelledby="carousel-video-yt"
       role="region"
-      className="border-b -mx-4 px-4"
+      className={clsx(isMobile && "-mx-4 px-4", "border-b")}
     >
       <Carousel
         className="w-full overflow-hidden "
@@ -36,7 +36,7 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
           {group.map((video, index) => (
             <CarouselItem
               className={clsx(
-                "basis-[85%] border-r first:-ml-0 -ml-5",
+                "basis-[75%] first:-ml-0 -ml-5",
                 isMobile && "border-none pr-5 -ml-0",
               )}
               key={index}
@@ -48,12 +48,12 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
         <CarouselPrevious
           variant="default"
           size="icon-lg"
-          className="hidden sm:flex left-1 z-30 transform-none hover:bg-accent-foreground"
+          className="hidden sm:flex top-[50%] left-1 z-30 transform-none hover:bg-accent-foreground"
         />
         <CarouselNext
           variant="default"
           size="icon-lg"
-          className="hidden sm:flex right-1 z-30 transform-none hover:bg-accent-foreground"
+          className="hidden sm:flex top-[50%] right-1 z-30 transform-none hover:bg-accent-foreground"
         />
       </Carousel>
     </section>

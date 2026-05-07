@@ -15,6 +15,10 @@ const url = import.meta.env.PROD
   ? "https://api.veille.safecoffi.app/v1"
   : "http://localhost:8081/v1";
 
+const now = new Date().toLocaleDateString(navigator.language, {
+  dateStyle: "medium",
+});
+
 export function App() {
   const { desktopRef, mobileRef, height: headerHeight } = useHeaderHeight();
   const { ref: containerRef, left: buttonLeft } = useContainerLeftOffset();
@@ -32,7 +36,7 @@ export function App() {
       >
         <div className="py-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground px-4 mb-2">
-            Calendrier
+            {now}
           </p>
           <Calendar scrollable data={calendarData} />
         </div>
@@ -45,9 +49,9 @@ export function App() {
         className={`hidden lg:block fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-md border-b border-border ${calendarVisible ? "" : "h-0 pointer-events-none overflow-hidden"}`}
       >
         <div className="mx-auto max-w-5xl px-12 py-6">
-          <section className="px-5 py-0">
+          <section>
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">
-              Calendrier
+              {now}
             </p>
             <Calendar data={calendarData} />
           </section>

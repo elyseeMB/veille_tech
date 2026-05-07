@@ -240,7 +240,7 @@ export function Calendar({
         className="flex overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {QUARTERS.map((q, i) => (
-          <div key={i} className="snap-start shrink-0 w-full px-4">
+          <div key={i} className="snap-start shrink-0 w-full">
             <QuarterCalendar start={q.start} end={q.end} data={data} />
           </div>
         ))}

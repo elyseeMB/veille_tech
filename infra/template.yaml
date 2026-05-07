@@ -45,13 +45,13 @@ Resources:
         WeekendSchedule:
           Type: Schedule
           Properties:
-            Schedule: cron(0 9-20 ? * SAT-SUN *)
+            Schedule: cron(0 9-18 ? * SAT-SUN *)
             Name: tech-watch-weekend-1h
             Enabled: true
         NightSchedule:
           Type: Schedule
           Properties:
-            Schedule: cron(0 19-6 ? * * *)
+            Schedule: cron(0 19,23,3 ? * * *)
             Name: tech-watch-night-4h
             Enabled: true
 

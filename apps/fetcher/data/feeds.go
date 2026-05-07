@@ -14,7 +14,7 @@ var RSS_FEEDS = []models.RSSFeed{
 		Name: "Hacker News",
 		Categories: []models.Category{
 			{URL: "https://hnrss.org/newest?points=100", Category: "top"},
-			{URL: "https://hnrss.org/show?points=101", Category: "show"},
+			{URL: "https://hnrss.org/show?points=100", Category: "show"},
 		},
 	},
 	{
