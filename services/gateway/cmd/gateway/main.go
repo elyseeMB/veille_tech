@@ -90,8 +90,8 @@ func setupRouter() *gin.Engine {
 
 	v1 := r.Group("/v1")
 	{
-		// Cache 30 min
-		v1.GET("/feed", cacheControl("public, max-age=1800, stale-while-revalidate=3600"), handlers.GetFeed())
+		// Cache 5 min
+		v1.GET("/feed", cacheControl("public, max-age=300, stale-while-revalidate=600"), handlers.GetFeed())
 
 		// Cache 30 min
 		v1.GET("/videos", cacheControl("public, max-age=1800"), handlers.GetVideos())
