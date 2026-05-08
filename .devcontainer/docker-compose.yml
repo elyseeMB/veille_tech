@@ -1,0 +1,15 @@
+include:
+  - ../docker-compose.yml
+
+services:
+  dev:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://veille:veille@postgres:5432/veille_db

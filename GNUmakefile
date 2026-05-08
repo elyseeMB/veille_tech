@@ -1,36 +1,63 @@
-.PHONY: build build-gateway build-backfill deploy deploy-fetcher deploy-gateway run-fetcher run-gateway api-dev clean
+.PHONY: build build-gateway build-backfill \
+        deploy-fetcher deploy-gateway deploy \
+        run-fetcher run-gateway \
+        sam-build sam-deploy clean \
+		dev-backend dev-frontend
 
 build:
-	cd apps/fetcher && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap main.go
+	cd services/fetcher && \
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
+	go build -o function/bootstrap ./cmd/fetcher/main.go
 
 build-gateway:
-	cd apps/gateway && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap main.go
+	cd services/gateway && \
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
+	go build -o function/bootstrap ./cmd/gateway/main.go
 
 build-backfill:
-	cd apps/fetcher && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o backfill ./cmd/backfill/main.go
+	cd services/fetcher && \
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
+	go build -o function/backfill ./cmd/backfill/main.go
 
 deploy-fetcher: build
-	cd apps/fetcher && \
-	powershell Compress-Archive -Force bootstrap bootstrap.zip && \
-	aws lambda update-function-code --function-name veille-fetcher --zip-file fileb://bootstrap.zip --region us-east-1
+	cd services/fetcher && \
+	zip -j function/bootstrap.zip function/bootstrap && \
+	aws lambda update-function-code \
+		--function-name veille-fetcher \
+		--zip-file fileb://function/bootstrap.zip \
+		--region us-east-1
 
 deploy-gateway: build-gateway
-	cd apps/gateway && \
-	powershell Compress-Archive -Force bootstrap bootstrap.zip && \
-	aws lambda update-function-code --function-name veille-gateway --zip-file fileb://bootstrap.zip --region us-east-1
+	cd services/gateway && \
+	zip -j function/bootstrap.zip function/bootstrap && \
+	aws lambda update-function-code \
+		--function-name veille-gateway \
+		--zip-file fileb://function/bootstrap.zip \
+		--region us-east-1
 
 deploy: deploy-fetcher deploy-gateway
 
 run-fetcher:
-	cd apps/fetcher && go run main.go
+	cd services/fetcher && go run ./cmd/fetcher/main.go
 
 run-gateway:
-	cd apps/gateway && go run main.go
+	cd services/gateway && go run ./cmd/gateway/main.go
 
-api-dev:
-	cd apps/fetcher && go run main.go & \
-	cd apps/gateway && go run main.go & \
-	pnpm -C apps/root/ run dev
+sam-build:
+	cd infra && sam build
+
+sam-deploy: sam-build
+	cd infra && sam deploy
+
+dev-backend:
+	cd services/fetcher && go run ./cmd/fetcher/main.go &
+	cd services/gateway && go run ./cmd/gateway/main.go
+
+dev-frontend:
+	cd apps/root && pnpm run dev
 
 clean:
-	rm -f apps/fetcher/bootstrap apps/fetcher/bootstrap.zip apps/gateway/bootstrap apps/gateway/bootstrap.zip backfill
+	rm -f services/fetcher/function/bootstrap \
+	      services/fetcher/function/bootstrap.zip \
+	      services/gateway/function/bootstrap \
+	      services/gateway/function/bootstrap.zip
