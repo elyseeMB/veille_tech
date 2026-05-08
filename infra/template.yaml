@@ -15,6 +15,9 @@ Globals:
       AllowHeaders:
         - Content-Type
         - Authorization
+    DefaultRouteSettings:
+      ThrottlingBurstLimit: 200
+      ThrottlingRateLimit: 100
 
 Resources:
   # ─── Lambda Fetcher RSS + YouTube ───────────────────────────────
@@ -24,7 +27,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       FunctionName: veille-fetcher
-      CodeUri: ../services/fetcher/function/
+      CodeUri: ../services/fetcher/function
       Handler: bootstrap
       Runtime: provided.al2023
       Architectures:
@@ -64,12 +67,13 @@ Resources:
       BuildMethod: makefile
     Properties:
       FunctionName: veille-gateway
-      CodeUri: ../services/gateway/function/
+      CodeUri: ../services/gateway/function
       Handler: bootstrap
       Runtime: provided.al2023
       Architectures:
         - x86_64
       Timeout: 30
+      ReservedConcurrentExecutions: 15
       Environment:
         Variables:
           DB_PARAM_NAME: "/veille/database_url"

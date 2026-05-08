@@ -2,7 +2,7 @@
         deploy-fetcher deploy-gateway deploy \
         run-fetcher run-gateway \
         sam-build sam-deploy clean \
-		dev-back
+		dev-backend dev-frontend
 
 build:
 	cd services/fetcher && \
@@ -46,10 +46,15 @@ run-gateway:
 sam-build:
 	cd infra && sam build
 
-sam-deploy:
+sam-deploy: sam-build
 	cd infra && sam deploy
 
-dev-back: run-fetcher run-gateway 
+dev-backend:
+	cd services/fetcher && go run ./cmd/fetcher/main.go &
+	cd services/gateway && go run ./cmd/gateway/main.go
+
+dev-frontend:
+	cd apps/root && pnpm run dev
 
 clean:
 	rm -f services/fetcher/function/bootstrap \

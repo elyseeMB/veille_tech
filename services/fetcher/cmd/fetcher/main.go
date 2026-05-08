@@ -19,7 +19,7 @@ import (
 )
 
 func loadSecrets() {
-	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" {
+	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" || os.Getenv("LOCAL_DEV") == "true" {
 		return
 	}
 

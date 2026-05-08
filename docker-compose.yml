@@ -18,3 +18,5 @@ services:
 
 volumes:
   postgres-data-veille-tech:
+    external: true
+    name: veille_tech_go_postgres-data-veille-tech

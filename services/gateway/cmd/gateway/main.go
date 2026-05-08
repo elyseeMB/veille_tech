@@ -67,7 +67,7 @@ func setupRouter() *gin.Engine {
 
 	allowOrigins := []string{"https://veille.safecoffi.app"}
 
-	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" {
+	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" || os.Getenv("LOCAL_DEV") == "true" {
 		allowOrigins = append(allowOrigins,
 			"http://localhost:5173",
 			"http://127.0.0.1:5173",
