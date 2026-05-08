@@ -82,12 +82,10 @@ func main() {
 
 	loadSecrets()
 
-	// Local ou Lambda ?
+	
 	if os.Getenv("AWS_LAMBDA_RUNTIME_API") != "" {
-		// Sur Lambda → mode Lambda
 		lambda.Start(handler)
 	} else {
-		// En local → exécution directe
 		if err := handler(context.Background()); err != nil {
 			slog.Error("handler failed", "error", err)
 			os.Exit(1)
