@@ -74,7 +74,6 @@ Resources:
       Architectures:
         - x86_64
       Timeout: 30
-      ReservedConcurrentExecutions: 15
       Environment:
         Variables:
           DB_PARAM_NAME: "/veille/database_url"
