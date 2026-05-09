@@ -21,6 +21,7 @@
   "forwardPorts": [8080, 8081, 5432],
   "remoteEnv": {
     "GOPATH": "/go",
-    "GOROOT": "/usr/local/go"
+    "GOROOT": "/usr/local/go",
+    "AWS_PAGER": ""
   }
 }

@@ -65,7 +65,7 @@ func loadSecrets() {
 func setupRouter() *gin.Engine {
 	r := gin.Default()
 
-	allowOrigins := []string{"https://veille.safecoffi.app"}
+	allowOrigins := []string{"https://veille.safecoffi.app", "https://beta.veille.safecoffi.app"}
 
 	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" || os.Getenv("LOCAL_DEV") == "true" {
 		allowOrigins = append(allowOrigins,
@@ -90,8 +90,8 @@ func setupRouter() *gin.Engine {
 
 	v1 := r.Group("/v1")
 	{
-		// Cache 30 min
-		v1.GET("/feed", cacheControl("public, max-age=1800, stale-while-revalidate=3600"), handlers.GetFeed())
+		// Cache 5 min
+		v1.GET("/feed", cacheControl("public, max-age=300, stale-while-revalidate=600"), handlers.GetFeed())
 
 		// Cache 30 min
 		v1.GET("/videos", cacheControl("public, max-age=1800"), handlers.GetVideos())
