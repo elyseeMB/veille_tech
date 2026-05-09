@@ -6,6 +6,8 @@ on:
       - "develop"
     paths:
       - "apps/root/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -15,9 +17,8 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: lts/*
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
       - run: pnpm install --frozen-lockfile
       - run: pnpm add -wD wrangler@latest
       - run: pnpm --filter=root build -- --mode=beta

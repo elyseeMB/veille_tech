@@ -65,7 +65,7 @@ func loadSecrets() {
 func setupRouter() *gin.Engine {
 	r := gin.Default()
 
-	allowOrigins := []string{"https://veille.safecoffi.app"}
+	allowOrigins := []string{"https://veille.safecoffi.app", "https://beta.veille.safecoffi.app"}
 
 	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" || os.Getenv("LOCAL_DEV") == "true" {
 		allowOrigins = append(allowOrigins,
