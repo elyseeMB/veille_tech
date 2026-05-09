@@ -26,5 +26,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_VEILLE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/root/dist --project-name=veille-safecoffi-app --branch=beta
+          command: pages deploy apps/root/dist --project-name=veille-safecoffi-beta --branch=beta
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
