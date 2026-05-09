@@ -9,6 +9,7 @@ Globals:
     CorsConfiguration:
       AllowOrigins:
         - "https://veille.safecoffi.app"
+        - "https://beta.veille.safecoffi.app"
       AllowMethods:
         - GET
         - OPTIONS
