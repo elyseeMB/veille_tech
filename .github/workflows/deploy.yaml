@@ -6,7 +6,6 @@ on:
       - "develop"
     paths:
       - "apps/root/**"
-      - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
 jobs:
@@ -22,6 +21,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm add -wD wrangler@latest
       - run: pnpm --filter=root build -- --mode=beta
+        env:
+          VITE_API_URL: https://api.veille.safecoffi.app
+          VITE_ENV: beta
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_VEILLE_API_TOKEN }}
