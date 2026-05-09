@@ -80,7 +80,7 @@ export function SummaryPanel({ data }: { data: FeedItem }) {
             }
           />
           <DropdownMenuContent
-            className="font-serif text-sm leading-relaxed"
+            className="font-sans text-sm leading-relaxed"
             align="end"
           >
             {(Object.entries(MODEL_LABELS) as [AIModel, string][]).map(

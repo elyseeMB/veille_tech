@@ -70,7 +70,7 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
 
           {/* Channel header */}
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            <div className="flex items-center gap-2 font-serif">
+            <div className="flex items-center gap-2 font-sans">
               {item.channelAvatar && (
                 <img
                   className="object-cover w-10 rounded-full inline-block"

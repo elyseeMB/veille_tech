@@ -27,7 +27,7 @@ export function ModeToggle() {
           </Button>
         }
       ></DropdownMenuTrigger>
-      <DropdownMenuContent className="font-serif" align="end">
+      <DropdownMenuContent className="font-sans" align="end">
         <DropdownMenuItem onClick={() => setTheme("light")} className="gap-2">
           <Sun className="h-3.5 w-3.5" />
           Light

@@ -168,7 +168,7 @@ function QuarterCalendar({
                 </TooltipTrigger>
                 <TooltipContent className="pointer-events-none">
                   <div className="flex flex-col gap-0.5 items-center">
-                    <p className="font-serif text-sm">{label}</p>
+                    <p className="font-sans text-sm">{label}</p>
                     {articleForDate?.count && (
                       <span>article(s) {articleForDate.count}</span>
                     )}
@@ -314,7 +314,7 @@ export function Calendar({
                 </TooltipTrigger>
                 <TooltipContent className="pointer-events-none">
                   <div className="flex flex-col gap-0.5 items-center">
-                    <p className="font-serif text-sm">{label}</p>
+                    <p className="font-sans text-sm">{label}</p>
                     {articleForDate?.count && (
                       <span>article(s) {articleForDate.count}</span>
                     )}
@@ -327,7 +327,7 @@ export function Calendar({
       ))}
       <g
         ref={axisRef}
-        className="text-sm font-serif text-muted-foreground dark:text-muted-foreground"
+        className="text-sm font-sans text-muted-foreground dark:text-muted-foreground"
         transform={`translate(0, ${D_H - D_MARGIN[2]})`}
       />
     </svg>

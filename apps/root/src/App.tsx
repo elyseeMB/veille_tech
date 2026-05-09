@@ -28,7 +28,7 @@ export function App() {
   const calendarData = useCalendarData();
 
   return (
-    <main className="min-h-screen bg-background font-serif relative">
+    <main className="min-h-screen bg-background font-sans relative">
       {/* CALENDRIER FIXE - Mobile */}
       <div
         ref={mobileRef}
