@@ -6,6 +6,7 @@ on:
       - "develop"
     paths:
       - "apps/root/**"
+      - ".github/workflows/deploy.yml"
 
 jobs:
   deploy:
