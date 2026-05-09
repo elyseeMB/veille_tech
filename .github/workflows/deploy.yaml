@@ -6,7 +6,6 @@ on:
       - "develop"
     paths:
       - "apps/root/**"
-      - ".github/workflows/deploy.yml"
 
 jobs:
   deploy:
@@ -19,8 +18,9 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm add -D wrangler@latest
       - run: pnpm --filter=root build -- --mode=beta
-      - run: pnpm add -g wrangler
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_VEILLE_API_TOKEN }}
