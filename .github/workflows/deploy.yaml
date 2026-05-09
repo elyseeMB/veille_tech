@@ -19,7 +19,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm install --frozen-lockfile
-      - run: pnpm add -D wrangler@latest
+      - run: pnpm add -wD wrangler@latest
       - run: pnpm --filter=root build -- --mode=beta
       - uses: cloudflare/wrangler-action@v3
         with:
