@@ -136,7 +136,7 @@ export function ArticlesList({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <h2 className="text-[17px] font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
+                    <h2 className="text-lg font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
                       {item.title}
                     </h2>
                   </a>

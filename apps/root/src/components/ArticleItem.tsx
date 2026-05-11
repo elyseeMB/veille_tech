@@ -155,7 +155,7 @@ export function ArticleItem({ article: item }: { article: Article }) {
               e.preventDefault();
             }}
           >
-            <h2 className="text-[17px] font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
+            <h2 className="text-lg font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
               {item.title}
             </h2>
           </a>
@@ -163,7 +163,7 @@ export function ArticleItem({ article: item }: { article: Article }) {
           {item.content &&
             !item.content.includes("Comments URL:") &&
             !item.source.includes("Lobsters") && (
-              <p className="text-sm leading-relaxed text-muted-foreground line-clamp-3">
+              <p className="leading-relaxed text-muted-foreground line-clamp-3">
                 {item.content.replace(/<[^>]*>/g, "").slice(0, 140)}
               </p>
             )}
