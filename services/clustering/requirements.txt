@@ -1,0 +1,11 @@
+trafilatura
+psycopg2-binary
+umap-learn
+hdbscan
+numpy
+requests
+pydantic
+pgvector
+tenacity
+boto3
+python-dotenv

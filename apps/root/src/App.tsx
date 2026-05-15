@@ -8,7 +8,9 @@ import { useContainerLeftOffset } from "@/hooks/useContainerLeftOffset.ts";
 import { useCalendarToggle } from "@/hooks/useCalendarToggle.ts";
 import { useCalendarData } from "@/hooks/useCalendarData.ts";
 import { useFeed } from "@/hooks/useFeed.ts";
+import { useClusters } from "@/hooks/useClusters.ts";
 import { Feed } from "@/components/Feed.tsx";
+import { ClustersPanel } from "@/components/ClustersPanel.tsx";
 import { Banner } from "./components/BannerContext.tsx";
 
 const url = import.meta.env.PROD
@@ -25,6 +27,12 @@ export function App() {
   const { visible: calendarVisible, toggle } = useCalendarToggle();
   const { items, loading, loadingMore, hasMore, loadMore, error, retry } =
     useFeed(url);
+  const {
+    clusters,
+    loading: clustersLoading,
+    error: clustersError,
+    retry: clustersRetry,
+  } = useClusters(url);
   const calendarData = useCalendarData();
 
   return (
@@ -49,7 +57,7 @@ export function App() {
         className={`hidden lg:block fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-md border-b border-border ${calendarVisible ? "" : "h-0 pointer-events-none overflow-hidden"}`}
       >
         <div className="mx-auto max-w-5xl px-12 py-6">
-          <section>
+          <section id="clusters">
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">
               {now}
             </p>
@@ -74,6 +82,14 @@ export function App() {
           ref={containerRef}
           className="hidden lg:grid grid-cols-3 border-l border-border"
         >
+          <ClustersPanel
+            clusters={clusters}
+            loading={clustersLoading}
+            error={clustersError}
+            onRetry={clustersRetry}
+            baseUrl={url}
+          />
+
           {/* Colonne droite Desktop Feed */}
           <section id="list">
             <div className="border-r border-border">

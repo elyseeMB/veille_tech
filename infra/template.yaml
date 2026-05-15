@@ -87,3 +87,39 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
+
+  # ─── Lambda Clustering (Python / Docker) ────────────────────────
+  ClusteringFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ../services/clustering
+      DockerTag: latest
+    Properties:
+      FunctionName: veille-clustering
+      PackageType: Image
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Timeout: 300
+      Environment:
+        Variables:
+          DB_PARAM_NAME: "/veille/database_url"
+          CF_ACCOUNT_ID: "/veille/cf_account_id"
+          CF_API_TOKEN: "/veille/cf_api_token"
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: "veille/*"
+      Events:
+        MorningSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 6 ? * * *)
+            Name: clustering-morning
+            Enabled: true
+        EveningSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 18 ? * * *)
+            Name: clustering-evening
+            Enabled: true

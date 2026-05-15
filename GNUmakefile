@@ -1,6 +1,7 @@
 .PHONY: build build-gateway build-backfill \
         deploy-fetcher deploy-gateway deploy \
-        run-fetcher run-gateway \
+        run-fetcher run-gateway run-clustering \
+        setup-clustering \
         sam-build sam-deploy clean \
 		dev-backend dev-frontend
 
@@ -34,6 +35,12 @@ deploy-gateway: build-gateway
 		--function-name veille-gateway \
 		--zip-file fileb://function/bootstrap.zip \
 		--region us-east-1
+
+setup-clustering:
+	cd services/clustering && pip install -r requirements.txt
+
+run-clustering: setup-clustering
+	cd services/clustering && USE_MOCK=false DATABASE_URL="postgres://veille:veille@localhost:5432/veille_db" python app.py
 
 deploy: deploy-fetcher deploy-gateway
 

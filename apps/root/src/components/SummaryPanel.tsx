@@ -61,9 +61,9 @@ export function SummaryPanel({ data }: { data: FeedItem }) {
     <section
       ref={sectionRef}
       id="summary"
-      className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] border-r border-border col-span-2"
+      className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] border-r border-border"
     >
-      <TemporalForceGraph feedData={Array.isArray(data) ? data : [data]} />
+      {/* <TemporalForceGraph feedData={Array.isArray(data) ? data : [data]} /> */}
 
       {/* Header */}
       <div className="px-5 py-3 flex items-center justify-between">
