@@ -7,8 +7,11 @@ import { useHeaderHeight } from "@/hooks/useHeaderHeight.ts";
 import { useContainerLeftOffset } from "@/hooks/useContainerLeftOffset.ts";
 import { useCalendarToggle } from "@/hooks/useCalendarToggle.ts";
 import { useCalendarData } from "@/hooks/useCalendarData.ts";
+import { useMemo } from "react";
+import type { FeedItem } from "@/hooks/useFeed.ts";
 import { useFeed } from "@/hooks/useFeed.ts";
 import { useClusters } from "@/hooks/useClusters.ts";
+import { useClusterStore } from "@/store/clusterStore.ts";
 import { Feed } from "@/components/Feed.tsx";
 import { ClustersPanel } from "@/components/ClustersPanel.tsx";
 import { Banner } from "./components/BannerContext.tsx";
@@ -33,7 +36,19 @@ export function App() {
     error: clustersError,
     retry: clustersRetry,
   } = useClusters(url);
+  const { selectedCluster } = useClusterStore();
   const calendarData = useCalendarData();
+
+  const feedItems: FeedItem[] = useMemo(() => {
+    if (selectedCluster) {
+      return selectedCluster.articles.map((a) => ({
+        type: "article" as const,
+        date: new Date(a.pubDate),
+        data: a,
+      }));
+    }
+    return items;
+  }, [selectedCluster, items]);
 
   return (
     <main className="min-h-screen bg-background font-serif relative">
@@ -89,18 +104,17 @@ export function App() {
             onRetry={clustersRetry}
             baseUrl={url}
           />
-
           {/* Colonne droite Desktop Feed */}
           <section id="list">
             <div className="border-r border-border">
               <Feed
-                items={items}
-                loading={loading}
-                loadingMore={loadingMore}
-                hasMore={hasMore}
-                loadMore={loadMore}
+                items={feedItems}
+                loading={selectedCluster ? false : loading}
+                loadingMore={selectedCluster ? false : loadingMore}
+                hasMore={selectedCluster ? false : hasMore}
+                loadMore={selectedCluster ? () => {} : loadMore}
               />
-              {error && (
+              {!selectedCluster && error && (
                 <div className="p-2 flex items-center justify-center">
                   <Button
                     className="cursor-pointer"
@@ -113,9 +127,8 @@ export function App() {
               )}
             </div>
           </section>
-
           {/* Colonne droite Summary */}
-          <SummaryPanel data={items} />
+          <SummaryPanel data={feedItems} />
         </div>
 
         {/* Header Mobile */}

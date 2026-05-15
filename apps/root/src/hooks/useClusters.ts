@@ -1,4 +1,18 @@
 import { useEffect, useState } from "react";
+import type { Article } from "./useFeed.ts";
+
+type GatewaySource = {
+  name: string;
+  baseUrl: string;
+};
+
+type GatewayCluster = {
+  id: string;
+  label: string;
+  createdAt: string;
+  articleCount: number;
+  sources: GatewaySource[];
+};
 
 type GatewayArticle = {
   id: string;
@@ -6,34 +20,33 @@ type GatewayArticle = {
   link: string;
   author: string;
   pubDate: string;
+  content?: string;
+  summary?: string | null;
   source: string;
   category: string;
-};
-
-type GatewayCluster = {
-  id: string;
-  label: string;
-  createdAt: string;
 };
 
 export type Cluster = {
   id: string;
   label: string;
   createdAt: string;
+  articleCount: number;
+  sources: GatewaySource[];
 };
 
-export type ClusterArticle = {
-  id: string;
-  title: string;
-  link: string;
-  author: string;
-  pubDate: string;
-  source: string;
-};
-
-export type ClusterWithArticles = Cluster & {
-  articles: ClusterArticle[];
-};
+function toArticle(a: GatewayArticle): Article {
+  return {
+    id: a.id,
+    title: a.title,
+    link: a.link,
+    author: a.author,
+    pubDate: a.pubDate || new Date().toISOString(),
+    content: a.content,
+    summary: a.summary,
+    source: a.source,
+    category: a.category,
+  };
+}
 
 export function useClusters(baseUrl: string) {
   const [clusters, setClusters] = useState<Cluster[]>([]);
@@ -48,6 +61,11 @@ export function useClusters(baseUrl: string) {
         id: c.id,
         label: c.label,
         createdAt: c.createdAt,
+        articleCount: c.articleCount,
+        sources: (c.sources || []).map((s: GatewaySource) => ({
+          name: s.name,
+          baseUrl: s.baseUrl,
+        })),
       }));
       setClusters(mapped);
       setError(null);
@@ -67,30 +85,19 @@ export function useClusters(baseUrl: string) {
     fetchClusters();
   };
 
+  console.log(clusters);
+
   return { clusters, loading, error, retry };
 }
 
-export function useClusterDetail(baseUrl: string) {
-  const fetchCluster = async (id: string): Promise<ClusterWithArticles | null> => {
-    try {
-      const res = await fetch(`${baseUrl}/clusters/${id}`).then((r) => r.json());
-      return {
-        id: res.id,
-        label: res.label,
-        createdAt: res.createdAt,
-        articles: (res.articles || []).map((a: GatewayArticle) => ({
-          id: a.id,
-          title: a.title,
-          link: a.link,
-          author: a.author,
-          pubDate: a.pubDate,
-          source: a.source,
-        })),
-      };
-    } catch {
-      return null;
-    }
-  };
-
-  return { fetchCluster };
+export async function fetchClusterArticles(
+  baseUrl: string,
+  id: string,
+): Promise<Article[]> {
+  try {
+    const res = await fetch(`${baseUrl}/clusters/${id}`).then((r) => r.json());
+    return (res.articles || []).map(toArticle);
+  } catch {
+    return [];
+  }
 }

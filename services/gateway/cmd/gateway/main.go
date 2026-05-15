@@ -108,6 +108,9 @@ func setupRouter() *gin.Engine {
 		// Cache 30min
 		v1.GET("/clusters", cacheControl("public, max-age=1800"), handlers.GetClusters())
 		v1.GET("/clusters/:id", cacheControl("public, max-age=1800"), handlers.GetClusterByID())
+
+		// Cache 24h
+		v1.GET("/favicon", cacheControl("public, max-age=86400"), handlers.ProxyFavicon())
 	}
 
 	return r

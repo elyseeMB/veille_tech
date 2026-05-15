@@ -4,68 +4,141 @@ import (
 	"context"
 	"gateway/internal/config"
 	"gateway/internal/models"
+	"time"
 )
 
-// Récupère les clusters récents (sans le détail des articles pour la liste)
-func GetRecentClusters() ([]models.ClusterDB, error) {
-	query := `SELECT id, label, created_at FROM clusters ORDER BY created_at DESC LIMIT 50`
+func GetRecentClusters() ([]models.ClusterDB, map[string][]models.SourceDTO, error) {
+	query := `
+		SELECT
+			c.id,
+			c.label,
+			c.created_at,
+			COUNT(ac.article_id) OVER (PARTITION BY c.id) as article_count,
+			s.name,
+			regexp_replace(a.url, '^https?://(?:www\.)?([^/]+).*', '\1') as article_domain
+		FROM clusters c
+		LEFT JOIN article_clusters ac ON ac.cluster_id = c.id
+		LEFT JOIN articles a ON a.id = ac.article_id
+		LEFT JOIN sources s ON s.id = a.source_id
+		WHERE s.name IS NOT NULL
+		ORDER BY c.created_at DESC, s.name`
 
 	rows, err := config.DB.Query(context.Background(), query)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer rows.Close()
 
-	var result []models.ClusterDB
+	clusterOrder := []string{}
+	clustersMap := map[string]models.ClusterDB{}
+	sourcesMap := map[string][]models.SourceDTO{}
+	seenSources := map[string]map[string]bool{}
+
 	for rows.Next() {
-		var c models.ClusterDB
-		if err := rows.Scan(&c.ID, &c.Label, &c.CreatedAt); err != nil {
-			return nil, err
+		var clusterID, label, name, articleDomain string
+		var createdAt time.Time
+		var articleCount int
+
+		if err := rows.Scan(&clusterID, &label, &createdAt, &articleCount, &name, &articleDomain); err != nil {
+			return nil, nil, err
 		}
-		result = append(result, c)
+
+		if _, exists := clustersMap[clusterID]; !exists {
+			clustersMap[clusterID] = models.ClusterDB{
+				ID:           clusterID,
+				Label:        label,
+				CreatedAt:    createdAt,
+				ArticleCount: articleCount,
+			}
+			clusterOrder = append(clusterOrder, clusterID)
+			seenSources[clusterID] = map[string]bool{}
+		}
+
+		if !seenSources[clusterID][articleDomain] {
+			seenSources[clusterID][articleDomain] = true
+			sourcesMap[clusterID] = append(sourcesMap[clusterID], models.SourceDTO{
+				Name:    name,
+				BaseUrl: articleDomain,
+			})
+		}
 	}
-	return result, nil
+
+	var clusters []models.ClusterDB
+	for _, id := range clusterOrder {
+		clusters = append(clusters, clustersMap[id])
+	}
+
+	return clusters, sourcesMap, nil
 }
 
-// Récupère un cluster et TOUS les articles associés via la table de liaison
-func GetClusterWithArticles(clusterID string) (models.ClusterDB, []models.ArticleDB, error) {
+func GetClusterWithArticles(clusterID string) (models.ClusterDB, []models.SourceDTO, []models.ArticleDB, error) {
 	var c models.ClusterDB
+	seenSrc := map[string]bool{}
+	var sources []models.SourceDTO
 
-	// 1. Get Cluster
-	err := config.DB.QueryRow(context.Background(),
-		"SELECT id, label, created_at FROM clusters WHERE id = $1", clusterID).
-		Scan(&c.ID, &c.Label, &c.CreatedAt)
+	sourceRows, err := config.DB.Query(context.Background(), `
+		SELECT
+			c.id, c.label, c.created_at,
+			COUNT(ac.article_id) OVER (PARTITION BY c.id) as article_count,
+			s.name,
+			regexp_replace(a.url, '^https?://(?:www\.)?([^/]+).*', '\1') as article_domain
+		FROM clusters c
+		LEFT JOIN article_clusters ac ON ac.cluster_id = c.id
+		LEFT JOIN articles a ON a.id = ac.article_id
+		LEFT JOIN sources s ON s.id = a.source_id
+		WHERE c.id = $1
+		AND s.name IS NOT NULL
+		ORDER BY s.name`, clusterID)
 	if err != nil {
-		return c, nil, err
+		return c, nil, nil, err
+	}
+	defer sourceRows.Close()
+
+	for sourceRows.Next() {
+		var name, articleDomain string
+		var articleCount int
+		var createdAt time.Time
+
+		if err := sourceRows.Scan(&c.ID, &c.Label, &createdAt, &articleCount, &name, &articleDomain); err != nil {
+			return c, nil, nil, err
+		}
+		c.CreatedAt = createdAt
+		c.ArticleCount = articleCount
+
+		if !seenSrc[articleDomain] {
+			seenSrc[articleDomain] = true
+			sources = append(sources, models.SourceDTO{
+				Name:    name,
+				BaseUrl: articleDomain,
+			})
+		}
 	}
 
-	// 2. Get Associated Articles
-	query := `
-		SELECT a.id, a.external_id, a.title, a.url, COALESCE(a.author, ''), 
-		       COALESCE(a.content, ''), a.summary, COALESCE(a.category, ''), 
+	articleRows, err := config.DB.Query(context.Background(), `
+		SELECT a.id, a.external_id, a.title, a.url, COALESCE(a.author, ''),
+		       COALESCE(a.content, ''), a.summary, COALESCE(a.category, ''),
 		       s.name as source, a.published_at
 		FROM articles a
 		JOIN article_clusters ac ON a.id = ac.article_id
 		JOIN sources s ON s.id = a.source_id
 		WHERE ac.cluster_id = $1
-		ORDER BY a.published_at DESC`
-
-	rows, err := config.DB.Query(context.Background(), query, clusterID)
+		ORDER BY a.published_at DESC`, clusterID)
 	if err != nil {
-		return c, nil, err
+		return c, sources, nil, err
 	}
-	defer rows.Close()
+	defer articleRows.Close()
 
 	var articles []models.ArticleDB
-	for rows.Next() {
+	for articleRows.Next() {
 		var a models.ArticleDB
-		err := rows.Scan(&a.ID, &a.ExternalID, &a.Title, &a.URL, &a.Author,
-			&a.Content, &a.Summary, &a.Category, &a.Source, &a.PublishedAt)
-		if err != nil {
-			return c, nil, err
+		if err := articleRows.Scan(
+			&a.ID, &a.ExternalID, &a.Title, &a.URL, &a.Author,
+			&a.Content, &a.Summary, &a.Category, &a.Source, &a.PublishedAt,
+		); err != nil {
+			return c, sources, nil, err
 		}
 		articles = append(articles, a)
 	}
 
-	return c, articles, nil
+	return c, sources, articles, nil
 }

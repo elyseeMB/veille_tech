@@ -18,8 +18,6 @@ import { TemporalForceGraph } from "./Graph.tsx";
 import type { FeedItem } from "@/hooks/useFeed.ts";
 
 export function SummaryPanel({ data }: { data: FeedItem }) {
-  console.log(data);
-
   const sectionRef = useRef<HTMLElement>(null);
   const { selectedArticle, activeModel, setActiveModel } = useSummaryStore();
 
@@ -67,7 +65,7 @@ export function SummaryPanel({ data }: { data: FeedItem }) {
 
       {/* Header */}
       <div className="px-5 py-3 flex items-center justify-between">
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger
             render={
               <Button
@@ -100,7 +98,7 @@ export function SummaryPanel({ data }: { data: FeedItem }) {
               ),
             )}
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
 
         <a href={selectedArticle?.url ?? "#"} target="_blank" rel="noreferrer">
           <Button
@@ -132,8 +130,7 @@ export function SummaryPanel({ data }: { data: FeedItem }) {
             {selectedArticle.title}
           </p>
           <div
-            style={{ width: 600 }}
-            className="prose m-auto dark:prose-invert prose-headings:font-sans prose-headings:text-lg text-primary "
+            className="prose dark:prose-invert prose-headings:font-sans prose-headings:text-lg text-primary "
             dangerouslySetInnerHTML={{
               __html: marked.parse(selectedArticle?.content ?? ""),
             }}

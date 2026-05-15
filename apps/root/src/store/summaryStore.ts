@@ -7,7 +7,10 @@ export interface SelectedArticle {
   title: string;
   url: string;
   summary: string | null;
+  pubDate: string;
+  source: string;
   content?: string;
+  node?: HTMLElement | null;
 }
 
 interface SummaryStore {

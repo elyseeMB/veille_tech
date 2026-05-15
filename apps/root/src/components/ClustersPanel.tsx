@@ -1,52 +1,44 @@
-import { useState } from "react";
-import { Skeleton } from "./ui/skeleton.tsx";
-import { Button } from "./ui/button.tsx";
+import type { Cluster } from "@/hooks/useClusters.ts";
+import { fetchClusterArticles } from "@/hooks/useClusters.ts";
+import { useClusterStore } from "@/store/clusterStore.ts";
+import { SourcesBadge } from "./SourcesBadge.tsx";
 import { TimeRelative } from "./TimeRelative.tsx";
-import type { Cluster, ClusterArticle } from "@/hooks/useClusters.ts";
-import { useClusterDetail } from "@/hooks/useClusters.ts";
+import { Button } from "./ui/button.tsx";
+import { Skeleton } from "./ui/skeleton.tsx";
 
 function ClusterCard({
   cluster,
-  articles,
-  expanded,
-  onToggle,
+  selected,
+  onSelect,
 }: {
   cluster: Cluster;
-  articles: ClusterArticle[];
-  expanded: boolean;
-  onToggle: () => void;
+  selected: boolean;
+  onSelect: () => void;
 }) {
   return (
-    <div className="grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 border-b border-border last:border-0">
-      <div className="bg-muted" />
-      <div>
-        <button onClick={onToggle} className="text-left w-full cursor-pointer">
-          <TimeRelative
-            date={cluster.createdAt}
-            className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground"
-          />
-          <p className="text-base leading-snug mt-1 font-medium text-foreground">
-            {cluster.label}
-          </p>
-        </button>
+    <div
+      className={`flex flex-col gap-5 p-5  border-b border-border last:border-0 transition-colors cursor-pointer ${
+        selected ? "bg-foreground/10" : "hover:bg-foreground/5"
+      }`}
+      onClick={onSelect}
+    >
+      <div className="min-w-0 flex flex-col gap-1">
+        <div className="flex items-center gap-2 mb-1">
+          <TimeRelative date={cluster.createdAt} className="text-sm" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground/50">
+            ·
+          </span>
+          <span className="flex items-center gap-1 text-[10px]">
+            {cluster.articleCount}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 w-fit text-xs font-sans bg-muted border border-border rounded-full px-2.5 py-1 -ml-2.5 before:content-[''] before:block before:w-2 before:h-2 before:bg-secondary-foreground before:rounded-full ">
+          {cluster.label}
+        </div>
 
-        {expanded && (
-          <div className="mt-3 space-y-2 pl-0">
-            {articles.map((article) => (
-              <div key={article.id} className="text-sm text-muted-foreground">
-                <a
-                  href={article.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-foreground transition-colors"
-                >
-                  {article.title}
-                </a>
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground ml-2">
-                  {article.source}
-                </span>
-              </div>
-            ))}
+        {cluster.sources.length > 0 && (
+          <div className="mt-2">
+            <SourcesBadge sources={cluster.sources} />
           </div>
         )}
       </div>
@@ -79,30 +71,15 @@ export function ClustersPanel({
   onRetry: () => void;
   baseUrl: string;
 }) {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [articlesMap, setArticlesMap] = useState<
-    Record<string, ClusterArticle[]>
-  >({});
-  const [loadingArticles, setLoadingArticles] = useState<
-    Record<string, boolean>
-  >({});
-  const { fetchCluster } = useClusterDetail(baseUrl);
+  const { selectedCluster, setSelectedCluster } = useClusterStore();
 
-  const handleToggle = async (cluster: Cluster) => {
-    if (expandedId === cluster.id) {
-      setExpandedId(null);
+  const handleSelect = async (cluster: Cluster) => {
+    if (selectedCluster?.id === cluster.id) {
+      setSelectedCluster(null);
       return;
     }
-    setExpandedId(cluster.id);
-
-    if (!articlesMap[cluster.id]) {
-      setLoadingArticles((prev) => ({ ...prev, [cluster.id]: true }));
-      const detail = await fetchCluster(cluster.id);
-      if (detail) {
-        setArticlesMap((prev) => ({ ...prev, [cluster.id]: detail.articles }));
-      }
-      setLoadingArticles((prev) => ({ ...prev, [cluster.id]: false }));
-    }
+    const articles = await fetchClusterArticles(baseUrl, cluster.id);
+    setSelectedCluster({ id: cluster.id, label: cluster.label, createdAt: cluster.createdAt, articles });
   };
 
   if (loading) {
@@ -134,21 +111,15 @@ export function ClustersPanel({
   }
 
   return (
-    <section className="border-r overflow-y-auto scrollbar-hide border-border top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))]">
+    <section className="sticky overflow-y-auto scrollbar-hide overscroll-contain top-[var(--header-height)] h-[calc(100vh_-_var(--header-height))] border-r border-border">
       {clusters.map((cluster) => (
         <ClusterCard
           key={cluster.id}
           cluster={cluster}
-          articles={articlesMap[cluster.id] || []}
-          expanded={expandedId === cluster.id}
-          onToggle={() => handleToggle(cluster)}
+          selected={selectedCluster?.id === cluster.id}
+          onSelect={() => handleSelect(cluster)}
         />
       ))}
-      {expandedId && loadingArticles[expandedId] && (
-        <div className="pl-[calc(1px_+_1.25rem)] py-2">
-          <Skeleton className="h-4 w-full bg-muted" />
-        </div>
-      )}
     </section>
   );
 }
