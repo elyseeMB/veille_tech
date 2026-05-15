@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -14,6 +16,14 @@ import (
 
 	"github.com/mmcdole/gofeed"
 )
+
+func extractDomain(rawURL string) string {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return rawURL
+	}
+	return strings.TrimPrefix(u.Hostname(), "www.")
+}
 
 func FetchRSS(ctx context.Context) error {
 	type FeedTarget struct {
@@ -73,6 +83,14 @@ func FetchRSS(ctx context.Context) error {
 				slog.Warn("feed parse failed", "source", t.Source, "error", err)
 				results <- Result{source: t.Source}
 				return
+			}
+
+			// Update base_url depuis le <link> du channel RSS
+			if feed.Link != "" {
+				domain := extractDomain(feed.Link)
+				if err := repository.UpdateSourceBaseURL(t.Source, domain); err != nil {
+					slog.Warn("failed to update base_url", "source", t.Source, "error", err)
+				}
 			}
 
 			var articles []models.Article
@@ -149,6 +167,6 @@ func FetchRSS(ctx context.Context) error {
 		"skipped", len(unique)-len(newArticles),
 	)
 
-	_ = time.Now() // garde l'import si utilisé ailleurs
+	_ = time.Now()
 	return nil
 }

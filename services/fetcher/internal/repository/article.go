@@ -104,3 +104,12 @@ func InsertArticles(articles []models.Article) error {
 
 	return tx.Commit(context.Background())
 }
+
+func UpdateSourceBaseURL(name, baseURL string) error {
+	_, err := config.DB.Exec(context.Background(),
+		`UPDATE sources SET base_url = $1
+		 WHERE name = $2 AND (base_url IS NULL OR base_url = '')`,
+		baseURL, name,
+	)
+	return err
+}

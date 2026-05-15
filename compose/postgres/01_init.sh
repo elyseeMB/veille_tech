@@ -54,6 +54,7 @@ CREATE TABLE articles (
     content TEXT,
     summary TEXT,
     embedding vector(1024),
+    scrape_skipped BOOLEAN DEFAULT FALSE,
     category TEXT,
     published_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -119,5 +120,20 @@ CREATE INDEX idx_graph_similarity ON graph_edges(similarity DESC);
 CREATE INDEX idx_feed_items_published_at ON feed_items(published_at DESC);
 CREATE INDEX idx_feed_items_type ON feed_items(type);
 CREATE INDEX idx_feed_items_ref_id ON feed_items(ref_id);
+
+CREATE TABLE clusters (
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    label      TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE article_clusters (
+    article_id UUID REFERENCES articles(id) ON DELETE CASCADE,
+    cluster_id UUID REFERENCES clusters(id) ON DELETE CASCADE,
+    PRIMARY KEY (article_id, cluster_id)
+);
+
+CREATE INDEX idx_clusters_created_at ON clusters(created_at DESC);
+CREATE INDEX idx_article_clusters_cluster_id ON article_clusters(cluster_id);
 
 EOF

@@ -4,7 +4,8 @@
   "service": "dev",
   "workspaceFolder": "/workspace",
   "mounts": [
-    "source=${localEnv:USERPROFILE}\\.aws,target=/root/.aws,type=bind,consistency=cached"
+    "source=${localEnv:USERPROFILE}\\.aws,target=/root/.aws,type=bind,consistency=cached",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ],
   "customizations": {
     "vscode": {

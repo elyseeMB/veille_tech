@@ -7,8 +7,13 @@ import { useHeaderHeight } from "@/hooks/useHeaderHeight.ts";
 import { useContainerLeftOffset } from "@/hooks/useContainerLeftOffset.ts";
 import { useCalendarToggle } from "@/hooks/useCalendarToggle.ts";
 import { useCalendarData } from "@/hooks/useCalendarData.ts";
+import { useMemo } from "react";
+import type { FeedItem } from "@/hooks/useFeed.ts";
 import { useFeed } from "@/hooks/useFeed.ts";
+import { useClusters } from "@/hooks/useClusters.ts";
+import { useClusterStore } from "@/store/clusterStore.ts";
 import { Feed } from "@/components/Feed.tsx";
+import { ClustersPanel } from "@/components/ClustersPanel.tsx";
 import { Banner } from "./components/BannerContext.tsx";
 
 const url = import.meta.env.PROD
@@ -25,7 +30,25 @@ export function App() {
   const { visible: calendarVisible, toggle } = useCalendarToggle();
   const { items, loading, loadingMore, hasMore, loadMore, error, retry } =
     useFeed(url);
+  const {
+    clusters,
+    loading: clustersLoading,
+    error: clustersError,
+    retry: clustersRetry,
+  } = useClusters(url);
+  const { selectedCluster } = useClusterStore();
   const calendarData = useCalendarData();
+
+  const feedItems: FeedItem[] = useMemo(() => {
+    if (selectedCluster) {
+      return selectedCluster.articles.map((a) => ({
+        type: "article" as const,
+        date: new Date(a.pubDate),
+        data: a,
+      }));
+    }
+    return items;
+  }, [selectedCluster, items]);
 
   return (
     <main className="min-h-screen bg-background font-sans relative">
@@ -49,7 +72,7 @@ export function App() {
         className={`hidden lg:block fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-md border-b border-border ${calendarVisible ? "" : "h-0 pointer-events-none overflow-hidden"}`}
       >
         <div className="mx-auto max-w-5xl px-12 py-6">
-          <section>
+          <section id="clusters">
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">
               {now}
             </p>
@@ -74,17 +97,24 @@ export function App() {
           ref={containerRef}
           className="hidden lg:grid grid-cols-3 border-l border-border"
         >
+          <ClustersPanel
+            clusters={clusters}
+            loading={clustersLoading}
+            error={clustersError}
+            onRetry={clustersRetry}
+            baseUrl={url}
+          />
           {/* Colonne droite Desktop Feed */}
           <section id="list">
             <div className="border-r border-border">
               <Feed
-                items={items}
-                loading={loading}
-                loadingMore={loadingMore}
-                hasMore={hasMore}
-                loadMore={loadMore}
+                items={feedItems}
+                loading={selectedCluster ? false : loading}
+                loadingMore={selectedCluster ? false : loadingMore}
+                hasMore={selectedCluster ? false : hasMore}
+                loadMore={selectedCluster ? () => {} : loadMore}
               />
-              {error && (
+              {!selectedCluster && error && (
                 <div className="p-2 flex items-center justify-center">
                   <Button
                     className="cursor-pointer"
@@ -97,9 +127,8 @@ export function App() {
               )}
             </div>
           </section>
-
           {/* Colonne droite Summary */}
-          <SummaryPanel data={items} />
+          <SummaryPanel data={feedItems} />
         </div>
 
         {/* Header Mobile */}
