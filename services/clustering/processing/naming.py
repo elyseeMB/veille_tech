@@ -1,3 +1,4 @@
+import os
 import json
 import requests
 from json_repair import repair_json
@@ -27,7 +28,11 @@ class ClusterNamer:
     __headers: dict
 
     def __init__(self, account_id: str, api_token: str):
-        self.__url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+        is_prod = os.getenv("ENVIRONMENT") == "production"
+        model = (
+            "llama-3.3-70b-instruct-fp8-fast" if is_prod else "llama-3.1-8b-instruct"
+        )
+        self.__url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/meta/{model}"
         self.__headers = {
             "Authorization": f"Bearer {api_token}",
             "Content-Type": "application/json",
@@ -38,7 +43,7 @@ class ClusterNamer:
         wait=wait_exponential(multiplier=1, min=2, max=30),
         retry=retry_if_exception_type((requests.RequestException, KeyError)),
     )
-    def name(self, input: NamingInput) -> Result[NamingResult]:
+    def generate(self, input: NamingInput) -> Result[NamingResult]:
         try:
             system_prompt = (
                 "You are a JSON-only API. "
@@ -90,7 +95,9 @@ Respond ONLY with this JSON object:
                     label=self._clean_label(
                         result_json.get("label", "Unnamed Cluster")
                     ),
-                    description=raw_desc if isinstance(raw_desc, str) else str(raw_desc),
+                    description=(
+                        raw_desc if isinstance(raw_desc, str) else str(raw_desc)
+                    ),
                 )
             )
         except Exception as e:
@@ -101,7 +108,7 @@ Respond ONLY with this JSON object:
 
         for prefix in ["label:", "label :", "here is", "response:", "category:"]:
             if label.lower().startswith(prefix):
-                label = label[len(prefix):].strip()
+                label = label[len(prefix) :].strip()
 
         words = label.split()[:4]
         return " ".join(words) if words else "Unnamed Cluster"

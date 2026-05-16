@@ -7,7 +7,9 @@ interface SourcesBadgeProps {
   sources: Source[];
 }
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8081";
+const API_URL = import.meta.env.DEV
+  ? "http://localhost:8081"
+  : import.meta.env.BASE_URL;
 
 export function SourcesBadge({ sources }: SourcesBadgeProps) {
   const shown = sources.slice(0, 4);

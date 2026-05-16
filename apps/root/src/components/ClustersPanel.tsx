@@ -25,10 +25,10 @@ function ClusterCard({
       <div className="min-w-0 flex flex-col gap-1">
         <div className="flex items-center gap-2 mb-1">
           <TimeRelative date={cluster.createdAt} className="text-sm" />
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground/50">
+          <span className="font-mono text-sm uppercase tracking-[0.25em] text-muted-foreground/50">
             ·
           </span>
-          <span className="flex items-center gap-1 text-[10px]">
+          <span className="flex items-center gap-1 text-xs">
             {cluster.articleCount}
           </span>
         </div>
@@ -42,7 +42,9 @@ function ClusterCard({
           </div>
         )}
       </div>
-      {cluster.description && <p>{cluster.description}</p>}
+      {cluster.description && (
+        <p className="leading-relaxed text-sm">{cluster.description}</p>
+      )}
     </div>
   );
 }
