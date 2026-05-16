@@ -124,6 +124,7 @@ CREATE INDEX idx_feed_items_ref_id ON feed_items(ref_id);
 CREATE TABLE clusters (
     id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     label      TEXT NOT NULL,
+    description TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

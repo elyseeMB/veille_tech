@@ -32,18 +32,18 @@ class ClusterNamer:
     )
     def name(self, input: NamingInput) -> Result[NamingResult]:
         try:
-            system_prompt = "You are a data classification bot. Your job is to extract a single concise tech category from a list of titles. You must output ONLY the category name. No punctuation, no quotes, no numbers, no conversational text."
+            system_prompt = "You are a data classification bot. Your job is to analyze tech article titles and return a JSON object containing a concise category name (4 words max) and a brief description (15 to 25 words max) summarizing the main theme."
 
             user_prompt = f"""Analyze these tech article titles:
-            {chr(10).join([f"- {t}" for t in input.titles])}
+{chr(10).join([f"- {t}" for t in input.titles])}
 
-            Examples of expected outputs:
-            - AI Industry Trends
-            - Cloud Infrastructure Security
-            - Frontend Frameworks
-            - Space Geopolitics
+You MUST respond with a JSON object following this exact schema:
+{{
+  "label": "Name of the category",
+  "description": "Brief summary sentence explaining the common technical theme of these articles."
+}}
 
-            Output the best neutral, professional label (1 to 4 words max) for the provided titles:"""
+Do not include any conversational text or markdown code blocks outside the JSON."""
 
             response = requests.post(
                 self.__url,
@@ -53,19 +53,31 @@ class ClusterNamer:
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt},
                     ],
-                    "temperature": 0.1,  # Force Llama à être ultra-factuel et direct
+                    "temperature": 0.1,
+                    "response_format": {
+                        "type": "json_object"
+                    },  # Si l'API Cloudflare de ton infra le supporte, sinon laisse Llama le générer
                 },
                 timeout=30,
             )
             response.raise_for_status()
+
+            import json
+
             data = response.json()
+            raw_response = data["result"]["response"].strip()
 
-            label = data["result"]["response"].strip()
-            label = self._clean_label(label)
+            # On parse le JSON renvoyé par l'IA
+            result_json = json.loads(raw_response)
 
-            return Result.ok(NamingResult(label=label))
+            return Result.ok(
+                NamingResult(
+                    label=self._clean_label(result_json["label"]),
+                    description=result_json["description"].strip(),
+                )
+            )
         except Exception as e:
-            return Result.fail(f"naming error: {e}")
+            return Result.fail(f"naming and description error: {e}")
 
     def _clean_label(self, label: str) -> str:
         # Nettoie les guillemets et les puces parasites que le modèle peut renvoyer
