@@ -8,4 +8,5 @@ pydantic
 pgvector
 tenacity
 boto3
+json-repair
 python-dotenv

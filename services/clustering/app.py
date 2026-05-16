@@ -15,15 +15,15 @@ container = None
 def load_secrets():
     if os.getenv("AWS_LAMBDA_RUNTIME_API") is None:
         return
-        
+
     ssm = boto3.client("ssm")
-    
+
     params = {
         "DATABASE_URL": os.environ.get("DB_PARAM_NAME"),
         "CF_ACCOUNT_ID": os.environ.get("CF_ACCOUNT_ID"),
         "CF_API_TOKEN": os.environ.get("CF_API_TOKEN"),
     }
-    
+
     for env_key, ssm_path in params.items():
         if ssm_path and (ssm_path.startswith("/") or ssm_path.startswith("veille")):
             try:
@@ -61,10 +61,14 @@ def handler(event, context):
                         }
                     )
                 else:
-                    print(f"scraping empty or failed for article {article.id}, skipping")
+                    print(
+                        f"scraping empty or failed for article {article.id}, skipping"
+                    )
                     container.repository.mark_as_skipped(article.id)
             except Exception as scrape_err:
-                print(f"error scraping article {article.id} ({article.url}): {scrape_err}")
+                print(
+                    f"error scraping article {article.id} ({article.url}): {scrape_err}"
+                )
                 container.repository.mark_as_skipped(article.id)
 
         if not scraped:
@@ -84,9 +88,11 @@ def handler(event, context):
             )
             if not saved.success:
                 print(saved.error)
-                
+
         if len(scraped) < 5:
-            print(f"Nombre d'articles insuffisant ({len(scraped)}) pour générer des clusters. Fin du traitement.")
+            print(
+                f"Nombre d'articles insuffisant ({len(scraped)}) pour générer des clusters. Fin du traitement."
+            )
             return
 
         clusters = container.clusterer.cluster(embeddings.value)
@@ -103,14 +109,19 @@ def handler(event, context):
         cluster_rows = []
         for label, members in groups.items():
             naming = container.namer.name(
-                NamingInput(titles=[a["title"] for a in members])
+                NamingInput(
+                    titles=[a["title"] for a in members],
+                    excerpts=[a["full_text"][:1500] for a in members],
+                )
             )
             if not naming.success:
                 print(naming.error)
                 continue
             cluster_rows.append(
                 ClusterRow(
-                    label=naming.value.label, description=naming.value.description, article_ids=[a["id"] for a in members]
+                    label=naming.value.label,
+                    description=naming.value.description,
+                    article_ids=[a["id"] for a in members],
                 )
             )
 
