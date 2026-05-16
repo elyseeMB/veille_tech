@@ -28,10 +28,7 @@ class ClusterNamer:
     __headers: dict
 
     def __init__(self, account_id: str, api_token: str):
-        is_prod = os.getenv("ENVIRONMENT") == "production"
-        model = (
-            "llama-3.3-70b-instruct-fp8-fast" if is_prod else "llama-3.1-8b-instruct"
-        )
+        model = "llama-3.1-8b-instruct"
         self.__url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/meta/{model}"
         self.__headers = {
             "Authorization": f"Bearer {api_token}",
