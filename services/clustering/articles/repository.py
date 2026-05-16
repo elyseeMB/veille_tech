@@ -82,7 +82,7 @@ class PostgresRepository(BaseRepository):
                         LEFT JOIN article_clusters ac ON ac.article_id = a.id
                         WHERE ac.article_id IS NULL
                         AND a.scrape_skipped = FALSE
-                        AND a.published_at >= NOW() - INTERVAL '24 hours'
+                        AND a.published_at >= NOW() - INTERVAL '48 hours'
                     """)
                     rows = cur.fetchall()
                     return Result.ok(
