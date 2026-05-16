@@ -100,10 +100,11 @@ Resources:
       PackageType: Image
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 2048
       Timeout: 300
       Environment:
         Variables:
+          USE_MOCK: "false"
           DB_PARAM_NAME: "/veille/database_url"
           CF_ACCOUNT_ID: "/veille/cf_account_id"
           CF_API_TOKEN: "/veille/cf_api_token"

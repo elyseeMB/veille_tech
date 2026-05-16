@@ -15,19 +15,22 @@ container = None
 def load_secrets():
     if os.getenv("AWS_LAMBDA_RUNTIME_API") is None:
         return
+        
     ssm = boto3.client("ssm")
+    
     params = {
-        "CF_ACCOUNT_ID": os.environ.get("CF_ACCOUNT_ID_PARAM"),
-        "CF_API_TOKEN": os.environ.get("CF_API_TOKEN_PARAM"),
         "DATABASE_URL": os.environ.get("DB_PARAM_NAME"),
+        "CF_ACCOUNT_ID": os.environ.get("CF_ACCOUNT_ID"),
+        "CF_API_TOKEN": os.environ.get("CF_API_TOKEN"),
     }
+    
     for env_key, ssm_path in params.items():
-        if ssm_path and not os.environ.get(env_key):
+        if ssm_path and (ssm_path.startswith("/") or ssm_path.startswith("veille")):
             try:
                 resp = ssm.get_parameter(Name=ssm_path, WithDecryption=True)
                 os.environ[env_key] = resp["Parameter"]["Value"]
             except Exception as e:
-                print(f"failed to load {ssm_path}: {e}")
+                print(f"failed to load ssm parameter {ssm_path}: {e}")
 
 
 def handler(event, context):
@@ -47,16 +50,21 @@ def handler(event, context):
 
         scraped = []
         for article in articles.value:
-            result = container.scraper.scrape(article.url)
-            if result.success:
-                scraped.append(
-                    {
-                        "id": article.id,
-                        "title": article.title,
-                        "full_text": result.value.full_text[:2000],
-                    }
-                )
-            else:
+            try:
+                result = container.scraper.scrape(article.url)
+                if result.success and result.value and result.value.full_text:
+                    scraped.append(
+                        {
+                            "id": article.id,
+                            "title": article.title,
+                            "full_text": result.value.full_text[:2000],
+                        }
+                    )
+                else:
+                    print(f"scraping empty or failed for article {article.id}, skipping")
+                    container.repository.mark_as_skipped(article.id)
+            except Exception as scrape_err:
+                print(f"error scraping article {article.id} ({article.url}): {scrape_err}")
                 container.repository.mark_as_skipped(article.id)
 
         if not scraped:
@@ -76,6 +84,10 @@ def handler(event, context):
             )
             if not saved.success:
                 print(saved.error)
+                
+        if len(scraped) < 5:
+            print(f"Nombre d'articles insuffisant ({len(scraped)}) pour générer des clusters. Fin du traitement.")
+            return
 
         clusters = container.clusterer.cluster(embeddings.value)
         if not clusters.success:

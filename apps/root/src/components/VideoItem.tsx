@@ -62,13 +62,6 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
                 {item.channelTitle}
               </span>
             </div>
-            <span className="h-px flex-1 bg-foreground/10" />
-            <time>
-              {new Date(item.publishedAt).toLocaleDateString("en", {
-                day: "numeric",
-                month: "short",
-              })}
-            </time>
           </div>
 
           {item.thumbnail && (

@@ -137,13 +137,6 @@ export function ArticleItem({ article: item }: { article: Article }) {
 
           <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             <span>{item.author}</span>
-            <span className="h-px flex-1 bg-foreground/10" />
-            <time>
-              {new Date(item.pubDate).toLocaleDateString("en", {
-                day: "numeric",
-                month: "short",
-              })}
-            </time>
           </div>
 
           <a
