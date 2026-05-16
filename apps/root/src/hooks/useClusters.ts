@@ -9,6 +9,7 @@ type GatewaySource = {
 type GatewayCluster = {
   id: string;
   label: string;
+  description?: string;
   createdAt: string;
   articleCount: number;
   sources: GatewaySource[];
@@ -62,6 +63,7 @@ export function useClusters(baseUrl: string) {
         id: c.id,
         label: c.label,
         createdAt: c.createdAt,
+        description: c.description ?? null,
         articleCount: c.articleCount,
         sources: (c.sources || []).map((s: GatewaySource) => ({
           name: s.name,

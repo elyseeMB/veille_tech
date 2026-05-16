@@ -52,8 +52,6 @@ export function Banner() {
     return null;
   }
 
-  console.log(banner);
-
   return (
     <div
       className="hidden lg:flex sticky z-40 items-center gap-3 pl-0 px-5 py-2 bg-primary-foreground border-x border-b border-border animate-banner"
