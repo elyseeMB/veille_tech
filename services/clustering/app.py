@@ -110,7 +110,7 @@ def handler(event, context):
                 continue
             cluster_rows.append(
                 ClusterRow(
-                    label=naming.value.label, article_ids=[a["id"] for a in members]
+                    label=naming.value.label, description=naming.value.description, article_ids=[a["id"] for a in members]
                 )
             )
 
