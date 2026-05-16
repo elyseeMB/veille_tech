@@ -28,7 +28,7 @@ class ClusterResult(BaseModel):
 
 class NamingResult(BaseModel):
     label: str
-    description: str
+    description: Optional[str] = None
 
 
 __all__ = ["Result", "EmbeddingResult", "ClusterResult", "NamingResult"]

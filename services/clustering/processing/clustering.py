@@ -16,11 +16,11 @@ class Clusterer:
         import hdbscan
 
         if self.__umap is None:
-            self.__umap = umap.UMAP(n_neighbors=5, n_components=2, random_state=42)
+            self.__umap = umap.UMAP(n_neighbors=10, n_components=2, random_state=42)
 
         if self.__clusterer is None:
             self.__clusterer = hdbscan.HDBSCAN(
-                min_cluster_size=3, min_samples=2, metric="euclidean"
+                min_cluster_size=2, min_samples=1, metric="euclidean"
             )
 
     def cluster(self, embeddings: EmbeddingResult) -> Result[ClusterResult]:

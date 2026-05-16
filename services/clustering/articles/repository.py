@@ -52,7 +52,6 @@ class MockRepository(BaseRepository):
 
     def mark_as_skipped(self, article_id: str) -> Result[None]:
         print(f"mock mark skipped: {article_id}")
-
         return Result.ok(None)
 
     def save_embedding(self, row: EmbeddingRow) -> Result[None]:
@@ -146,10 +145,10 @@ class PostgresRepository(BaseRepository):
                         cluster_id = str(uuid.uuid4())
                         cur.execute(
                             """
-                            INSERT INTO clusters (id, label)
-                            VALUES (%s, %s)
+                            INSERT INTO clusters (id, label, description)
+                            VALUES (%s, %s, %s)
                         """,
-                            (cluster_id, cluster.label),
+                            (cluster_id, cluster.label, cluster.description),
                         )
 
                         for article_id in cluster.article_ids:
