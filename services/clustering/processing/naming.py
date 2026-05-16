@@ -1,4 +1,6 @@
+import json
 import requests
+from json_repair import repair_json
 from tenacity import (
     retry,
     stop_after_attempt,
@@ -12,6 +14,12 @@ from shared import Result, NamingResult
 
 class NamingInput(BaseModel):
     titles: List[str]
+    excerpts: List[str] = []
+
+
+def extract_first_json(text: str) -> dict:
+    repaired = repair_json(text)
+    return json.loads(repaired)
 
 
 class ClusterNamer:
@@ -19,7 +27,7 @@ class ClusterNamer:
     __headers: dict
 
     def __init__(self, account_id: str, api_token: str):
-        self.__url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/meta/llama-3.1-8b-instruct"
+        self.__url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/meta/llama-3.3-70b-instruct-fp8-fast"
         self.__headers = {
             "Authorization": f"Bearer {api_token}",
             "Content-Type": "application/json",
@@ -32,18 +40,22 @@ class ClusterNamer:
     )
     def name(self, input: NamingInput) -> Result[NamingResult]:
         try:
-            system_prompt = "You are a data classification bot. Your job is to analyze tech article titles and return a JSON object containing a concise category name (4 words max) and a brief description (15 to 25 words max) summarizing the main theme."
+            system_prompt = (
+                "You are a JSON-only API. "
+                "Respond ONLY with valid JSON matching the schema. "
+                "Do NOT add explanations, comments, or any text outside the JSON object. "
+                "Do NOT use markdown or code fences."
+            )
 
-            user_prompt = f"""Analyze these tech article titles:
-{chr(10).join([f"- {t}" for t in input.titles])}
+            user_prompt = f"""Analyze these tech articles and find their common theme:
 
-You MUST respond with a JSON object following this exact schema:
+{chr(10).join([f"Title: {t}\nExcerpt: {e[:1500]}\n" for t, e in zip(input.titles, input.excerpts or input.titles)])}
+
+Respond ONLY with this JSON object:
 {{
-  "label": "Name of the category",
-  "description": "Brief summary sentence explaining the common technical theme of these articles."
-}}
-
-Do not include any conversational text or markdown code blocks outside the JSON."""
+  "label": "3-4 words max, NO dash, the common topic",
+  "description": "2 sentences max about the common theme, written as a topic summary, do not start with 'These articles' or 'The articles'."
+}}"""
 
             response = requests.post(
                 self.__url,
@@ -54,39 +66,42 @@ Do not include any conversational text or markdown code blocks outside the JSON.
                         {"role": "user", "content": user_prompt},
                     ],
                     "temperature": 0.1,
-                    "response_format": {
-                        "type": "json_object"
-                    },  # Si l'API Cloudflare de ton infra le supporte, sinon laisse Llama le générer
                 },
-                timeout=30,
+                timeout=60,
             )
             response.raise_for_status()
-
-            import json
-
             data = response.json()
-            raw_response = data["result"]["response"].strip()
 
-            # On parse le JSON renvoyé par l'IA
-            result_json = json.loads(raw_response)
+            if not data.get("success", True):
+                errors = data.get("errors", [])
+                return Result.fail(f"cloudflare error: {errors}")
 
+            raw_response = data["result"]["response"]
+
+            # Cloudflare JSON mode retourne parfois un dict directement
+            if isinstance(raw_response, dict):
+                result_json = raw_response
+            else:
+                result_json = extract_first_json(raw_response.strip())
+
+            raw_desc = result_json.get("description", "")
             return Result.ok(
                 NamingResult(
-                    label=self._clean_label(result_json["label"]),
-                    description=result_json["description"].strip(),
+                    label=self._clean_label(
+                        result_json.get("label", "Unnamed Cluster")
+                    ),
+                    description=raw_desc if isinstance(raw_desc, str) else str(raw_desc),
                 )
             )
         except Exception as e:
             return Result.fail(f"naming and description error: {e}")
 
     def _clean_label(self, label: str) -> str:
-        # Nettoie les guillemets et les puces parasites que le modèle peut renvoyer
         label = label.replace('"', "").replace("'", "").lstrip("- ").strip()
 
         for prefix in ["label:", "label :", "here is", "response:", "category:"]:
             if label.lower().startswith(prefix):
-                label = label[len(prefix) :].strip()
+                label = label[len(prefix):].strip()
 
-        # 4 mots max pour laisser de la place aux vrais termes techniques (ex: Cloud Infrastructure Security)
         words = label.split()[:4]
         return " ".join(words) if words else "Unnamed Cluster"
