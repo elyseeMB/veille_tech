@@ -29,6 +29,7 @@ type GatewayArticle = {
 export type Cluster = {
   id: string;
   label: string;
+  description?: string;
   createdAt: string;
   articleCount: number;
   sources: GatewaySource[];

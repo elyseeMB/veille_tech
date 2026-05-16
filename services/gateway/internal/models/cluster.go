@@ -5,6 +5,7 @@ import "time"
 type ClusterDB struct {
 	ID           string    `db:"id"`
 	Label        string    `db:"label"`
+	Description  string    `json:"description"`
 	CreatedAt    time.Time `db:"created_at"`
 	ArticleCount int       `db:"article_count"`
 }
@@ -17,6 +18,7 @@ type SourceDTO struct {
 type ClusterDTO struct {
 	ID           string       `json:"id"`
 	Label        string       `json:"label"`
+	Description  string       `json:"description"`
 	CreatedAt    time.Time    `json:"createdAt"`
 	ArticleCount int          `json:"articleCount"`
 	Sources      []SourceDTO  `json:"sources"`
@@ -27,6 +29,7 @@ func ToClusterDTO(db ClusterDB, sources []SourceDTO, articles []ArticleDTO) Clus
 	return ClusterDTO{
 		ID:           db.ID,
 		Label:        db.Label,
+		Description:  db.Description,
 		CreatedAt:    db.CreatedAt,
 		ArticleCount: db.ArticleCount,
 		Sources:      sources,

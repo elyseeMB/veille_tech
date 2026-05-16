@@ -17,7 +17,7 @@ function ClusterCard({
 }) {
   return (
     <div
-      className={`flex flex-col gap-5 p-5  border-b border-border last:border-0 transition-colors cursor-pointer ${
+      className={`flex flex-col gap-2 p-5 border-b border-border last:border-0 transition-colors cursor-pointer ${
         selected ? "bg-foreground/10" : "hover:bg-foreground/5"
       }`}
       onClick={onSelect}
@@ -42,6 +42,7 @@ function ClusterCard({
           </div>
         )}
       </div>
+      {cluster.description && <p>{cluster.description}</p>}
     </div>
   );
 }
@@ -79,7 +80,12 @@ export function ClustersPanel({
       return;
     }
     const articles = await fetchClusterArticles(baseUrl, cluster.id);
-    setSelectedCluster({ id: cluster.id, label: cluster.label, createdAt: cluster.createdAt, articles });
+    setSelectedCluster({
+      id: cluster.id,
+      label: cluster.label,
+      createdAt: cluster.createdAt,
+      articles,
+    });
   };
 
   if (loading) {

@@ -12,6 +12,7 @@ func GetRecentClusters() ([]models.ClusterDB, map[string][]models.SourceDTO, err
 		SELECT
 			c.id,
 			c.label,
+			COALESCE(c.description, '') as description,
 			c.created_at,
 			COUNT(ac.article_id) OVER (PARTITION BY c.id) as article_count,
 			s.name,
@@ -35,11 +36,11 @@ func GetRecentClusters() ([]models.ClusterDB, map[string][]models.SourceDTO, err
 	seenSources := map[string]map[string]bool{}
 
 	for rows.Next() {
-		var clusterID, label, name, articleDomain string
+		var clusterID, label, description, name, articleDomain string
 		var createdAt time.Time
 		var articleCount int
 
-		if err := rows.Scan(&clusterID, &label, &createdAt, &articleCount, &name, &articleDomain); err != nil {
+		if err := rows.Scan(&clusterID, &label, &description, &createdAt, &articleCount, &name, &articleDomain); err != nil {
 			return nil, nil, err
 		}
 
@@ -47,6 +48,7 @@ func GetRecentClusters() ([]models.ClusterDB, map[string][]models.SourceDTO, err
 			clustersMap[clusterID] = models.ClusterDB{
 				ID:           clusterID,
 				Label:        label,
+				Description:  description,
 				CreatedAt:    createdAt,
 				ArticleCount: articleCount,
 			}
@@ -78,7 +80,7 @@ func GetClusterWithArticles(clusterID string) (models.ClusterDB, []models.Source
 
 	sourceRows, err := config.DB.Query(context.Background(), `
 		SELECT
-			c.id, c.label, c.created_at,
+			c.id, c.label, COALESCE(c.description, '') as description, c.created_at, -- ◄─── Ajout description
 			COUNT(ac.article_id) OVER (PARTITION BY c.id) as article_count,
 			s.name,
 			regexp_replace(a.url, '^https?://(?:www\.)?([^/]+).*', '\1') as article_domain
@@ -99,7 +101,7 @@ func GetClusterWithArticles(clusterID string) (models.ClusterDB, []models.Source
 		var articleCount int
 		var createdAt time.Time
 
-		if err := sourceRows.Scan(&c.ID, &c.Label, &createdAt, &articleCount, &name, &articleDomain); err != nil {
+		if err := sourceRows.Scan(&c.ID, &c.Label, &c.Description, &createdAt, &articleCount, &name, &articleDomain); err != nil {
 			return c, nil, nil, err
 		}
 		c.CreatedAt = createdAt
