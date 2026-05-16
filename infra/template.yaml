@@ -104,6 +104,7 @@ Resources:
       Timeout: 300
       Environment:
         Variables:
+          ENVIRONMENT: production
           USE_MOCK: "false"
           DB_PARAM_NAME: "/veille/database_url"
           CF_ACCOUNT_ID: "/veille/cf_account_id"

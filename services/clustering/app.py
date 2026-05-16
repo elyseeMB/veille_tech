@@ -108,7 +108,7 @@ def handler(event, context):
 
         cluster_rows = []
         for label, members in groups.items():
-            naming = container.namer.name(
+            naming = container.namer.generate(
                 NamingInput(
                     titles=[a["title"] for a in members],
                     excerpts=[a["full_text"][:1500] for a in members],
