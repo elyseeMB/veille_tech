@@ -22,6 +22,7 @@ func GetRecentClusters() ([]models.ClusterDB, map[string][]models.SourceDTO, err
 		LEFT JOIN articles a ON a.id = ac.article_id
 		LEFT JOIN sources s ON s.id = a.source_id
 		WHERE s.name IS NOT NULL
+		AND c.created_at >= NOW() - INTERVAL '48 hours'
 		ORDER BY c.created_at DESC, s.name`
 
 	rows, err := config.DB.Query(context.Background(), query)
