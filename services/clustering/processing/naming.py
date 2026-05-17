@@ -28,7 +28,10 @@ class ClusterNamer:
     __headers: dict
 
     def __init__(self, account_id: str, api_token: str):
-        model = "llama-3.1-8b-instruct"
+        is_prod = os.getenv("ENVIRONMENT") == "production"
+        model = (
+            "llama-3.3-70b-instruct-fp8-fast" if is_prod else "llama-3.1-8b-instruct"
+        )
         self.__url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/meta/{model}"
         self.__headers = {
             "Authorization": f"Bearer {api_token}",
@@ -51,13 +54,13 @@ class ClusterNamer:
 
             user_prompt = f"""Analyze these tech articles and find their common theme:
 
-{chr(10).join([f"Title: {t}\nExcerpt: {e[:1500]}\n" for t, e in zip(input.titles, input.excerpts or input.titles)])}
+            {chr(10).join([f"Title: {t}\nExcerpt: {e[:1500]}\n" for t, e in zip(input.titles, input.excerpts or input.titles)])}
 
-Respond ONLY with this JSON object:
-{{
-  "label": "3-4 words max, NO dash, the common topic",
-  "description": "2 sentences max about the common theme, written as a topic summary, do not start with 'These articles' or 'The articles'."
-}}"""
+            Respond ONLY with this JSON object:
+            {{
+            "label": "3-4 words max, NO dash, the common topic",
+            "description": "1 sentence only about the common theme, written as a topic summary, do not start with 'These articles' or 'The articles'."
+            }}"""
 
             response = requests.post(
                 self.__url,
