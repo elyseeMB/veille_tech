@@ -3,7 +3,11 @@
         run-fetcher run-gateway run-clustering \
         setup-clustering \
         sam-build sam-deploy clean \
-		dev-backend dev-frontend
+		dev-backend dev-frontend \
+		stack-up
+
+DOCKER?= docker
+DOCKER_COMPOSE=	$(DOCKER) compose
 
 build:
 	cd services/fetcher && \
@@ -56,12 +60,15 @@ sam-build:
 sam-deploy: sam-build
 	cd infra && sam deploy
 
-dev-backend:
-	cd services/fetcher && go run ./cmd/fetcher/main.go &
+dev-backend: stack-up
+	cd services/fetcher && go run ./cmd/fetcher/main.go & \
 	cd services/gateway && go run ./cmd/gateway/main.go
 
 dev-frontend:
 	cd apps/root && pnpm run dev
+
+stack-up:
+	$(DOCKER_COMPOSE) up -d
 
 clean:
 	rm -f services/fetcher/function/bootstrap \

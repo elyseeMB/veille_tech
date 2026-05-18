@@ -41,7 +41,7 @@ func ProxyFavicon() gin.HandlerFunc {
 		}
 
 		c.Header("Content-Type", resp.Header.Get("Content-Type"))
-		c.Header("Cache-Control", "public, max-age=86400")
+
 		c.Status(http.StatusOK)
 		io.Copy(c.Writer, resp.Body)
 	}

@@ -101,16 +101,15 @@ func setupRouter() *gin.Engine {
 		v1.GET("/calendar", cacheControl("public, max-age=1800"), handlers.GetCalendarMeta())
 		v1.GET("/graph", cacheControl("public, max-age=1800"), handlers.GetGraph())
 
-		// Cache 24h
-		v1.GET("/articles/:id", cacheControl("public, max-age=86400"), handlers.GetArticleByID())
-		v1.GET("/avatar", cacheControl("public, max-age=86400"), handlers.ProxyAvatar())
-
 		// Cache 30min
 		v1.GET("/clusters", cacheControl("public, max-age=1800"), handlers.GetClusters())
 		v1.GET("/clusters/:id", cacheControl("public, max-age=1800"), handlers.GetClusterByID())
 
 		// Cache 24h
+		v1.GET("/articles/:id", cacheControl("public, max-age=86400"), handlers.GetArticleByID())
+		v1.GET("/avatar", cacheControl("public, max-age=86400"), handlers.ProxyAvatar())
 		v1.GET("/favicon", cacheControl("public, max-age=86400"), handlers.ProxyFavicon())
+
 	}
 
 	return r
