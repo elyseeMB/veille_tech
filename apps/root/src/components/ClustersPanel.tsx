@@ -51,8 +51,7 @@ function ClusterCard({
 
 function SkeletonCard() {
   return (
-    <div className="grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 border-b border-border">
-      <Skeleton className="h-full bg-muted" />
+    <div className="flex flex-col gap-5 p-5 border-b border-border">
       <div className="space-y-3">
         <Skeleton className="h-3 w-20 bg-muted" />
         <Skeleton className="h-5 w-2/3 bg-muted" />
