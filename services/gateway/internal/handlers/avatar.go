@@ -1,12 +1,18 @@
 package handlers
 
 import (
+	"io"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func ProxyAvatar() gin.HandlerFunc {
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+	}
+
 	return func(c *gin.Context) {
 		imgURL := c.Query("url")
 		if imgURL == "" {
@@ -14,19 +20,28 @@ func ProxyAvatar() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := http.Get(imgURL)
-		if err != nil || resp.StatusCode != http.StatusOK {
+		req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodGet, imgURL, nil)
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+
+		req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; AvatarProxy/1.0)")
+
+		resp, err := client.Do(req)
+		if err != nil {
 			c.Status(http.StatusBadGateway)
 			return
 		}
 		defer resp.Body.Close()
 
-		c.DataFromReader(
-			http.StatusOK,
-			resp.ContentLength,
-			resp.Header.Get("Content-Type"),
-			resp.Body,
-			nil,
-		)
+		if resp.StatusCode != http.StatusOK {
+			c.Status(http.StatusBadGateway)
+			return
+		}
+
+		c.Header("Content-Type", resp.Header.Get("Content-Type"))
+		c.Status(http.StatusOK)
+		io.Copy(c.Writer, resp.Body)
 	}
 }
