@@ -32,7 +32,7 @@ function ClusterCard({
             {cluster.articleCount}
           </span>
         </div>
-        <div className="flex items-center gap-2 w-fit text-xs font-sans bg-muted border border-border rounded-full px-2.5 py-1 -ml-2.5 before:content-[''] before:block before:w-2 before:h-2 before:bg-secondary-foreground before:rounded-full ">
+        <div className="flex items-center gap-2 w-fit text-xs font-sans bg-muted border border-border rounded-full px-2.5 py-1 -ml-1 before:content-[''] before:block before:w-2 before:h-2 before:bg-secondary-foreground before:rounded-full ">
           {cluster.label}
         </div>
 
@@ -55,7 +55,9 @@ function SkeletonCard() {
       <Skeleton className="h-full bg-muted" />
       <div className="space-y-3">
         <Skeleton className="h-3 w-20 bg-muted" />
-        <Skeleton className="h-5 w-4/5 bg-muted" />
+        <Skeleton className="h-5 w-2/3 bg-muted" />
+        <Skeleton className="h-5 w-1/3 bg-muted" />
+        <Skeleton className="h-15 w-full bg-muted" />
       </div>
     </div>
   );
