@@ -5,6 +5,7 @@ import {
   useState,
   useCallback,
   type PropsWithChildren,
+  useEffect,
 } from "react";
 import { Button } from "./ui/button.tsx";
 import { ArrowDown, X } from "lucide-react";
@@ -44,9 +45,28 @@ export function Banner() {
   const [banner, setBanner] = useState<BannerData>(null);
   const { setBannerRef } = useContext(BannerContext);
   const { setSelectedArticle } = useSummaryStore();
+  const bannerRef = useRef<HTMLDivElement>(null);
   setBannerRef.current = ({ ...props }) => {
     setBanner(props);
   };
+
+  useEffect(() => {
+    const el = bannerRef.current;
+    if (!el) return;
+
+    const obs = new ResizeObserver(([entry]) => {
+      document.documentElement.style.setProperty(
+        "--banner-height",
+        `${entry.contentRect.height}px`,
+      );
+    });
+    obs.observe(el);
+
+    return () => {
+      obs.disconnect();
+      document.documentElement.style.setProperty("--banner-height", "0px");
+    };
+  }, [banner]);
 
   if (!banner) {
     return null;
@@ -54,6 +74,7 @@ export function Banner() {
 
   return (
     <div
+      ref={bannerRef}
       className="hidden lg:flex sticky z-40 items-center gap-3 pl-0 px-5 py-2 bg-primary-foreground border-x border-b border-border animate-banner"
       style={{ top: "calc(var(--header-height))" }}
     >

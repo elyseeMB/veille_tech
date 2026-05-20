@@ -1,13 +1,39 @@
 import { ModeToggle } from "./Mode-toggle.tsx";
 import clsx from "clsx";
 import { useMobile } from "@/hooks/useMobile.ts";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 export function Footer() {
   const isMobile = useMobile();
+  const ref = useRef<HTMLElement>(null);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    // Mesure immédiate avant le premier paint
+    document.documentElement.style.setProperty(
+      "--footer-height",
+      `${el.getBoundingClientRect().height}px`,
+    );
+
+    const obs = new ResizeObserver(([entry]) => {
+      document.documentElement.style.setProperty(
+        "--footer-height",
+        `${entry.contentRect.height}px`,
+      );
+    });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <footer
+      ref={ref}
       className={clsx(
-        "px-0 lg:px-5 py-4 flex items-center justify-between pt-6 -mb-10 border-x border-t border-border",
+        "fixed bottom-0 left-0 right-0 z-40",
+        "px-6 lg:px-12 py-4 flex items-center justify-between",
+        "bg-amber-500 backdrop-blur-md border-t border-border",
         isMobile && "border-x-0 -mx-4 px-4",
       )}
     >

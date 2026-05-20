@@ -55,7 +55,7 @@ export function Feed({
   };
 
   return (
-    <section className="space-y-0">
+    <section className="sticky overflow-y-auto scrollbar-hide h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]">
       {loading ? (
         Array.from({ length: 5 }).map((_, i) => <ItemSkeleton2 key={i} />)
       ) : items.length === 0 ? (
@@ -79,8 +79,7 @@ export function Feed({
 
 function ItemSkeleton() {
   return (
-    <div className="grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 border-b border-border">
-      <Skeleton className="h-full bg-muted" />
+    <div className="flex flex-col gap-5 p-5 border-l border-b border-border">
       <div className="space-y-3">
         <Skeleton className="h-3 w-20 bg-muted" />
         <Skeleton className="h-5 w-4/5 bg-muted" />
@@ -91,7 +90,7 @@ function ItemSkeleton() {
 
 function ItemSkeleton2() {
   return (
-    <div className="grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 mb-9 border-b border-border last:border-0">
+    <div className="flex flex-col gap-5 p-5 mb-9 border-l border-b border-border last:border-0">
       <Skeleton className="h-full bg-muted" />
       <div className="space-y-3">
         <Skeleton className="h-3 w-20 bg-muted" />
