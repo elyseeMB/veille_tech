@@ -10,3 +10,5 @@ tenacity
 boto3
 json-repair
 python-dotenv
+langchain-text-splitters
+youtube_transcript_api

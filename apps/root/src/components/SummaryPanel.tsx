@@ -1,25 +1,12 @@
-import { useEffect, useRef } from "react";
-import { ArrowUpRight, ChevronsUpDown } from "lucide-react";
-import { Button } from "./ui/button.tsx";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu.tsx";
-import {
-  useSummaryStore,
-  MODEL_LABELS,
-  type AIModel,
-} from "@/store/summaryStore.ts";
+import { useSummaryStore } from "@/store/summaryStore.ts";
+import { ArrowUpRight } from "lucide-react";
 import { marked } from "marked";
+import { useEffect, useRef } from "react";
+import { Button } from "./ui/button.tsx";
 
-import { TemporalForceGraph } from "./Graph.tsx";
-import type { FeedItem } from "@/hooks/useFeed.ts";
-
-export function SummaryPanel({ data }: { data: FeedItem }) {
+export function SummaryPanel() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { selectedArticle, activeModel, setActiveModel } = useSummaryStore();
+  const { selectedArticle } = useSummaryStore();
 
   useEffect(() => {
     if (!selectedArticle?.content || !sectionRef.current) {

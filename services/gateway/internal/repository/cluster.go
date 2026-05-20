@@ -8,22 +8,47 @@ import (
 )
 
 func GetRecentClusters() ([]models.ClusterDB, map[string][]models.SourceDTO, error) {
-	query := `
-		SELECT
-			c.id,
-			c.label,
-			COALESCE(c.description, '') as description,
-			c.created_at,
-			COUNT(ac.article_id) OVER (PARTITION BY c.id) as article_count,
-			s.name,
-			regexp_replace(a.url, '^https?://(?:www\.)?([^/]+).*', '\1') as article_domain
-		FROM clusters c
-		LEFT JOIN article_clusters ac ON ac.cluster_id = c.id
-		LEFT JOIN articles a ON a.id = ac.article_id
-		LEFT JOIN sources s ON s.id = a.source_id
-		WHERE s.name IS NOT NULL
-		AND c.created_at >= NOW() - INTERVAL '48 hours'
-		ORDER BY c.created_at DESC, s.name`
+	query := `SELECT
+					c.id,
+					c.label,
+					COALESCE(c.description, '') as description,
+					c.created_at,
+					item_counts.item_count,
+					item_counts.cluster_type,
+					item_type,
+					source_name,
+					item_domain
+				FROM clusters c
+				JOIN (
+					SELECT
+						cluster_id,
+						COUNT(*) as item_count,
+						CASE
+							WHEN COUNT(*) FILTER (WHERE type = 'article') > 0
+							AND COUNT(*) FILTER (WHERE type = 'video') > 0 THEN 'mixed'
+							WHEN COUNT(*) FILTER (WHERE type = 'video') > 0 THEN 'video'
+							ELSE 'article'
+						END as cluster_type
+					FROM cluster_items
+					GROUP BY cluster_id
+				) item_counts ON item_counts.cluster_id = c.id
+				JOIN (
+					SELECT ci.cluster_id, ci.type as item_type, s.name as source_name,
+						regexp_replace(a.url, '^https?://(?:www\.)?([^/]+).*', '\1') as item_domain
+					FROM cluster_items ci
+					JOIN articles a ON a.id = ci.ref_id AND ci.type = 'article'
+					JOIN sources s ON s.id = a.source_id
+
+					UNION ALL
+
+					SELECT ci.cluster_id, ci.type as item_type, s.name as source_name,
+						v.external_id as item_domain
+					FROM cluster_items ci
+					JOIN videos v ON v.id = ci.ref_id AND ci.type = 'video'
+					JOIN sources s ON s.id = v.source_id
+				) items ON items.cluster_id = c.id
+				WHERE c.created_at >= NOW() - INTERVAL '48 hours'
+				ORDER BY c.created_at DESC`
 
 	rows, err := config.DB.Query(context.Background(), query)
 	if err != nil {
@@ -37,11 +62,15 @@ func GetRecentClusters() ([]models.ClusterDB, map[string][]models.SourceDTO, err
 	seenSources := map[string]map[string]bool{}
 
 	for rows.Next() {
-		var clusterID, label, description, name, articleDomain string
+		var clusterID, label, description, clusterType, itemType, sourceName, itemDomain string
 		var createdAt time.Time
-		var articleCount int
+		var itemCount int
 
-		if err := rows.Scan(&clusterID, &label, &description, &createdAt, &articleCount, &name, &articleDomain); err != nil {
+		if err := rows.Scan(
+			&clusterID, &label, &description,
+			&createdAt, &itemCount, &clusterType, &itemType,
+			&sourceName, &itemDomain,
+		); err != nil {
 			return nil, nil, err
 		}
 
@@ -51,17 +80,19 @@ func GetRecentClusters() ([]models.ClusterDB, map[string][]models.SourceDTO, err
 				Label:        label,
 				Description:  description,
 				CreatedAt:    createdAt,
-				ArticleCount: articleCount,
+				ArticleCount: itemCount,
+				Type:         clusterType,
 			}
 			clusterOrder = append(clusterOrder, clusterID)
 			seenSources[clusterID] = map[string]bool{}
 		}
 
-		if !seenSources[clusterID][articleDomain] {
-			seenSources[clusterID][articleDomain] = true
+		if !seenSources[clusterID][itemDomain] {
+			seenSources[clusterID][itemDomain] = true
 			sourcesMap[clusterID] = append(sourcesMap[clusterID], models.SourceDTO{
-				Name:    name,
-				BaseUrl: articleDomain,
+				Name:    sourceName,
+				BaseUrl: itemDomain,
+				Type:    itemType,
 			})
 		}
 	}
@@ -74,74 +105,129 @@ func GetRecentClusters() ([]models.ClusterDB, map[string][]models.SourceDTO, err
 	return clusters, sourcesMap, nil
 }
 
-func GetClusterWithArticles(clusterID string) (models.ClusterDB, []models.SourceDTO, []models.ArticleDB, error) {
+func GetClusterWithItems(clusterID string) (models.ClusterDB, []models.SourceDTO, []models.ArticleDB, []models.VideoDB, error) {
 	var c models.ClusterDB
 	seenSrc := map[string]bool{}
 	var sources []models.SourceDTO
+	var articles []models.ArticleDB
+	var videos []models.VideoDB
 
-	sourceRows, err := config.DB.Query(context.Background(), `
-		SELECT
-			c.id, c.label, COALESCE(c.description, '') as description, c.created_at, -- ◄─── Ajout description
-			COUNT(ac.article_id) OVER (PARTITION BY c.id) as article_count,
-			s.name,
-			regexp_replace(a.url, '^https?://(?:www\.)?([^/]+).*', '\1') as article_domain
+	sourceRows, err := config.DB.Query(context.Background(), `SELECT
+			c.id, c.label, COALESCE(c.description, '') as description, c.created_at,
+			COUNT(*) OVER (PARTITION BY c.id) as item_count,
+			item_counts.cluster_type,
+			item_type,    
+			source_name,
+			item_domain
 		FROM clusters c
-		LEFT JOIN article_clusters ac ON ac.cluster_id = c.id
-		LEFT JOIN articles a ON a.id = ac.article_id
-		LEFT JOIN sources s ON s.id = a.source_id
+		JOIN (
+			SELECT
+				cluster_id,
+				CASE
+					WHEN COUNT(*) FILTER (WHERE type = 'article') > 0
+					AND COUNT(*) FILTER (WHERE type = 'video') > 0 THEN 'mixed'
+					WHEN COUNT(*) FILTER (WHERE type = 'video') > 0 THEN 'video'
+					ELSE 'article'
+				END as cluster_type
+			FROM cluster_items
+			GROUP BY cluster_id
+		) item_counts ON item_counts.cluster_id = c.id
+		JOIN (
+			SELECT ci.cluster_id, ci.type as item_type, s.name as source_name,
+				regexp_replace(a.url, '^https?://(?:www\.)?([^/]+).*', '\1') as item_domain
+			FROM cluster_items ci
+			JOIN articles a ON a.id = ci.ref_id AND ci.type = 'article'
+			JOIN sources s ON s.id = a.source_id
+
+			UNION ALL
+
+			SELECT ci.cluster_id, ci.type as item_type, s.name as source_name,
+				v.external_id as item_domain
+			FROM cluster_items ci
+			JOIN videos v ON v.id = ci.ref_id AND ci.type = 'video'
+			JOIN sources s ON s.id = v.source_id
+		) items ON items.cluster_id = c.id
 		WHERE c.id = $1
-		AND s.name IS NOT NULL
-		ORDER BY s.name`, clusterID)
+		ORDER BY source_name`, clusterID)
 	if err != nil {
-		return c, nil, nil, err
+		return c, nil, nil, nil, err
 	}
 	defer sourceRows.Close()
 
 	for sourceRows.Next() {
-		var name, articleDomain string
-		var articleCount int
+		var sourceName, itemDomain, itemType, clusterType string
+		var itemCount int
 		var createdAt time.Time
 
-		if err := sourceRows.Scan(&c.ID, &c.Label, &c.Description, &createdAt, &articleCount, &name, &articleDomain); err != nil {
-			return c, nil, nil, err
+		if err := sourceRows.Scan(&c.ID, &c.Label, &c.Description, &createdAt, &itemCount, &clusterType, &itemType, &sourceName, &itemDomain); err != nil {
+			return c, nil, nil, nil, err
 		}
 		c.CreatedAt = createdAt
-		c.ArticleCount = articleCount
+		c.ArticleCount = itemCount
+		c.Type = clusterType
 
-		if !seenSrc[articleDomain] {
-			seenSrc[articleDomain] = true
+		if !seenSrc[itemDomain] {
+			seenSrc[itemDomain] = true
 			sources = append(sources, models.SourceDTO{
-				Name:    name,
-				BaseUrl: articleDomain,
+				Name:    sourceName,
+				BaseUrl: itemDomain,
+				Type:    itemType,
 			})
 		}
 	}
 
-	articleRows, err := config.DB.Query(context.Background(), `
-		SELECT a.id, a.external_id, a.title, a.url, COALESCE(a.author, ''),
-		       COALESCE(a.content, ''), a.summary, COALESCE(a.category, ''),
-		       s.name as source, a.published_at
-		FROM articles a
-		JOIN article_clusters ac ON a.id = ac.article_id
-		JOIN sources s ON s.id = a.source_id
-		WHERE ac.cluster_id = $1
-		ORDER BY a.published_at DESC`, clusterID)
+	itemRows, err := config.DB.Query(context.Background(), `
+		SELECT ref_id, type 
+		FROM cluster_items 
+		WHERE cluster_id = $1`, clusterID)
 	if err != nil {
-		return c, sources, nil, err
+		return c, sources, nil, nil, err
 	}
-	defer articleRows.Close()
+	defer itemRows.Close()
 
-	var articles []models.ArticleDB
-	for articleRows.Next() {
-		var a models.ArticleDB
-		if err := articleRows.Scan(
-			&a.ID, &a.ExternalID, &a.Title, &a.URL, &a.Author,
-			&a.Content, &a.Summary, &a.Category, &a.Source, &a.PublishedAt,
-		); err != nil {
-			return c, sources, nil, err
+	var articleIDs []string
+	var videoIDs []string
+
+	for itemRows.Next() {
+		var refID, itemType string
+		if err := itemRows.Scan(&refID, &itemType); err != nil {
+			return c, sources, nil, nil, err
 		}
-		articles = append(articles, a)
+		switch itemType {
+		case "article":
+			articleIDs = append(articleIDs, refID)
+		case "video":
+			videoIDs = append(videoIDs, refID)
+		}
 	}
 
-	return c, sources, articles, nil
+	if len(articleIDs) > 0 {
+		articlesMap, err := GetArticlesFeedByIDs(articleIDs)
+		if err != nil {
+			return c, sources, nil, nil, err
+		}
+		for _, id := range articleIDs {
+			if article, exists := articlesMap[id]; exists {
+				articles = append(articles, article)
+			}
+		}
+	} else {
+		articles = []models.ArticleDB{}
+	}
+
+	if len(videoIDs) > 0 {
+		videosMap, err := GetVideosFeedByIDs(videoIDs)
+		if err != nil {
+			return c, sources, articles, nil, err
+		}
+		for _, id := range videoIDs {
+			if video, exists := videosMap[id]; exists {
+				videos = append(videos, video)
+			}
+		}
+	} else {
+		videos = []models.VideoDB{}
+	}
+
+	return c, sources, articles, videos, nil
 }

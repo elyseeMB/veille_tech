@@ -39,6 +39,8 @@ export function Feed({
     switch (item.type) {
       case "article":
         return <ArticleItem article={item.data} />;
+      case "video":
+        return <VideoItem video={item.data} />;
       case "video_carousel":
         return item.data.length === 1 ? (
           <VideoItem video={item.data[0]} />
