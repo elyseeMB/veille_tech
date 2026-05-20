@@ -5,7 +5,7 @@ import {
   useState,
   useCallback,
   type PropsWithChildren,
-  useEffect,
+  useLayoutEffect,
 } from "react";
 import { Button } from "./ui/button.tsx";
 import { ArrowDown, X } from "lucide-react";
@@ -50,16 +50,22 @@ export function Banner() {
     setBanner(props);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = bannerRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
 
-    const obs = new ResizeObserver(([entry]) => {
+    const measure = () => {
       document.documentElement.style.setProperty(
         "--banner-height",
-        `${entry.contentRect.height}px`,
+        `${el.getBoundingClientRect().height}px`,
       );
-    });
+    };
+
+    measure();
+
+    const obs = new ResizeObserver(measure);
     obs.observe(el);
 
     return () => {

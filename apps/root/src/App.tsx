@@ -95,29 +95,27 @@ export function App() {
             onRetry={clustersRetry}
             baseUrl={url}
           />
+
           {/* Colonne droite Desktop Feed */}
-          <section id="list">
-            <div className="border-r border-border">
-              <Feed
-                items={feedItems}
-                loading={selectedCluster ? false : loading}
-                loadingMore={selectedCluster ? false : loadingMore}
-                hasMore={selectedCluster ? false : hasMore}
-                loadMore={selectedCluster ? () => {} : loadMore}
-              />
-              {!selectedCluster && error && (
-                <div className="p-2 flex items-center justify-center">
-                  <Button
-                    className="cursor-pointer"
-                    variant="outline"
-                    onClick={retry}
-                  >
-                    No connection. Tap to try again
-                  </Button>
-                </div>
-              )}
+          <Feed
+            items={feedItems}
+            loading={selectedCluster ? false : loading}
+            loadingMore={selectedCluster ? false : loadingMore}
+            hasMore={selectedCluster ? false : hasMore}
+            loadMore={selectedCluster ? () => {} : loadMore}
+          />
+          {!selectedCluster && error && (
+            <div className="p-2 flex items-center justify-center">
+              <Button
+                className="cursor-pointer"
+                variant="outline"
+                onClick={retry}
+              >
+                No connection. Tap to try again
+              </Button>
             </div>
-          </section>
+          )}
+
           {/* Colonne droite Summary */}
           <SummaryPanel />
         </div>
@@ -156,7 +154,6 @@ export function App() {
           >
             <Fullscreen onClick={toggle} />
           </Button>
-
           <ModeToggle />
         </div>
       </div>
