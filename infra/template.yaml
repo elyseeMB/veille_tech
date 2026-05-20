@@ -106,9 +106,7 @@ Resources:
         Variables:
           ENVIRONMENT: "production"
           YOUTUBE_SCRAPING: "false"
-          YOUTUBE_SCRAPER_PROVIDER: "supadata"
           USE_MOCK: "false"
-          SUPADATA_API_KEY: "/veille/supadata_api_key"
           DB_PARAM_NAME: "/veille/database_url"
           CF_ACCOUNT_ID: "/veille/cf_account_id"
           CF_API_TOKEN: "/veille/cf_api_token"
