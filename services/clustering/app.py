@@ -24,8 +24,6 @@ def load_secrets():
         "DATABASE_URL": os.environ.get("DB_PARAM_NAME"),
         "CF_ACCOUNT_ID": os.environ.get("CF_ACCOUNT_ID"),
         "CF_API_TOKEN": os.environ.get("CF_API_TOKEN"),
-        "SUPADATA_API_KEY": os.environ.get("SUPADATA_API_KEY"),
-        "RAPIDAPI_KEY": os.environ.get("RAPIDAPI_KEY"),
     }
     for env_key, ssm_path in params.items():
         if ssm_path and (ssm_path.startswith("/") or ssm_path.startswith("veille")):
