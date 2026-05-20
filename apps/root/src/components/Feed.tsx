@@ -55,7 +55,7 @@ export function Feed({
   };
 
   return (
-    <section className="sticky overflow-y-auto scrollbar-hide h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]">
+    <section className="sticky overflow-y-auto scrollbar-hide h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))] border-r border-border">
       {loading ? (
         Array.from({ length: 5 }).map((_, i) => <ItemSkeleton2 key={i} />)
       ) : items.length === 0 ? (
