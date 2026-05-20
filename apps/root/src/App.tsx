@@ -54,9 +54,6 @@ export function App() {
         className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border"
       >
         <div className="py-3">
-          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground px-4 mb-2">
-            {now}
-          </p>
           <Calendar scrollable data={calendarData} />
         </div>
       </div>
@@ -69,9 +66,6 @@ export function App() {
       >
         <div className="mx-auto max-w-5xl px-12 py-6">
           <section id="clusters">
-            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">
-              {now}
-            </p>
             <Calendar data={calendarData} />
           </section>
         </div>
