@@ -115,7 +115,6 @@ export function App() {
               </Button>
             </div>
           )}
-
           {/* Colonne droite Summary */}
           <SummaryPanel />
         </div>

@@ -3,6 +3,8 @@ import { Skeleton } from "./ui/skeleton.tsx";
 import type { FeedItem } from "@/hooks/useFeed.ts";
 import { ArticleItem } from "./ArticleItem.tsx";
 import { VideoItem } from "./VideoItem.tsx";
+import { useMobile } from "@/hooks/useMobile.ts";
+import clsx from "clsx";
 
 const VideoCarouselLazy = lazy(() => import("@/components/VideoCarousel"));
 
@@ -20,6 +22,7 @@ export function Feed({
   loadMore: () => void;
 }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const isMobile = useMobile();
 
   useEffect(() => {
     if (!sentinelRef.current) return;
@@ -55,7 +58,12 @@ export function Feed({
   };
 
   return (
-    <section className="sticky overflow-y-auto scrollbar-hide h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))] border-r border-border">
+    <section
+      className={clsx(
+        !isMobile &&
+          "border-r border-border sticky overflow-y-auto scrollbar-hide h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]",
+      )}
+    >
       {loading ? (
         Array.from({ length: 5 }).map((_, i) => <ItemSkeleton2 key={i} />)
       ) : items.length === 0 ? (
