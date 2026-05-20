@@ -41,11 +41,7 @@ export function App() {
 
   const feedItems: FeedItem[] = useMemo(() => {
     if (selectedCluster) {
-      return selectedCluster.articles.map((a) => ({
-        type: "article" as const,
-        date: new Date(a.pubDate),
-        data: a,
-      }));
+      return selectedCluster.items.map((i) => i);
     }
     return items;
   }, [selectedCluster, items]);
@@ -128,7 +124,7 @@ export function App() {
             </div>
           </section>
           {/* Colonne droite Summary */}
-          <SummaryPanel data={feedItems} />
+          <SummaryPanel />
         </div>
 
         {/* Header Mobile */}

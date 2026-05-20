@@ -1,5 +1,5 @@
 import type { Cluster } from "@/hooks/useClusters.ts";
-import { fetchClusterArticles } from "@/hooks/useClusters.ts";
+import { fetchClusterItems } from "@/hooks/useClusters.ts";
 import { useClusterStore } from "@/store/clusterStore.ts";
 import { SourcesBadge } from "./SourcesBadge.tsx";
 import { TimeRelative } from "./TimeRelative.tsx";
@@ -82,12 +82,12 @@ export function ClustersPanel({
       setSelectedCluster(null);
       return;
     }
-    const articles = await fetchClusterArticles(baseUrl, cluster.id);
+    const items = await fetchClusterItems(baseUrl, cluster.id);
     setSelectedCluster({
       id: cluster.id,
       label: cluster.label,
       createdAt: cluster.createdAt,
-      articles,
+      items,
     });
   };
 

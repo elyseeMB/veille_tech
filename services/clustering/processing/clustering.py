@@ -23,8 +23,10 @@ class Clusterer:
         if min_cluster_size >= n_articles:
             min_cluster_size = 2
 
+        n_components = min(5, max(2, n_articles // 3))
+
         self.__umap = umap.UMAP(
-            n_neighbors=n_neighbors, n_components=5, random_state=42
+            n_neighbors=n_neighbors, n_components=n_components, random_state=42
         )
 
         self.__clusterer = hdbscan.HDBSCAN(

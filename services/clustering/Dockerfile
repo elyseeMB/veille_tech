@@ -9,13 +9,6 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt --no-cache-dir && \
     python -m compileall -b /var/lang/lib/python3.12/site-packages || true
 
-COPY shared.py      .
-COPY container.py   .
-COPY app.py         .
-COPY articles/      articles/
-COPY scraper/       scraper/
-COPY processing/    processing/
-COPY db/            db/
-
+COPY . .
 
 CMD ["app.handler"]

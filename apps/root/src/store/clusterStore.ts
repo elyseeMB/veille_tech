@@ -1,11 +1,11 @@
 import { create } from "zustand";
-import type { Article } from "@/hooks/useFeed.ts";
+import type { ClusterItem } from "@/hooks/useClusters.ts";
 
 export type ClusterSelection = {
   id: string;
   label: string;
   createdAt: string;
-  articles: Article[];
+  items: ClusterItem[];
 } | null;
 
 interface ClusterStore {

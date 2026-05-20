@@ -8,6 +8,9 @@ from tenacity import (
 from typing import List
 from pydantic import BaseModel
 from shared import Result, EmbeddingResult
+from logger import get_logger
+
+log = get_logger("processing.article")
 
 
 class EmbeddingInput(BaseModel):
@@ -47,14 +50,25 @@ class CloudflareEmbedder:
     def embed_in_batches(
         self, texts: List[str], batch_size: int = 50
     ) -> Result[EmbeddingResult]:
+        log.info(f"embedding {len(texts)} chunks in batches of {batch_size}")
         try:
             all_vectors = []
             for i in range(0, len(texts), batch_size):
                 batch = texts[i : i + batch_size]
+
+                log.debug(
+                    f"batch {i//batch_size + 1}/{-(-len(texts)//batch_size)} — {len(batch)} chunks"
+                )
+
                 result = self.embed(EmbeddingInput(texts=batch))
                 if not result.success:
+                    log.error(f"batch {i} error: {result.error}")
+
                     return Result.fail(f"batch {i} error: {result.error}")
+
                 all_vectors.extend(result.value.vectors)
+                log.info(f"embeddings done — {len(all_vectors)} vectors")
             return Result.ok(EmbeddingResult(vectors=all_vectors))
         except Exception as e:
+            log.error(f"batch embedding error: {e}")
             return Result.fail(f"batch embedding error: {e}")

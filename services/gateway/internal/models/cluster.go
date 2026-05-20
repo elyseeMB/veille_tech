@@ -2,37 +2,40 @@ package models
 
 import "time"
 
-type ClusterDB struct {
-	ID           string    `db:"id"`
-	Label        string    `db:"label"`
-	Description  string    `json:"description"`
-	CreatedAt    time.Time `db:"created_at"`
-	ArticleCount int       `db:"article_count"`
-}
-
 type SourceDTO struct {
 	Name    string `json:"name"`
 	BaseUrl string `json:"baseUrl"`
+	Type    string `json:"type"`
+}
+
+type ClusterDB struct {
+	ID           string    `db:"id" json:"id"`
+	Label        string    `db:"label" json:"label"`
+	Description  string    `db:"description" json:"description"`
+	CreatedAt    time.Time `db:"created_at" json:"createdAt"`
+	ArticleCount int       `db:"article_count" json:"articleCount"`
+	Type         string    `db:"type" json:"type"`
 }
 
 type ClusterDTO struct {
-	ID           string       `json:"id"`
-	Label        string       `json:"label"`
-	Description  string       `json:"description"`
-	CreatedAt    time.Time    `json:"createdAt"`
-	ArticleCount int          `json:"articleCount"`
-	Sources      []SourceDTO  `json:"sources"`
-	Articles     []ArticleDTO `json:"articles,omitempty"`
+	ClusterDB `json:",inline"`
+	Sources   []SourceDTO  `json:"sources"`
+	Articles  []ArticleDTO `json:"articles,omitempty"`
+	Videos    []VideoDTO   `json:"videos"`
 }
 
-func ToClusterDTO(db ClusterDB, sources []SourceDTO, articles []ArticleDTO) ClusterDTO {
+func ToClusterDTO(db ClusterDB, sources []SourceDTO, articles []ArticleDTO, videos []VideoDTO) ClusterDTO {
 	return ClusterDTO{
-		ID:           db.ID,
-		Label:        db.Label,
-		Description:  db.Description,
-		CreatedAt:    db.CreatedAt,
-		ArticleCount: db.ArticleCount,
-		Sources:      sources,
-		Articles:     articles,
+		ClusterDB: ClusterDB{
+			ID:           db.ID,
+			Label:        db.Label,
+			Description:  db.Description,
+			CreatedAt:    db.CreatedAt,
+			ArticleCount: db.ArticleCount,
+			Type:         db.Type,
+		},
+		Sources:  sources,
+		Articles: articles,
+		Videos:   videos,
 	}
 }

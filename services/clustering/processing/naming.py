@@ -46,21 +46,97 @@ class ClusterNamer:
     def generate(self, input: NamingInput) -> Result[NamingResult]:
         try:
             system_prompt = (
-                "You are a JSON-only API. "
-                "Respond ONLY with valid JSON matching the schema. "
-                "Do NOT add explanations, comments, or any text outside the JSON object. "
+                "You are a JSON-only API."
+                "Respond ONLY with valid JSON matching the schema."
+                "Do NOT add explanations, comments, or any text outside the JSON object."
                 "Do NOT use markdown or code fences."
             )
 
-            user_prompt = f"""Analyze these tech articles and find their common theme:
+            user_prompt = f"""
+                You are an expert semantic clustering engine for a technology intelligence platform.
 
-            {chr(10).join([f"Title: {t}\nExcerpt: {e[:1500]}\n" for t, e in zip(input.titles, input.excerpts or input.titles)])}
+                Your task is to analyze multiple tech articles and infer the SINGLE dominant shared topic.
 
-            Respond ONLY with this JSON object:
-            {{
-            "label": "3-4 words max, NO dash, the common topic",
-            "description": "1 sentence only about the common theme, written as a topic summary, do not start with 'These articles' or 'The articles'."
-            }}"""
+                The goal is NOT summarization.
+                The goal is taxonomy-quality semantic labeling.
+
+                ARTICLES:
+                {chr(10).join([
+                    f"Title: {t}\nExcerpt: {e}\n"
+                    for t, e in zip(input.titles, input.excerpts or input.titles)
+                ])}
+
+                INSTRUCTIONS:
+
+                1. Detect the COMMON underlying theme across MOST articles.
+                2. Infer the broader technical domain or trend.
+                3. Prioritize semantic meaning over repeated wording.
+                4. Avoid copying article titles directly.
+                5. Ignore hype wording, announcements, and marketing language.
+                6. Ignore company names unless the cluster is explicitly company-centric.
+                7. Prefer stable taxonomy labels reusable over time.
+                8. Use terminology commonly understood by developers and tech professionals.
+                9. The label should feel like a category name, not a headline.
+                10. If multiple subtopics exist, choose the strongest shared denominator.
+
+                LABEL RULES:
+                - 2 to 4 words maximum
+                - lowercase only
+                - no punctuation
+                - no quotes
+                - no dashes
+                - no emojis
+                - avoid vague wording
+                - avoid temporal wording
+                - avoid generic labels like:
+                - ai news
+                - tech updates
+                - software trends
+                - innovation
+                - startups
+
+                GOOD LABEL EXAMPLES:
+                - llm agents
+                - vector databases
+                - browser automation
+                - edge computing
+                - developer tooling
+                - cloud security
+                - realtime rendering
+                - ai infrastructure
+                - robotics automation
+                - wasm tooling
+                - distributed systems
+                - observability platforms
+                - inference optimization
+                - ai coding tools
+
+                BAD LABEL EXAMPLES:
+                - openai launch
+                - new ai release
+                - latest technology
+                - github copilot update
+                - exciting innovation
+                - startup funding
+                - anthropic model
+
+                DESCRIPTION RULES:
+                - exactly 1 sentence
+                - concise but informative
+                - describe the broader topic
+                - do NOT mention "articles"
+                - do NOT mention titles
+                - do NOT explain clustering
+                - no marketing tone
+
+                OUTPUT FORMAT:
+                Respond ONLY with valid JSON.
+
+                {{
+                "label": "semantic cluster label",
+                "description": "Concise semantic summary of the shared topic."
+                }}
+                """
 
             response = requests.post(
                 self.__url,
@@ -83,7 +159,6 @@ class ClusterNamer:
 
             raw_response = data["result"]["response"]
 
-            # Cloudflare JSON mode retourne parfois un dict directement
             if isinstance(raw_response, dict):
                 result_json = raw_response
             else:
