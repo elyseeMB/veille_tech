@@ -15,6 +15,7 @@ import { useClusterStore } from "@/store/clusterStore.ts";
 import { Feed } from "@/components/Feed.tsx";
 import { ClustersPanel } from "@/components/ClustersPanel.tsx";
 import { Banner } from "./components/BannerContext.tsx";
+import { ModeToggle } from "./components/Mode-toggle.tsx";
 
 const url = import.meta.env.PROD
   ? "https://api.veille.safecoffi.app/v1"
@@ -78,7 +79,7 @@ export function App() {
           // @ts-ignore
           "--header-height": `${calendarVisible ? headerHeight : 0}px`,
         }}
-        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 pt-[var(--header-height)] pb-10 transition-[padding-top] transition-height duration-150 ease-out"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 pt-[var(--header-height)] transition-[padding-top] transition-height duration-150 ease-out"
       >
         <Banner />
 
@@ -143,15 +144,21 @@ export function App() {
         </div>
 
         {/* Pied de page */}
-        <Footer />
-        <Button
+        {/* <Footer /> */}
+        <div
+          className={`fixed flex flex-col top-[calc(var(--header-height)_+_0.5rem)] z-100`}
           style={{ left: `${buttonLeft}px` }}
-          className={`fixed top-[calc(var(--header-height)_+_0.5rem)] z-100`}
-          variant="ghost"
-          onClick={toggle}
         >
-          <Fullscreen />
-        </Button>
+          <Button
+            className="text-muted-foreground/60 hover:text-foreground"
+            variant="ghost"
+            onClick={toggle}
+          >
+            <Fullscreen onClick={toggle} />
+          </Button>
+
+          <ModeToggle />
+        </div>
       </div>
     </main>
   );

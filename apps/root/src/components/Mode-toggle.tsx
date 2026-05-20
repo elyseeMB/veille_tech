@@ -18,7 +18,6 @@ export function ModeToggle() {
         render={
           <Button
             variant="ghost"
-            size="icon-xs"
             className="text-muted-foreground/60 hover:text-foreground"
           >
             <Sun className="h-3 w-3 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
