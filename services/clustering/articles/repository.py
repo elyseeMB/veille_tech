@@ -42,28 +42,28 @@ class MockRepository(BaseRepository):
                 ),
                 ArticleRow(
                     id="3",
-                    title="Rust est intégré au noyau Linux",
-                    url="https://www.programmez.com/actualites/linux-rust-38696",
+                    title="Node.js 26.2.0 : bug fix et quelques nouveautés",
+                    url="https://www.programmez.com/actualites/nodejs-2620-bug-fix-et-quelques-nouveautes-39475",
                 ),
                 ArticleRow(
                     id="4",
-                    title="Meta annonce Llama 4",
-                    url="https://www.leptidigital.fr/meta-llama-4-75542/",
+                    title="Search agentique, Gemini 3.5 Flash, Spark : ce que Google I/O 2026 change pour les pros du digital",
+                    url="https://www.leptidigital.fr/intelligence-artificielle-ia/recap-google-io-2026-pros-90178/",
                 ),
                 ArticleRow(
                     id="5",
-                    title="Google dévoile Gemini Ultra 2",
-                    url="https://blog.google/technology/ai/gemini-ultra-2/",
+                    title="I/O 2026: Welcome to the agentic Gemini era",
+                    url="https://blog.google/innovation-and-ai/sundar-pichai-io-2026/",
                 ),
                 ArticleRow(
                     id="6",
-                    title="Apple intègre l'IA dans iOS 19",
-                    url="https://www.macrumors.com/2025/ios-19-ai/",
+                    title="Apple Says iOS 27 Can Automatically Add Captions to Your Personal iPhone Videos",
+                    url="https://www.macrumors.com/2026/05/20/ios-27-automatic-captions-for-personal-videos/",
                 ),
                 ArticleRow(
                     id="7",
-                    title="Nvidia annonce le GPU H200",
-                    url="https://nvidianews.nvidia.com/news/h200",
+                    title="NVIDIA Announces Financial Results for First Quarter Fiscal 2027",
+                    url="https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2027",
                 ),
                 ArticleRow(
                     id="8",
@@ -72,13 +72,13 @@ class MockRepository(BaseRepository):
                 ),
                 ArticleRow(
                     id="9",
-                    title="TypeScript 5.5 améliore les perfs",
-                    url="https://devblogs.microsoft.com/typescript/typescript-5-5/",
+                    title="Announcing TypeScript 7.0 Beta",
+                    url="https://devblogs.microsoft.com/typescript/announcing-typescript-7-0-beta/",
                 ),
                 ArticleRow(
                     id="10",
-                    title="AWS Lambda supporte Python 3.13",
-                    url="https://aws.amazon.com/blogs/compute/python-313-lambda/",
+                    title="Enhancing network observability with new AWS Outposts racks LAG metrics",
+                    url="https://aws.amazon.com/fr/blogs/compute/enhancing-network-observability-with-new-aws-outposts-racks-lag-metrics/",
                 ),
             ]
         )
