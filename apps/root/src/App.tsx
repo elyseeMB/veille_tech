@@ -26,7 +26,7 @@ const now = new Date().toLocaleDateString(navigator.language, {
 });
 
 export function App() {
-  const { desktopRef, mobileRef, height: headerHeight } = useHeaderHeight();
+  const { ref: headerRef, height: headerHeight } = useHeaderHeight();
   const { ref: containerRef, left: buttonLeft } = useContainerLeftOffset();
   const { visible: calendarVisible, toggle } = useCalendarToggle();
   const { items, loading, loadingMore, hasMore, loadMore, error, retry } =
@@ -49,23 +49,13 @@ export function App() {
 
   return (
     <main className="min-h-screen bg-background font-sans relative">
-      {/* CALENDRIER FIXE - Mobile */}
+      {/* CALENDRIER */}
       <div
-        ref={mobileRef}
-        className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border"
-      >
-        <div className="py-3">
-          <Calendar scrollable data={calendarData} />
-        </div>
-      </div>
-
-      {/* CALENDRIER FIXE - Desktop */}
-      <div
-        ref={desktopRef}
+        ref={headerRef}
         style={{ viewTransitionName: "calendar-header" }}
-        className={`hidden lg:block fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-md border-b border-border ${calendarVisible ? "" : "h-0 pointer-events-none overflow-hidden"}`}
+        className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border ${calendarVisible ? "" : "lg:h-0 lg:pointer-events-none lg:overflow-hidden"}`}
       >
-        <div className="mx-auto max-w-5xl px-12 py-6">
+        <div className="mx-auto max-w-5xl px-4 lg:px-12 pt-3 lg:pt-4 pb-0 lg:pb-2">
           <section id="clusters">
             <Calendar data={calendarData} />
           </section>

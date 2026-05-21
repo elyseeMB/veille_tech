@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react";
 import { axisBottom, scaleUtc, timeYear, timeMonth, timeDay, select } from "d3";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip.tsx";
+import { useMobile, useMobileMedium } from "@/hooks/useMobile.ts";
 
 const DAYS_IN_WEEK = 7;
 const now = new Date();
 const today = +timeDay.floor(now);
 
-// ── Desktop (année complète)
+// ── Desktop
 const D_MARGIN = [10, 20, 40, 40];
 const D_CELL = 11;
 const D_W = 900;
@@ -30,14 +31,21 @@ const getDCy = (d: Date) =>
   D_MARGIN[0];
 
 // ── Mobile (trimestres)
-const QC = 14;
+const QC_MOBILE = 14;
+const QC_MEDIUM = 10;
 const QM = { t: 8, r: 8, b: 30, l: 8 };
-const Q_H = DAYS_IN_WEEK * QC + QM.t + QM.b;
 
-const QUARTERS = [0, 1, 2, 3].map((q) => ({
-  start: new Date(now.getFullYear(), q * 3, 1),
-  end: new Date(now.getFullYear(), q * 3 + 3, 1),
-}));
+const QUARTERSFN = (n: number = 3) => {
+  return [0, 1, 2, 3].map((q) => ({
+    start: new Date(now.getFullYear(), q * 3, 1),
+    end: new Date(now.getFullYear(), q * 3 + n, 1),
+  }));
+};
+const HALVESFN = () =>
+  [0, 1].map((h) => ({
+    start: new Date(now.getFullYear(), h * 6, 1),
+    end: new Date(now.getFullYear(), h * 6 + 6, 1),
+  }));
 
 function weeksInMonth(m: Date): number {
   const startDay = (m.getDay() + 6) % 7;
@@ -51,11 +59,14 @@ function QuarterCalendar({
   start,
   end,
   data,
+  cellSize = QC_MOBILE,
 }: {
   start: Date;
   end: Date;
   data: CalendarData;
+  cellSize?: number;
 }) {
+  const Q_H = DAYS_IN_WEEK * cellSize + QM.t + QM.b;
   const axisRef = useRef<SVGGElement | null>(null);
   const months = timeMonth.range(start, end);
 
@@ -63,7 +74,7 @@ function QuarterCalendar({
   let xOff = QM.l;
   for (const m of months) {
     monthXMap.set(+m, xOff);
-    xOff += weeksInMonth(m) * QC;
+    xOff += weeksInMonth(m) * cellSize;
   }
   const svgW = xOff + QM.r;
 
@@ -73,17 +84,19 @@ function QuarterCalendar({
     const weekIdx = Math.floor(
       (timeDay.count(ms, d) + startDay) / DAYS_IN_WEEK,
     );
-    return (monthXMap.get(+ms) ?? 0) + weekIdx * QC + QC / 2;
+    return (monthXMap.get(+ms) ?? 0) + weekIdx * cellSize + cellSize / 2;
   };
   const getCy = (d: Date) =>
-    (DAYS_IN_WEEK - 1 - ((d.getDay() + 6) % 7)) * QC + QC / 2 + QM.t;
+    (DAYS_IN_WEEK - 1 - ((d.getDay() + 6) % 7)) * cellSize +
+    cellSize / 2 +
+    QM.t;
 
   useEffect(() => {
     if (!axisRef.current) return;
     const g = select(axisRef.current);
     g.selectAll("*").remove();
     months.forEach((m) => {
-      const cx = (monthXMap.get(+m) ?? 0) + (weeksInMonth(m) * QC) / 2;
+      const cx = (monthXMap.get(+m) ?? 0) + (weeksInMonth(m) * cellSize) / 2;
       g.append("text")
         .attr("x", cx)
         .attr("y", 0)
@@ -134,10 +147,10 @@ function QuarterCalendar({
                   {isToday ? (
                     <a href={`/date/${dateStr}`}>
                       <rect
-                        width={QC - 2}
-                        height={QC - 2}
-                        x={cx - (QC - 2) / 2}
-                        y={cy - (QC - 2) / 2}
+                        width={cellSize - 2}
+                        height={cellSize - 2}
+                        x={cx - (cellSize - 2) / 2}
+                        y={cy - (cellSize - 2) / 2}
                         fill="#5dff6d"
                         className="dark:fill-emerald-400"
                       />
@@ -145,7 +158,7 @@ function QuarterCalendar({
                   ) : isPast ? (
                     <a href={`/date/${dateStr}`}>
                       <circle
-                        r={QC / 2 - 1.5}
+                        r={cellSize / 2 - 1.5}
                         fill={
                           isArticleForDate
                             ? "var(--color-amber-500)"
@@ -158,7 +171,7 @@ function QuarterCalendar({
                     </a>
                   ) : (
                     <circle
-                      r={QC / 2 - 1.5}
+                      r={cellSize / 2 - 1.5}
                       fill="currentColor"
                       opacity={0.75}
                       cx={cx}
@@ -189,7 +202,6 @@ function QuarterCalendar({
 }
 
 export function Calendar({
-  scrollable = false,
   data,
 }: {
   scrollable?: boolean;
@@ -197,10 +209,22 @@ export function Calendar({
 }) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const axisRef = useRef<SVGGElement | null>(null);
+  const isMobile = useMobile();
+  const isMediumMobile = useMobileMedium();
+
+  const scrollable = isMediumMobile;
+
+  const cellSize = isMobile ? QC_MOBILE : QC_MEDIUM;
+  const periods = isMobile ? QUARTERSFN(3) : HALVESFN();
+  const currentPeriodIdx = isMobile
+    ? Math.floor(now.getMonth() / 3)
+    : Math.floor(now.getMonth() / 6);
 
   // ── Axis D3 desktop
   useEffect(() => {
-    if (scrollable || !axisRef.current) return;
+    if (scrollable || !axisRef.current) {
+      return;
+    }
 
     const axis = axisBottom(xFull)
       .tickValues(desktopMonths)
@@ -224,14 +248,16 @@ export function Calendar({
 
   // ── Scroll vers le trimestre courant (mobile)
   useEffect(() => {
-    if (!scrollable || !scrollRef.current) return;
-    const currentQ = Math.floor(now.getMonth() / 3);
-    (scrollRef.current.children[currentQ] as HTMLElement)?.scrollIntoView({
+    if (!scrollable || !scrollRef.current) {
+      return;
+    }
+    const node = scrollRef.current.children[currentPeriodIdx] as HTMLElement;
+    node.scrollIntoView({
       behavior: "instant",
       inline: "start",
       block: "nearest",
     });
-  }, [scrollable]);
+  }, [scrollable, currentPeriodIdx]);
 
   if (scrollable) {
     return (
@@ -239,9 +265,14 @@ export function Calendar({
         ref={scrollRef}
         className="flex overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {QUARTERS.map((q, i) => (
+        {periods.map((p, i) => (
           <div key={i} className="snap-start shrink-0 w-full">
-            <QuarterCalendar start={q.start} end={q.end} data={data} />
+            <QuarterCalendar
+              start={p.start}
+              end={p.end}
+              data={data}
+              cellSize={cellSize}
+            />
           </div>
         ))}
       </div>

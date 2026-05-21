@@ -1,17 +1,24 @@
 import { useLayoutEffect, useState } from "react";
 
-export function useMobile() {
-  const [isMobile, setIsMobile] = useState(
-    () => window.matchMedia("(max-width: 600px)").matches,
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(
+    () => window.matchMedia(query).matches,
   );
 
   useLayoutEffect(() => {
-    const mediaQuery = window.matchMedia("(width <= 600px)");
-    const handler = (event: MediaQueryListEvent) => setIsMobile(event.matches);
+    const mediaQuery = window.matchMedia(query);
+    const handler = (event: MediaQueryListEvent) => setMatches(event.matches);
     mediaQuery.addEventListener("change", handler);
-
     return () => mediaQuery.removeEventListener("change", handler);
-  }, []);
+  }, [query]);
 
-  return isMobile;
+  return matches;
+}
+
+export function useMobile() {
+  return useMediaQuery("(width <= 600px)");
+}
+
+export function useMobileMedium() {
+  return useMediaQuery("(width <= 800px)");
 }
