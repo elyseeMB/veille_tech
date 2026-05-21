@@ -104,14 +104,14 @@ function ItemSkeleton2() {
   return (
     <div
       className={clsx(
-        "flex flex-col gap-5 w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:border-l lg:w-full lg:mx-0 lg:py-5 lg:pl-0 lg:pr-5 mb-9 border-b border-border last:border-0",
+        "flex flex-col gap-5 w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:border-l lg:w-full lg:mx-0 lg:py-5 lg:pl-0 lg:pr-5 border-b border-border last:border-0",
       )}
     >
       <Skeleton className="h-full bg-muted" />
       <div className="space-y-3">
         <Skeleton className="h-3 w-20 bg-muted" />
         <Skeleton className="h-5 w-4/5 bg-muted" />
-        <Skeleton className="h-4 w-full bg-foreground/10" />
+        <Skeleton className="h-15 w-full bg-foreground/10" />
       </div>
     </div>
   );
