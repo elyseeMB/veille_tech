@@ -1,18 +1,7 @@
-import { useEffect, useRef } from "react";
-import { axisBottom, scaleUtc, timeYear, timeMonth, timeDay, select } from "d3";
-import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip.tsx";
 import { useMobile, useMobileMedium } from "@/hooks/useMobile.ts";
-
-function maxSvgW(periods: { start: Date; end: Date }[], cellSize: number) {
-  return Math.max(
-    ...periods.map(({ start, end }) => {
-      const months = timeMonth.range(start, end);
-      let w = QM.l;
-      for (const m of months) w += weeksInMonth(m) * cellSize;
-      return w + QM.r;
-    }),
-  );
-}
+import { axisBottom, scaleUtc, select, timeDay, timeMonth, timeYear } from "d3";
+import { useEffect, useRef } from "react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip.tsx";
 
 const DAYS_IN_WEEK = 7;
 const now = new Date();
@@ -70,13 +59,11 @@ function QuarterCalendar({
   end,
   data,
   cellSize = QC_MOBILE,
-  fixedW,
 }: {
   start: Date;
   end: Date;
   data: CalendarData;
   cellSize?: number;
-  fixedW?: number;
 }) {
   const Q_H = DAYS_IN_WEEK * cellSize + QM.t + QM.b;
   const axisRef = useRef<SVGGElement | null>(null);
@@ -88,7 +75,7 @@ function QuarterCalendar({
     monthXMap.set(+m, xOff);
     xOff += weeksInMonth(m) * cellSize;
   }
-  const svgW = fixedW ?? xOff + QM.r;
+  const svgW = xOff + QM.r;
 
   const getCx = (d: Date) => {
     const ms = timeMonth.floor(d);
@@ -119,7 +106,7 @@ function QuarterCalendar({
         .style("text-transform", "uppercase")
         .text(m.toLocaleString(navigator.language, { month: "short" }));
     });
-  }, [monthXMap, months]);
+  }, [monthXMap, months, cellSize]);
 
   return (
     <svg
@@ -230,8 +217,6 @@ export function Calendar({
     ? Math.floor(now.getMonth() / 3)
     : Math.floor(now.getMonth() / 6);
 
-  const fixedW = maxSvgW(periods, QC_MOBILE);
-
   // ── Axis D3 desktop
   useEffect(() => {
     if (scrollable || !axisRef.current) {
@@ -284,7 +269,6 @@ export function Calendar({
               end={p.end}
               data={data}
               cellSize={QC_MOBILE}
-              fixedW={fixedW}
             />
           </div>
         ))}
