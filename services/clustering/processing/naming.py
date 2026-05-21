@@ -11,6 +11,9 @@ from tenacity import (
 from typing import List
 from pydantic import BaseModel
 from shared import Result, NamingResult
+from logger import get_logger
+
+log = get_logger("processing.naming")
 
 
 class NamingInput(BaseModel):
@@ -37,6 +40,7 @@ class ClusterNamer:
             "Authorization": f"Bearer {api_token}",
             "Content-Type": "application/json",
         }
+        log.debug(f"using model: {model}")
 
     @retry(
         stop=stop_after_attempt(3),
@@ -45,6 +49,8 @@ class ClusterNamer:
     )
     def generate(self, input: NamingInput) -> Result[NamingResult]:
         try:
+            log.debug(f"naming cluster — {len(input.titles)} articles")
+
             system_prompt = (
                 "You are a JSON-only API."
                 "Respond ONLY with valid JSON matching the schema."
@@ -53,12 +59,10 @@ class ClusterNamer:
             )
 
             user_prompt = f"""
-                You are an expert semantic clustering engine for a technology intelligence platform.
+                You are a semantic labeling engine for a tech news aggregator.
 
-                Your task is to analyze multiple tech articles and infer the SINGLE dominant shared topic.
-
-                The goal is NOT summarization.
-                The goal is taxonomy-quality semantic labeling.
+                You receive a set of tech articles sharing a common topic.
+                Your job is to identify and name that shared topic with maximum precision.
 
                 ARTICLES:
                 {chr(10).join([
@@ -66,75 +70,33 @@ class ClusterNamer:
                     for t, e in zip(input.titles, input.excerpts or input.titles)
                 ])}
 
-                INSTRUCTIONS:
+                TASK:
+                Produce a label that captures the SPECIFIC subject of these articles.
 
-                1. Detect the COMMON underlying theme across MOST articles.
-                2. Infer the broader technical domain or trend.
-                3. Prioritize semantic meaning over repeated wording.
-                4. Avoid copying article titles directly.
-                5. Ignore hype wording, announcements, and marketing language.
-                6. Ignore company names unless the cluster is explicitly company-centric.
-                7. Prefer stable taxonomy labels reusable over time.
-                8. Use terminology commonly understood by developers and tech professionals.
-                9. The label should feel like a category name, not a headline.
-                10. If multiple subtopics exist, choose the strongest shared denominator.
+                SPECIFICITY RULE — the most important rule:
+                Given two accurate labels, always pick the more specific one.
+                Ask: "Could this label apply to 100 different news cycles?"
+                If yes, it is too generic. Go one level deeper.
 
                 LABEL RULES:
-                - 2 to 4 words maximum
+                - 2 to 5 words
                 - lowercase only
-                - no punctuation
-                - no quotes
-                - no dashes
-                - no emojis
-                - avoid vague wording
-                - avoid temporal wording
-                - avoid generic labels like:
-                - ai news
-                - tech updates
-                - software trends
-                - innovation
-                - startups
-
-                GOOD LABEL EXAMPLES:
-                - llm agents
-                - vector databases
-                - browser automation
-                - edge computing
-                - developer tooling
-                - cloud security
-                - realtime rendering
-                - ai infrastructure
-                - robotics automation
-                - wasm tooling
-                - distributed systems
-                - observability platforms
-                - inference optimization
-                - ai coding tools
-
-                BAD LABEL EXAMPLES:
-                - openai launch
-                - new ai release
-                - latest technology
-                - github copilot update
-                - exciting innovation
-                - startup funding
-                - anthropic model
+                - no punctuation, no quotes, no dashes, no emojis
+                - name the actual subject, not its parent category
+                - if a specific technology, protocol, or concept is shared — name it
+                - company names are allowed when the cluster is genuinely company-centric
 
                 DESCRIPTION RULES:
                 - exactly 1 sentence
-                - concise but informative
-                - describe the broader topic
-                - do NOT mention "articles"
-                - do NOT mention titles
-                - do NOT explain clustering
+                - describes what is happening, not just what the domain is
                 - no marketing tone
 
                 OUTPUT FORMAT:
-                Respond ONLY with valid JSON.
+                Respond ONLY with valid JSON. No markdown, no explanation.
 
                 {{
-                "label": "semantic cluster label",
-                "description": "Concise semantic summary of the shared topic."
+                "label": "specific subject label",
+                "description": "One sentence describing what is happening in this topic."
                 }}
                 """
 
@@ -148,16 +110,24 @@ class ClusterNamer:
                     ],
                     "temperature": 0.1,
                 },
-                timeout=60,
+                timeout=120,
             )
             response.raise_for_status()
             data = response.json()
+
+            log.debug(f"full data: {json.dumps(data)[:500]}")
 
             if not data.get("success", True):
                 errors = data.get("errors", [])
                 return Result.fail(f"cloudflare error: {errors}")
 
-            raw_response = data["result"]["response"]
+            raw_response = (
+                data["result"].get("response")
+                or data["result"]["choices"][0]["message"]["content"]
+            )
+            log.debug(
+                f"raw response: {json.dumps(raw_response) if isinstance(raw_response, dict) else str(raw_response)[:300]}"
+            )
 
             if isinstance(raw_response, dict):
                 result_json = raw_response
@@ -165,17 +135,21 @@ class ClusterNamer:
                 result_json = extract_first_json(raw_response.strip())
 
             raw_desc = result_json.get("description", "")
+            label = self._clean_label(result_json.get("label", "Unnamed Cluster"))
+
+            log.info(f"cluster named: '{label}'")
+            log.debug(f"description: {raw_desc}")
+
             return Result.ok(
                 NamingResult(
-                    label=self._clean_label(
-                        result_json.get("label", "Unnamed Cluster")
-                    ),
+                    label=label,
                     description=(
                         raw_desc if isinstance(raw_desc, str) else str(raw_desc)
                     ),
                 )
             )
         except Exception as e:
+            log.error(f"naming error: {e}")
             return Result.fail(f"naming and description error: {e}")
 
     def _clean_label(self, label: str) -> str:

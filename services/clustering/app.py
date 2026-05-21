@@ -52,7 +52,7 @@ def scrape_and_chunk(
                         "id": getattr(item, id_field),
                         "title": item.title,
                         "full_text": scraped.value.full_text,
-                        "excerpt": chunks[0],
+                        "excerpt": " ".join(chunks[:5]),
                         "chunks": chunks,
                         "type": item_type,
                     }
@@ -199,9 +199,10 @@ def handler(event, context):
             naming = container.namer.generate(
                 NamingInput(
                     titles=[m["title"] for m in members],
-                    excerpts=[m["excerpt"] for m in members],
+                    excerpts=[" ".join(m["chunks"][:2]) for m in members],
                 )
             )
+
             if not naming.success:
                 log.error(naming.error)
                 continue
