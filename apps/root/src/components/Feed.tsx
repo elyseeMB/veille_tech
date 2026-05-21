@@ -86,7 +86,6 @@ export function Feed({
 }
 
 function ItemSkeleton() {
-  const isMobile = useMobile();
   return (
     <div
       className={clsx(
@@ -102,7 +101,6 @@ function ItemSkeleton() {
 }
 
 function ItemSkeleton2() {
-  const isMobile = useMobile();
   return (
     <div
       className={clsx(
