@@ -1,5 +1,5 @@
 import os
-from scraper import TrafilaturaScraper, YouTubeScraper
+from scraper import ArticleScraper, YouTubeScraper
 from processing import CloudflareEmbedder, Clusterer, ClusterNamer, TextChunker
 from db import PostgresConnection
 from articles import MockRepository, PostgresRepository
@@ -14,7 +14,7 @@ class Container:
         use_mock = os.environ.get("USE_MOCK", "true") == "true"
         disable_youtube = os.environ.get("YOUTUBE_SCRAPING", "true") == "false"
 
-        self.article_scraper = TrafilaturaScraper()
+        self.article_scraper = ArticleScraper()
         self.chunker = TextChunker()
         self.embedder = CloudflareEmbedder(cf_account_id, cf_api_token)
         self.clusterer = Clusterer()
