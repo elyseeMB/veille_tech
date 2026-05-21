@@ -5,6 +5,7 @@ import { useBanner } from "./BannerContext.tsx";
 import { TimeRelative } from "./TimeRelative.tsx";
 import { useMobile, useMobileMedium } from "@/hooks/useMobile.ts";
 import clsx from "clsx";
+import { Badge } from "./ui/badge.tsx";
 
 const SOURCE_COLORS: Record<string, string> = {
   "Hacker News": "text-orange-400",
@@ -16,6 +17,79 @@ const SOURCE_COLORS: Record<string, string> = {
   abduzeedo: "text-[#dddddd]",
   TechCrunch: "text-[#68f176]",
   Lobsters: "text-red-300",
+};
+
+const BADGES_MAPPING = {
+  top: {
+    name: "Top",
+    className:
+      "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1",
+  },
+  show: {
+    name: "Show",
+    className:
+      "bg-fuchsia-50 text-fuchsia-800 dark:bg-fuchsia-950 dark:text-fuchsia-200 border-fuchsia-200 dark:border-fuchsia-900/50 border-1",
+  },
+  security: {
+    name: "Security",
+    className:
+      "bg-red-50 text-red-900 dark:bg-red-950 dark:text-red-200 border-red-200 dark:border-red-900/50 border-1",
+  },
+  science: {
+    name: "Science",
+    className:
+      "bg-sky-50 text-sky-900 dark:bg-sky-950 dark:text-sky-200 border-sky-200 dark:border-sky-900/50 border-1",
+  },
+  space: {
+    name: "Space",
+    className:
+      "bg-violet-50 text-violet-900 dark:bg-violet-950 dark:text-violet-200 border-violet-200 dark:border-violet-900/50 border-1",
+  },
+  ai: {
+    name: "AI",
+    className:
+      "bg-cyan-50 text-cyan-900 dark:bg-cyan-950 dark:text-cyan-200 border-cyan-200 dark:border-cyan-900/50 border-1",
+  },
+  computing: {
+    name: "Computing",
+    className:
+      "bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/50 border-1",
+  },
+  climate: {
+    name: "Climate",
+    className:
+      "bg-green-50 text-green-900 dark:bg-green-950 dark:text-green-200 border-green-200 dark:border-green-900/50 border-1",
+  },
+  startup: {
+    name: "Startup",
+    className:
+      "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1",
+  },
+  engineering: {
+    name: "Engineering",
+    className:
+      "bg-orange-50 text-orange-900 dark:bg-orange-950 dark:text-orange-200 border-orange-200 dark:border-orange-900/50 border-1",
+  },
+  "brand/design": {
+    name: "Brand/Design",
+    className:
+      "bg-pink-50 text-pink-900 dark:bg-pink-950 dark:text-pink-200 border-pink-200 dark:border-pink-900/50 border-1",
+  },
+  business: {
+    name: "Business",
+    className:
+      "bg-blue-50 text-blue-900 dark:bg-blue-950 dark:text-blue-200 border-blue-200 dark:border-blue-900/50 border-1",
+  },
+  backchannel: {
+    name: "Backchannel",
+    className:
+      "bg-zinc-50 text-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 border-zinc-200 dark:border-zinc-900/50 border-1",
+  },
+  ideas: {
+    name: "Ideas",
+    className:
+      "bg-yellow-50 text-yellow-900 dark:bg-yellow-950 dark:text-yellow-200 border-yellow-200 dark:border-yellow-900/50 border-1",
+  },
 };
 
 export function ArticleItem({ article: item }: { article: Article }) {
@@ -48,6 +122,8 @@ export function ArticleItem({ article: item }: { article: Article }) {
     });
   };
 
+  console.log(BADGES_MAPPING["ai"].name);
+
   return (
     <>
       <article
@@ -79,7 +155,9 @@ export function ArticleItem({ article: item }: { article: Article }) {
               </span>
               <span className="text-xs text-muted-foreground/50">·</span>
               <span className="text-xs max-w-60 truncate text-muted-foreground/60 capitalize">
-                {item.category}
+                <Badge className={BADGES_MAPPING[item.category].className}>
+                  {BADGES_MAPPING[item.category].name}
+                </Badge>
               </span>
             </div>
           </div>
