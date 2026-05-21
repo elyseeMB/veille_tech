@@ -32,7 +32,6 @@ const getDCy = (d: Date) =>
 
 // ── Mobile (trimestres)
 const QC_MOBILE = 14;
-const QC_MEDIUM = 10;
 const QM = { t: 8, r: 8, b: 30, l: 8 };
 
 const QUARTERSFN = (n: number = 3) => {
@@ -211,10 +210,8 @@ export function Calendar({
   const axisRef = useRef<SVGGElement | null>(null);
   const isMobile = useMobile();
   const isMediumMobile = useMobileMedium();
-
   const scrollable = isMediumMobile;
 
-  const cellSize = isMobile ? QC_MOBILE : QC_MEDIUM;
   const periods = isMobile ? QUARTERSFN(3) : HALVESFN();
   const currentPeriodIdx = isMobile
     ? Math.floor(now.getMonth() / 3)
@@ -271,7 +268,7 @@ export function Calendar({
               start={p.start}
               end={p.end}
               data={data}
-              cellSize={cellSize}
+              cellSize={QC_MOBILE}
             />
           </div>
         ))}
