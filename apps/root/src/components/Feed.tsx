@@ -86,8 +86,14 @@ export function Feed({
 }
 
 function ItemSkeleton() {
+  const isMobile = useMobile();
   return (
-    <div className="flex flex-col gap-5 p-5 border-l border-b border-border">
+    <div
+      className={clsx(
+        "flex flex-col gap-5 p-5 border-b border-border",
+        !isMobile && "border-l",
+      )}
+    >
       <div className="space-y-3">
         <Skeleton className="h-3 w-20 bg-muted" />
         <Skeleton className="h-5 w-4/5 bg-muted" />
@@ -97,8 +103,14 @@ function ItemSkeleton() {
 }
 
 function ItemSkeleton2() {
+  const isMobile = useMobile();
   return (
-    <div className="flex flex-col gap-5 p-5 mb-9 border-l border-b border-border last:border-0">
+    <div
+      className={clsx(
+        "flex flex-col gap-5 p-5 mb-9 border-b border-border last:border-0",
+        !isMobile && "border-l",
+      )}
+    >
       <Skeleton className="h-full bg-muted" />
       <div className="space-y-3">
         <Skeleton className="h-3 w-20 bg-muted" />
