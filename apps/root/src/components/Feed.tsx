@@ -107,7 +107,6 @@ function ItemSkeleton2() {
         "flex flex-col gap-5 w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:border-l lg:w-full lg:mx-0 lg:p-5 border-b border-border last:border-0",
       )}
     >
-      <Skeleton className="h-full bg-muted" />
       <div className="space-y-3">
         <Skeleton className="h-3 w-20 bg-muted" />
         <Skeleton className="h-5 w-4/5 bg-muted" />
@@ -120,7 +119,6 @@ function ItemSkeleton2() {
 function CarouselSkeleton() {
   return (
     <div className="grid grid-cols-[1px_1fr] gap-5 py-5 pr-5 mb-9 border-b border-border">
-      <Skeleton className="h-full bg-muted" />
       <div className="space-y-3">
         <Skeleton className="h-3 w-20 bg-muted" />
         <Skeleton className="h-5 w-4/5 bg-muted" />
