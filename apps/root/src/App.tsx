@@ -55,7 +55,7 @@ export function App() {
         style={{ viewTransitionName: "calendar-header" }}
         className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border ${calendarVisible ? "" : "lg:h-0 lg:pointer-events-none lg:overflow-hidden"}`}
       >
-        <div className="mx-auto max-w-5xl px-4 lg:px-12 pt-3 lg:pt-4 pb-0 lg:pb-2">
+        <div className="mx-auto max-w-5xl lg:px-12 pt-3 lg:pt-4 pb-0 lg:pb-2">
           <section id="clusters">
             <Calendar data={calendarData} />
           </section>
@@ -69,7 +69,7 @@ export function App() {
           // @ts-ignore
           "--header-height": `${calendarVisible ? headerHeight : 0}px`,
         }}
-        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 pt-[var(--header-height)] transition-[padding-top] transition-height duration-150 ease-out"
+        className="mx-auto max-w-7xl px-4 md:px-0 sm:px-6 lg:px-12 pt-[var(--header-height)] transition-[padding-top] transition-height duration-150 ease-out"
       >
         <Banner />
 
