@@ -30,7 +30,7 @@ class Clusterer:
         )
 
         self.__clusterer = hdbscan.HDBSCAN(
-            min_cluster_size=min_cluster_size, min_samples=1, metric="euclidean"
+            min_cluster_size=min_cluster_size, min_samples=2, metric="euclidean"
         )
 
     def cluster(self, embeddings: EmbeddingResult) -> Result[ClusterResult]:

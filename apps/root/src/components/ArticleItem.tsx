@@ -155,8 +155,12 @@ export function ArticleItem({ article: item }: { article: Article }) {
               </span>
               <span className="text-xs text-muted-foreground/50">·</span>
               <span className="text-xs max-w-60 truncate text-muted-foreground/60 capitalize">
-                <Badge className={BADGES_MAPPING[item.category].className}>
+                {/* <Badge className={BADGES_MAPPING[item.category].className}>
                   {BADGES_MAPPING[item.category].name}
+                </Badge> */}
+
+                <Badge className="bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1">
+                  {item.category}
                 </Badge>
               </span>
             </div>

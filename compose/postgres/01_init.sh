@@ -55,6 +55,7 @@ CREATE TABLE articles (
     content TEXT,
     summary TEXT,
     embedding vector(1024),
+    keywords text[];
     scrape_skipped BOOLEAN DEFAULT FALSE,
     category TEXT,
     published_at TIMESTAMPTZ,
@@ -70,6 +71,8 @@ CREATE TABLE videos (
     channel_title TEXT,
     channel_avatar TEXT,
     thumbnail TEXT,
+    keywords text[],
+    category text,
     scrape_skipped BOOLEAN DEFAULT FALSE,
     embedding vector(1024),
     published_at TIMESTAMPTZ,
@@ -145,4 +148,9 @@ CREATE INDEX idx_feed_items_type ON feed_items(type);
 CREATE INDEX idx_feed_items_ref_id ON feed_items(ref_id);
 
 CREATE INDEX idx_clusters_created_at ON clusters(created_at DESC);
+
+CREATE INDEX idx_videos_category ON videos (category);
+CREATE INDEX idx_articles_keywords ON articles USING GIN(keywords);
+CREATE INDEX idx_videos_keywords ON videos USING GIN(keywords);
+
 EOF

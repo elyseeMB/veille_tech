@@ -1,6 +1,12 @@
 import os
 from scraper import ArticleScraper, YouTubeScraper
-from processing import CloudflareEmbedder, Clusterer, ClusterNamer, TextChunker
+from processing import (
+    CloudflareEmbedder,
+    Clusterer,
+    ClusterNamer,
+    TextChunker,
+    MetadataExtractor,
+)
 from db import PostgresConnection
 from articles import MockRepository, PostgresRepository
 from videos import MockVideoRepository, PostgresVideoRepository
@@ -16,6 +22,7 @@ class Container:
 
         self.article_scraper = ArticleScraper()
         self.chunker = TextChunker()
+        self.metadata_extractor = MetadataExtractor(cf_account_id, cf_api_token)
         self.embedder = CloudflareEmbedder(cf_account_id, cf_api_token)
         self.clusterer = Clusterer()
         self.namer = ClusterNamer(cf_account_id, cf_api_token)

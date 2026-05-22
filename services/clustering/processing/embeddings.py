@@ -22,7 +22,7 @@ class CloudflareEmbedder:
     __headers: dict
 
     def __init__(self, account_id: str, api_token: str):
-        self.__url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/baai/bge-m3"
+        self.__url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/qwen/qwen3-embedding-0.6b"
         self.__headers = {
             "Authorization": f"Bearer {api_token}",
             "Content-Type": "application/json",
@@ -43,12 +43,13 @@ class CloudflareEmbedder:
             )
             response.raise_for_status()
             data = response.json()
+            log.debug(f"vector dimensions: {len(data['result']['data'][0])}")
             return Result.ok(EmbeddingResult(vectors=data["result"]["data"]))
         except Exception as e:
             return Result.fail(f"embedding error: {e}")
 
     def embed_in_batches(
-        self, texts: List[str], batch_size: int = 50
+        self, texts: List[str], batch_size: int = 32
     ) -> Result[EmbeddingResult]:
         log.info(f"embedding {len(texts)} chunks in batches of {batch_size}")
         try:
