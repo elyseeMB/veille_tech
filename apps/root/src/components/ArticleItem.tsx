@@ -170,12 +170,15 @@ export function ArticleItem({ article: item }: { article: Article }) {
                       {BADGES_MAPPING[item.category].name}
                     </span>
                   ) : (
-                    <div className="flex items-center gap-1">
-                      <Astroid size={10} />
+                    <span className="flex items-center gap-1">
+                      <Astroid
+                        className="fill-emerald-400 stroke-emerald-400"
+                        size={10}
+                      />
                       <span className=" max-w-[180px] truncate">
                         {item.category}
                       </span>
-                    </div>
+                    </span>
                   )}
                 </Badge>
               </span>
