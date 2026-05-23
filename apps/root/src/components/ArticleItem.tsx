@@ -1,4 +1,5 @@
 import type { Article } from "@/hooks/useFeed.ts";
+import { Astroid } from "lucide-react";
 import { useSummaryStore } from "@/store/summaryStore.ts";
 import { useRef, type MouseEventHandler } from "react";
 import { useBanner } from "./BannerContext.tsx";
@@ -164,11 +165,18 @@ export function ArticleItem({ article: item }: { article: Article }) {
                       : "bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/50 border-1"
                   }
                 >
-                  <span className="max-w-[200px] truncate">
-                    {isCategoryDefault
-                      ? BADGES_MAPPING[item.category].name
-                      : item.category}
-                  </span>
+                  {isCategoryDefault ? (
+                    <span className="max-w-[200px] truncate">
+                      {BADGES_MAPPING[item.category].name}
+                    </span>
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <Astroid size={10} />
+                      <span className=" max-w-[180px] truncate">
+                        {item.category}
+                      </span>
+                    </div>
+                  )}
                 </Badge>
               </span>
             </div>
