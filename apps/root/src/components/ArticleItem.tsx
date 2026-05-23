@@ -172,7 +172,7 @@ export function ArticleItem({ article: item }: { article: Article }) {
                   ) : (
                     <span className="flex items-center gap-1">
                       <Astroid
-                        className="fill-emerald-400 stroke-emerald-400"
+                        className="fill-emerald-300 stroke-emerald-300"
                         size={10}
                       />
                       <span className=" max-w-[180px] truncate">
