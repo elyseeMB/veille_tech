@@ -6,11 +6,12 @@ import os
 import boto3
 from collections import defaultdict
 from container import Container
-from processing import NamingInput
+from processing import NamingInput, MetadataInput
 from articles import ClusterRow, EmbeddingRow
 from videos import VideoEmbeddingRow
 from shared import EmbeddingResult
 from logger import get_logger
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 log = get_logger("app")
 container = None
@@ -35,55 +36,99 @@ def load_secrets():
 
 
 def scrape_and_chunk(
-    items, scrape_fn, id_field, url_field, skip_fn, chunker, item_type
+    items,
+    scrape_fn,
+    id_field,
+    url_field,
+    skip_fn,
+    chunker,
+    embedder,
+    metadata_extractor_fn,
+    item_type,
 ):
-    result = []
-    for item in items:
+    def process_item(item):
         try:
             url_or_id = getattr(item, url_field)
             scraped = scrape_fn(url_or_id)
             if scraped.success and scraped.value and scraped.value.full_text:
                 chunks = chunker.chunk(scraped.value.full_text)
+                chunks = chunker.select_best_chunks(item.title, chunks, embedder)
+
+                log.debug(f"--- BEST CHUNKS : {item.title} ---")
+                for idx, c in enumerate(chunks):
+                    log.debug(f"  Chunk {idx+1}: {c[:2]}...")
+
                 if not chunks:
                     skip_fn(getattr(item, id_field))
-                    continue
-                result.append(
-                    {
-                        "id": getattr(item, id_field),
-                        "title": item.title,
-                        "full_text": scraped.value.full_text,
-                        "excerpt": " ".join(chunks[:5]),
-                        "chunks": chunks,
-                        "type": item_type,
-                    }
+                    return None
+
+                meta_result = metadata_extractor_fn(
+                    MetadataInput(title=item.title, chunks=chunks)
                 )
+
+                if meta_result.success:
+                    main_topic = meta_result.value.main_topic
+                    keywords = meta_result.value.keywords
+                else:
+                    log.warning(
+                        f"Metadata extraction failed for {item.title}: {meta_result.error}"
+                    )
+                    main_topic = ""
+                    keywords = []
+
+                return {
+                    "id": getattr(item, id_field),
+                    "title": item.title,
+                    "full_text": scraped.value.full_text,
+                    "excerpt": " ".join(chunks[:5]),
+                    "chunks": chunks,
+                    "main_topic": main_topic,
+                    "keywords": keywords,
+                    "type": item_type,
+                }
             else:
                 log.warning(f"scraping failed for {url_or_id}, skipping")
                 skip_fn(getattr(item, id_field))
+                return None
         except Exception as e:
             log.error(f"error scraping {getattr(item, url_field)}: {e}")
             skip_fn(getattr(item, id_field))
+            return None
+
+    result = []
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = {executor.submit(process_item, item): item for item in items}
+        for future in as_completed(futures):
+            item_result = future.result()
+            if item_result:
+                result.append(item_result)
     return result
 
 
-def embed_items(items, embedder, chunker):
-    all_chunks = []
-    chunk_map = []
+def embed_items(items, embedder):
+    texts_to_embed = []
+    for item in items:
+        tags_str = ", ".join([item["main_topic"]] + item["keywords"])
+        chunks_str = " ".join(item["chunks"])
 
-    for i, item in enumerate(items):
-        all_chunks.extend(item["chunks"])
-        chunk_map.extend([i] * len(item["chunks"]))
+        enriched_text = (
+            f"Title: {item['title']} | Tags: {tags_str} | Content: {chunks_str}"
+        )
+        texts_to_embed.append(enriched_text)
 
-    embeddings = embedder.embed_in_batches(all_chunks, batch_size=50)
+        # LOG DU TEXTE ENRICHI AVANT EMBEDDING
+        log.info(f" Enriched text for '{item['title']}': {enriched_text[:150]}...")
+
+    embeddings = embedder.embed_in_batches(texts_to_embed, batch_size=50)
     if not embeddings.success:
         return None, embeddings.error
 
-    item_vectors = defaultdict(list)
-    for vector, item_idx in zip(embeddings.value.vectors, chunk_map):
-        item_vectors[item_idx].append(vector)
-
-    for i, item in enumerate(items):
-        item["vector"] = chunker.average_vectors(item_vectors[i])
+    for i, vector in enumerate(embeddings.value.vectors):
+        items[i]["vector"] = vector
+        # LOG DU VECTEUR GENERÉ (Aperçu des 5 premières dimensions)
+        log.info(
+            f" Embedding generated for '{items[i]['title']}' -> Vector shape: {len(vector)}, Preview: {vector[:5]}..."
+        )
 
     return items, None
 
@@ -118,6 +163,8 @@ def handler(event, context):
             url_field="url",
             skip_fn=container.repository.mark_as_skipped,
             chunker=container.chunker,
+            embedder=container.embedder,
+            metadata_extractor_fn=container.metadata_extractor.extract,
             item_type="article",
         )
         log.info(
@@ -136,6 +183,8 @@ def handler(event, context):
                 url_field="external_id",
                 skip_fn=container.video_repository.mark_as_skipped,
                 chunker=container.chunker,
+                embedder=container.embedder,
+                metadata_extractor_fn=container.metadata_extractor.extract,
                 item_type="video",
             )
             log.info(f"scraped {len(scraped_videos)}/{len(videos.value or [])} videos")
@@ -150,7 +199,7 @@ def handler(event, context):
         total_chunks = sum(len(i["chunks"]) for i in all_items)
         log.info(f"embedding {len(all_items)} items — {total_chunks} chunks total")
 
-        all_items, error = embed_items(all_items, container.embedder, container.chunker)
+        all_items, error = embed_items(all_items, container.embedder)
         if error:
             log.error(error)
             return
@@ -162,11 +211,21 @@ def handler(event, context):
         for item in all_items:
             if item["type"] == "article":
                 saved = container.repository.save_embedding(
-                    EmbeddingRow(article_id=item["id"], vector=item["vector"])
+                    EmbeddingRow(
+                        article_id=item["id"],
+                        vector=item["vector"],
+                        main_topic=item["main_topic"],
+                        keywords=item["keywords"],
+                    )
                 )
             else:
                 saved = container.video_repository.save_embedding(
-                    VideoEmbeddingRow(video_id=item["id"], vector=item["vector"])
+                    VideoEmbeddingRow(
+                        video_id=item["id"],
+                        vector=item["vector"],
+                        main_topic=item["main_topic"],
+                        keywords=item["keywords"],
+                    )
                 )
             if not saved.success:
                 log.error(saved.error)
@@ -196,10 +255,14 @@ def handler(event, context):
         cluster_rows = []
 
         for label, members in groups.items():
+            formatted_excerpts = [
+                f"Category: {m['main_topic']} | Content: {' '.join(m['chunks'][:2])}"
+                for m in members
+            ]
             naming = container.namer.generate(
                 NamingInput(
                     titles=[m["title"] for m in members],
-                    excerpts=[" ".join(m["chunks"][:2]) for m in members],
+                    excerpts=formatted_excerpts,
                 )
             )
 

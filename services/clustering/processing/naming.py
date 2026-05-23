@@ -59,46 +59,48 @@ class ClusterNamer:
             )
 
             user_prompt = f"""
-                You are a semantic labeling engine for a tech news aggregator.
+            You are a semantic labeling engine for a tech news aggregator.
 
-                You receive a set of tech articles sharing a common topic.
-                Your job is to identify and name that shared topic with maximum precision.
+            You receive a set of tech articles sharing a common topic.
+            Your job is to identify and name that shared topic with maximum precision.
 
-                ARTICLES:
-                {chr(10).join([
-                    f"Title: {t}\nExcerpt: {e}\n"
-                    for t, e in zip(input.titles, input.excerpts or input.titles)
-                ])}
+            ARTICLES:
+            {chr(10).join([
+                f"Title: {t}\nExcerpt: {e}\n"
+                for t, e in zip(input.titles, input.excerpts or input.titles)
+            ])}
 
-                TASK:
-                Produce a label that captures the SPECIFIC subject of these articles.
+            TASK:
+            Produce a label that captures the SPECIFIC subject of these articles.
 
-                SPECIFICITY RULE — the most important rule:
-                Given two accurate labels, always pick the more specific one.
-                Ask: "Could this label apply to 100 different news cycles?"
-                If yes, it is too generic. Go one level deeper.
+            SPECIFICITY RULE — the most important rule:
+            Given two accurate labels, always pick the more specific one.
+            Ask: "Could this label apply to 100 different news cycles?"
+            If yes, it is too generic. Go one level deeper.
 
-                LABEL RULES:
-                - 2 to 5 words
-                - lowercase only
-                - no punctuation, no quotes, no dashes, no emojis
-                - name the actual subject, not its parent category
-                - if a specific technology, protocol, or concept is shared — name it
-                - company names are allowed when the cluster is genuinely company-centric
+            LABEL RULES:
+            - 2 to 4 words maximum
+            - lowercase only
+            - no punctuation, no quotes, no dashes, no emojis
+            - name the actual entity or event — not its parent category
+            - ALWAYS prefer a proper noun, product name, company name, or version number
+            - "[company] reputation crisis" beats "ai backlash"
+            - "[group] supply chain attack" beats "github repository breaches"
+            - "[company A] [company B] acquisition" beats "tech and society"
 
-                DESCRIPTION RULES:
-                - exactly 1 sentence
-                - describes what is happening, not just what the domain is
-                - no marketing tone
+            DESCRIPTION RULES:
+            - exactly 1 sentence
+            - describes what is happening, not just what the domain is
+            - no marketing tone
 
-                OUTPUT FORMAT:
-                Respond ONLY with valid JSON. No markdown, no explanation.
+            OUTPUT FORMAT:
+            Respond ONLY with valid JSON. No markdown, no explanation.
 
-                {{
-                "label": "specific subject label",
-                "description": "One sentence describing what is happening in this topic."
-                }}
-                """
+            {{
+            "label": "specific subject label",
+            "description": "One sentence describing what is happening in this topic."
+            }}
+            """
 
             response = requests.post(
                 self.__url,

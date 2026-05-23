@@ -101,7 +101,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 2048
-      Timeout: 300
+      Timeout: 900
       Environment:
         Variables:
           ENVIRONMENT: "production"
@@ -119,10 +119,4 @@ Resources:
           Properties:
             Schedule: cron(0 6 ? * * *)
             Name: clustering-morning
-            Enabled: true
-        EveningSchedule:
-          Type: Schedule
-          Properties:
-            Schedule: cron(0 18 ? * * *)
-            Name: clustering-evening
             Enabled: true

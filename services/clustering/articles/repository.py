@@ -116,7 +116,7 @@ class PostgresRepository(BaseRepository):
                         LEFT JOIN cluster_items ci ON ci.ref_id = a.id AND ci.type = 'article'::feed_item_type
                         WHERE ci.ref_id IS NULL
                         AND a.scrape_skipped = FALSE
-                        AND a.published_at >= NOW() - INTERVAL '48 hours'""")
+                        AND a.published_at >= NOW() - INTERVAL '24 hours'""")
                     rows = cur.fetchall()
                     return Result.ok(
                         [
@@ -150,7 +150,7 @@ class PostgresRepository(BaseRepository):
 
     def save_embedding(self, row: EmbeddingRow) -> Result[None]:
         log.debug(
-            f"writing embedding — article={row.article_id} vector_size={len(row.vector)}"
+            f"writing embedding and metadata — article={row.article_id} vector_size={len(row.vector)}"
         )
         try:
             conn = self.__conn.get()
@@ -158,17 +158,28 @@ class PostgresRepository(BaseRepository):
                 with conn.cursor() as cur:
                     cur.execute(
                         """
-                        UPDATE articles SET embedding = %s::vector WHERE id = %s
-                    """,
-                        (str(row.vector), row.article_id),
+                        UPDATE articles 
+                        SET 
+                            embedding = %s::vector,
+                            category = %s,
+                            keywords = %s
+                        WHERE id = %s
+                        """,
+                        (
+                            str(row.vector),
+                            row.main_topic,
+                            row.keywords,
+                            row.article_id,
+                        ),
                     )
                 conn.commit()
             finally:
                 self.__conn.put(conn)
-            log.debug(f"embedding saved — article={row.article_id}")
+
+            log.debug(f"embedding and metadata saved — article={row.article_id}")
             return Result.ok(None)
         except Exception as e:
-            return Result.fail(f"save embedding error: {e}")
+            return Result.fail(f"save embedding and metadata error: {e}")
 
     def save_clusters(self, clusters: List[ClusterRow]) -> Result[None]:
         log.info(f"writing {len(clusters)} clusters to DB")

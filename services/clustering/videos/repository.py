@@ -112,7 +112,7 @@ class PostgresVideoRepository(BaseVideoRepository):
 
     def save_embedding(self, row: VideoEmbeddingRow) -> Result[None]:
         log.debug(
-            f"writing embedding — video={row.video_id} vector_size={len(row.vector)}"
+            f"writing embedding and metadata — video={row.video_id} vector_size={len(row.vector)}"
         )
         try:
             conn = self.__conn.get()
@@ -120,14 +120,25 @@ class PostgresVideoRepository(BaseVideoRepository):
                 with conn.cursor() as cur:
                     cur.execute(
                         """
-                        UPDATE videos SET embedding = %s::vector WHERE id = %s
-                    """,
-                        (str(row.vector), row.video_id),
+                        UPDATE videos 
+                        SET 
+                            embedding = %s::vector,
+                            category = %s,
+                            keywords = %s
+                        WHERE id = %s
+                        """,
+                        (
+                            str(row.vector),
+                            row.main_topic,
+                            row.keywords,
+                            row.video_id,
+                        ),
                     )
                 conn.commit()
             finally:
                 self.__conn.put(conn)
-            log.debug(f"embedding saved — video={row.video_id}")
+
+            log.debug(f"embedding and metadata saved — video={row.video_id}")
             return Result.ok(None)
         except Exception as e:
-            return Result.fail(f"save embedding video error: {e}")
+            return Result.fail(f"save video embedding error: {e}")

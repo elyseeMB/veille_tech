@@ -31,4 +31,15 @@ class NamingResult(BaseModel):
     description: Optional[str] = None
 
 
-__all__ = ["Result", "EmbeddingResult", "ClusterResult", "NamingResult"]
+class MetadataResult(BaseModel):
+    main_topic: str
+    keywords: List[str]
+
+
+__all__ = [
+    "Result",
+    "EmbeddingResult",
+    "ClusterResult",
+    "NamingResult",
+    "MetadataResult",
+]

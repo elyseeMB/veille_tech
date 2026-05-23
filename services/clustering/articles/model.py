@@ -20,6 +20,8 @@ class ClusterRow(BaseModel):
 class EmbeddingRow(BaseModel):
     article_id: str
     vector: List[float]
+    main_topic: str
+    keywords: List[str]
 
 
 __all__ = ["ArticleRow", "ClusterRow", "EmbeddingRow"]
