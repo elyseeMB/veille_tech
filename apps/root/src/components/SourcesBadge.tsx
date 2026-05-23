@@ -12,7 +12,7 @@ const API_URL = import.meta.env.DEV
   : import.meta.env.VITE_API_URL;
 
 export function SourcesBadge({ sources }: SourcesBadgeProps) {
-  const shown = sources.slice(0, 4);
+  const shown = sources.slice(0, 8);
   const count = sources.length;
 
   return (
