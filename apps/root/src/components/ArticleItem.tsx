@@ -161,7 +161,7 @@ export function ArticleItem({ article: item }: { article: Article }) {
                   className={
                     isCategoryDefault
                       ? BADGES_MAPPING[item.category].className
-                      : "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1"
+                      : "bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/50 border-1"
                   }
                 >
                   <span className="max-w-[200px] truncate">
