@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
+import time
 import boto3
 from collections import defaultdict
 from container import Container
@@ -255,6 +256,7 @@ def handler(event, context):
         cluster_rows = []
 
         for label, members in groups.items():
+            time.sleep(2)
             formatted_excerpts = [
                 f"Category: {m['main_topic']} | Content: {' '.join(m['chunks'][:2])}"
                 for m in members

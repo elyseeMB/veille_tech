@@ -122,6 +122,8 @@ export function ArticleItem({ article: item }: { article: Article }) {
     });
   };
 
+  const isCategoryDefault = !!BADGES_MAPPING[item.category];
+
   console.log(BADGES_MAPPING["ai"].name);
 
   return (
@@ -147,7 +149,7 @@ export function ArticleItem({ article: item }: { article: Article }) {
         <div className="space-y-3 w-full">
           <div className="flex flex-col items-start gap-1">
             <TimeRelative date={item.pubDate} />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full">
               <span
                 className={`text-xs uppercase tracking-widest ${SOURCE_COLORS[item.source] ?? "text-muted-foreground"}`}
               >
@@ -155,12 +157,18 @@ export function ArticleItem({ article: item }: { article: Article }) {
               </span>
               <span className="text-xs text-muted-foreground/50">·</span>
               <span className="text-xs max-w-60 truncate text-muted-foreground/60 capitalize">
-                {/* <Badge className={BADGES_MAPPING[item.category].className}>
-                  {BADGES_MAPPING[item.category].name}
-                </Badge> */}
-
-                <Badge className="bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1">
-                  {item.category}
+                <Badge
+                  className={
+                    isCategoryDefault
+                      ? BADGES_MAPPING[item.category].className
+                      : "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1"
+                  }
+                >
+                  <span className="max-w-[200px] truncate">
+                    {isCategoryDefault
+                      ? BADGES_MAPPING[item.category].name
+                      : item.category}
+                  </span>
                 </Badge>
               </span>
             </div>
