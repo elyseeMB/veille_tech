@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -46,9 +44,9 @@ const tabs = [
   },
 ];
 
-const INACTIVE_W = 40; // px — juste l'icône
-const GAP = 8; // gap-2 = 8px
-const PADDING = 8; // p-1 = 4px de chaque côté = 8px total
+const INACTIVE_W = 50;
+const GAP = 8;
+const PADDING = 0;
 
 export default function ExpandableTabs() {
   const [activeTab, setActiveTab] = useState("explore");
@@ -72,7 +70,10 @@ export default function ExpandableTabs() {
   return (
     <div className="w-full max-w-md">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-4">
-        <TabsList ref={listRef} className="flex gap-2 h-auto p-1 w-full">
+        <TabsList
+          ref={listRef}
+          className="flex justify-between p-0 h-auto w-full"
+        >
           {tabs.map(({ icon, name, value }) => {
             const isActive = activeTab === value;
 
@@ -86,15 +87,15 @@ export default function ExpandableTabs() {
               >
                 <TabsTrigger
                   value={value}
-                  className="flex h-8 w-full items-center justify-center gap-1.5 px-2 data-[state=active]:shadow-none"
+                  className="flex h-12 w-full items-center justify-center gap-1.5 px-2 data-[state=active]:shadow-none border border-input"
                 >
                   {icon}
                   <AnimatePresence initial={false}>
                     {isActive && (
                       <motion.span
                         className="text-sm font-medium whitespace-nowrap overflow-hidden"
-                        initial={{ opacity: 0, width: 0 }}
-                        animate={{ opacity: 1, width: "auto" }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         exit={{ opacity: 0, width: 0 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
                       >
@@ -108,11 +109,11 @@ export default function ExpandableTabs() {
           })}
         </TabsList>
 
-        {tabs.map((tab) => (
+        {/* {tabs.map((tab) => (
           <TabsContent key={tab.value} value={tab.value}>
             <p className="text-muted-foreground text-sm">{tab.content}</p>
           </TabsContent>
-        ))}
+        ))} */}
       </Tabs>
     </div>
   );

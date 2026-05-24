@@ -260,7 +260,7 @@ export function Calendar({
     return (
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex scrollbar-hide overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {periods.map((p, i) => (
           <div key={i} className="snap-start shrink-0 w-full">
