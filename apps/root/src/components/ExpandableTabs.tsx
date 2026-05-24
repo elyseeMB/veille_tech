@@ -1,10 +1,4 @@
-import {
-  useState,
-  useRef,
-  useLayoutEffect,
-  type ReactNode,
-  type JSX,
-} from "react";
+import { useState, useRef, type ReactNode, type JSX, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -29,7 +23,7 @@ export default function ExpandableTabs({
   const [activeWidth, setActiveWidth] = useState(120);
   const listRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!listRef.current) {
       return;
     }
