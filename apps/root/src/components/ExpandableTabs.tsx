@@ -34,9 +34,9 @@ export default function ExpandableTabs({
       return;
     }
     const node = listRef.current;
-    const rect = node.getBoundingClientRect();
 
     const calculate = () => {
+      const rect = node.getBoundingClientRect();
       document.documentElement.style.setProperty(
         "--tabs-height",
         `${rect.height}px`,
