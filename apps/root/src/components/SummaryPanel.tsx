@@ -50,7 +50,10 @@ export function SummaryPanel() {
     <section
       ref={sectionRef}
       id="summary"
-      className="sticky overflow-y-auto scrollbar-hide overscroll-contain h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))] border-r border-border"
+      className={clsx(
+        !isMobile &&
+          "border-r border-border sticky overflow-y-auto scrollbar-hide overscroll-contain h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]",
+      )}
     >
       {/* <TemporalForceGraph feedData={Array.isArray(data) ? data : [data]} /> */}
 
