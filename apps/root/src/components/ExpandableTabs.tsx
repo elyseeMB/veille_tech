@@ -82,6 +82,7 @@ export default function ExpandableTabs({
           before:content-['']
           before:pointer-events-none
           before:bg-gradient-to-b
+          before:from-30%
           before:from-background
           before:to-transparent
           "
