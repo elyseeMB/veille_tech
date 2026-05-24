@@ -3,11 +3,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-import time
 import boto3
 from collections import defaultdict
 from container import Container
-from processing import NamingInput, MetadataInput
+from processing import MetadataInput
+from processing.namers.base import BatchNamingInput, ClusterInput
 from articles import ClusterRow, EmbeddingRow
 from videos import VideoEmbeddingRow
 from shared import EmbeddingResult
@@ -26,6 +26,8 @@ def load_secrets():
         "DATABASE_URL": os.environ.get("DB_PARAM_NAME"),
         "CF_ACCOUNT_ID": os.environ.get("CF_ACCOUNT_ID"),
         "CF_API_TOKEN": os.environ.get("CF_API_TOKEN"),
+        "CF_API_TOKEN_GATEWAY": os.environ.get("CF_API_TOKEN_GATEWAY"),
+        "GEMINI_API_KEY": os.environ.get("GEMINI_API_KEY"),
     }
     for env_key, ssm_path in params.items():
         if ssm_path and (ssm_path.startswith("/") or ssm_path.startswith("veille")):
@@ -57,25 +59,40 @@ def scrape_and_chunk(
 
                 log.debug(f"--- BEST CHUNKS : {item.title} ---")
                 for idx, c in enumerate(chunks):
-                    log.debug(f"  Chunk {idx+1}: {c[:2]}...")
+                    log.debug(f"  Chunk {idx + 1}: {c[:2]}...")
 
                 if not chunks:
                     skip_fn(getattr(item, id_field))
                     return None
 
-                meta_result = metadata_extractor_fn(
-                    MetadataInput(title=item.title, chunks=chunks)
+                existing_category = getattr(item, "category", "") or getattr(
+                    item, "main_topic", ""
                 )
 
-                if meta_result.success:
-                    main_topic = meta_result.value.main_topic
-                    keywords = meta_result.value.keywords
-                else:
-                    log.warning(
-                        f"Metadata extraction failed for {item.title}: {meta_result.error}"
+                if getattr(item, "keywords", None) and existing_category.strip() != "":
+                    keywords = item.keywords
+                    main_topic = existing_category
+                    existing_embedding = getattr(item, "embedding", None)
+                    log.debug(
+                        f"keywords + category already exist for '{item.title}' — skipping extraction"
                     )
-                    main_topic = ""
-                    keywords = []
+                else:
+                    meta_result = metadata_extractor_fn(
+                        MetadataInput(title=item.title, chunks=chunks)
+                    )
+
+                    if meta_result.success:
+                        main_topic = meta_result.value.main_topic
+                        keywords = meta_result.value.keywords
+                    else:
+                        log.warning(
+                            f"metadata extraction failed for {item.title}: {meta_result.error}"
+                        )
+                        main_topic = existing_category
+                        keywords = getattr(item, "keywords", []) or []
+
+                    # Forcer régénération embedding — metadata a changé
+                    existing_embedding = None
 
                 return {
                     "id": getattr(item, id_field),
@@ -86,6 +103,7 @@ def scrape_and_chunk(
                     "main_topic": main_topic,
                     "keywords": keywords,
                     "type": item_type,
+                    "existing_embedding": existing_embedding,
                 }
             else:
                 log.warning(f"scraping failed for {url_or_id}, skipping")
@@ -97,7 +115,7 @@ def scrape_and_chunk(
             return None
 
     result = []
-    with ThreadPoolExecutor(max_workers=5) as executor:
+    with ThreadPoolExecutor(max_workers=2) as executor:
         futures = {executor.submit(process_item, item): item for item in items}
         for future in as_completed(futures):
             item_result = future.result()
@@ -107,28 +125,45 @@ def scrape_and_chunk(
 
 
 def embed_items(items, embedder):
-    texts_to_embed = []
+    to_embed = []
     for item in items:
-        tags_str = ", ".join([item["main_topic"]] + item["keywords"])
-        chunks_str = " ".join(item["chunks"])
+        if item.get("existing_embedding"):
+            item["vector"] = item["existing_embedding"]
+        else:
+            to_embed.append(item)
 
+    log.info(
+        f"{len(items) - len(to_embed)} embeddings récupérés depuis DB, {len(to_embed)} à calculer"
+    )
+
+    if not to_embed:
+        return items, None
+
+    texts_to_embed = []
+    for item in to_embed:
+        tags_parts = []
+        if item["main_topic"]:
+            tags_parts.append(item["main_topic"])
+        tags_parts.extend(item["keywords"])
+        tags_str = ", ".join(tags_parts) if tags_parts else ""
+
+        chunks_str = " ".join(item["chunks"])
         enriched_text = (
             f"Title: {item['title']} | Tags: {tags_str} | Content: {chunks_str}"
+            if tags_str
+            else f"Title: {item['title']} | Content: {chunks_str}"
         )
         texts_to_embed.append(enriched_text)
-
-        # LOG DU TEXTE ENRICHI AVANT EMBEDDING
-        log.info(f" Enriched text for '{item['title']}': {enriched_text[:150]}...")
+        log.info(f"enriched text for '{item['title']}': {enriched_text[:150]}...")
 
     embeddings = embedder.embed_in_batches(texts_to_embed, batch_size=50)
     if not embeddings.success:
         return None, embeddings.error
 
     for i, vector in enumerate(embeddings.value.vectors):
-        items[i]["vector"] = vector
-        # LOG DU VECTEUR GENERÉ (Aperçu des 5 premières dimensions)
+        to_embed[i]["vector"] = vector
         log.info(
-            f" Embedding generated for '{items[i]['title']}' -> Vector shape: {len(vector)}, Preview: {vector[:5]}..."
+            f"embedding generated for '{to_embed[i]['title']}' -> shape: {len(vector)}, preview: {vector[:5]}..."
         )
 
     return items, None
@@ -208,8 +243,13 @@ def handler(event, context):
         log.info("embeddings done")
 
         # ── 4. Sauvegarder les embeddings ─────────────────────────────────
-        log.info(f"saving {len(all_items)} embeddings...")
+        log.info(f"saving embeddings...")
+        saved_count = 0
         for item in all_items:
+            # Skip si embedding récupéré depuis DB — pas besoin de re-sauvegarder
+            if item.get("existing_embedding"):
+                continue
+
             if item["type"] == "article":
                 saved = container.repository.save_embedding(
                     EmbeddingRow(
@@ -230,6 +270,12 @@ def handler(event, context):
                 )
             if not saved.success:
                 log.error(saved.error)
+            else:
+                saved_count += 1
+
+        log.info(
+            f"{saved_count} embeddings saved, {len(all_items) - saved_count} reused from DB"
+        )
 
         # ── 5. Clustering ─────────────────────────────────────────────────
         if len(all_items) < 5:
@@ -246,41 +292,58 @@ def handler(event, context):
 
         # ── 6. Grouper par cluster ────────────────────────────────────────
         groups = defaultdict(list)
+        noise_count = 0
         for item, label in zip(all_items, clusters.value.labels):
             if label == -1:
+                noise_count += 1
                 continue
             groups[label].append(item)
 
-        # ── 7. Nommer + sauvegarder ───────────────────────────────────────
-        log.info(f"naming {len(groups)} clusters...")
-        cluster_rows = []
-
-        for label, members in groups.items():
-            time.sleep(2)
-            formatted_excerpts = [
-                f"Category: {m['main_topic']} | Content: {' '.join(m['chunks'][:2])}"
-                for m in members
-            ]
-            naming = container.namer.generate(
-                NamingInput(
-                    titles=[m["title"] for m in members],
-                    excerpts=formatted_excerpts,
-                )
+        log.info(
+            f"clustering result: {len(groups)} clusters, {noise_count} noise articles"
+        )
+        for label_id, members in groups.items():
+            log.info(
+                f"  cluster {label_id}: {len(members)} articles — ex: {members[0]['title'][:60]}"
             )
 
-            if not naming.success:
-                log.error(naming.error)
-                continue
+        if not groups:
+            log.warning("no clusters formed")
+            return
 
-            articles_in = [m["id"] for m in members if m["type"] == "article"]
-            videos_in = [m["id"] for m in members if m["type"] == "video"]
+        # ── 7. Nommer + sauvegarder ───────────────────────────────────────
+        log.info(f"naming {len(groups)} clusters...")
 
+        batch_input = BatchNamingInput(
+            clusters=[
+                ClusterInput(
+                    index=idx,
+                    titles=[m["title"] for m in members[:10]],
+                    excerpts=[
+                        f"Category: {m['main_topic']} | Content: {' '.join(m['chunks'][:1])[:300]}"
+                        for m in members[:10]
+                    ],
+                )
+                for idx, (label, members) in enumerate(groups.items())
+            ]
+        )
+
+        batch_result = container.namer.generate_batch(batch_input)
+        if not batch_result.success:
+            log.error(batch_result.error)
+            return
+
+        group_list = list(groups.values())
+        cluster_rows = []
+
+        for i, naming in enumerate(batch_result.value.results):
+            members = group_list[i]
             cluster_rows.append(
                 ClusterRow(
-                    label=naming.value.label,
-                    description=naming.value.description,
-                    article_ids=articles_in,
-                    video_ids=videos_in,
+                    label=naming.label,
+                    description=naming.description,
+                    article_ids=[m["id"] for m in members if m["type"] == "article"],
+                    video_ids=[m["id"] for m in members if m["type"] == "video"],
                 )
             )
 

@@ -1,7 +1,6 @@
 import os
 import json
 import requests
-from json_repair import repair_json
 from tenacity import (
     retry,
     stop_after_attempt,
@@ -9,24 +8,14 @@ from tenacity import (
     retry_if_exception_type,
 )
 from typing import List
-from pydantic import BaseModel
 from shared import Result, NamingResult
 from logger import get_logger
+from processing.namers.base import BaseNamer, NamingInput, extract_first_json
 
-log = get_logger("processing.naming")
-
-
-class NamingInput(BaseModel):
-    titles: List[str]
-    excerpts: List[str] = []
+log = get_logger("processing.namers.cloudflare")
 
 
-def extract_first_json(text: str) -> dict:
-    repaired = repair_json(text)
-    return json.loads(repaired)
-
-
-class ClusterNamer:
+class CloudflareNamer(BaseNamer):
     __url: str
     __headers: dict
 
@@ -67,10 +56,14 @@ class ClusterNamer:
             Your job is to identify and name that shared topic with maximum precision.
 
             ARTICLES:
-            {chr(10).join([
-                f"Title: {t}\nExcerpt: {e}\n"
-                for t, e in zip(input.titles, input.excerpts or input.titles)
-            ])}
+            {
+                chr(10).join(
+                    [
+                        f"Title: {t}\nExcerpt: {e}\n"
+                        for t, e in zip(input.titles, input.excerpts or input.titles)
+                    ]
+                )
+            }
 
             TASK:
             Produce a label that captures the SPECIFIC subject of these articles.
@@ -155,13 +148,3 @@ class ClusterNamer:
         except Exception as e:
             log.error(f"naming error: {e}")
             return Result.fail(f"naming and description error: {e}")
-
-    def _clean_label(self, label: str) -> str:
-        label = label.replace('"', "").replace("'", "").lstrip("- ").strip()
-
-        for prefix in ["label:", "label :", "here is", "response:", "category:"]:
-            if label.lower().startswith(prefix):
-                label = label[len(prefix) :].strip()
-
-        words = label.split()[:4]
-        return " ".join(words) if words else "Unnamed Cluster"

@@ -16,6 +16,7 @@ import { Feed } from "@/components/Feed.tsx";
 import { ClustersPanel } from "@/components/ClustersPanel.tsx";
 import { Banner } from "./components/BannerContext.tsx";
 import { ModeToggle } from "./components/Mode-toggle.tsx";
+import ExpandableTabs from "./components/ExpandableTabs.tsx";
 
 const url = import.meta.env.PROD
   ? "https://api.veille.safecoffi.app/v1"
@@ -121,6 +122,7 @@ export function App() {
 
         {/* Feed Mobile */}
         <div className="lg:hidden space-y-0">
+          <ExpandableTabs />
           <Feed
             items={items}
             loading={loading}

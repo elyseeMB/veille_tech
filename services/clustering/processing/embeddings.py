@@ -29,19 +29,21 @@ class CloudflareEmbedder:
         }
 
     @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=2, max=30),
-        retry=retry_if_exception_type((requests.RequestException, KeyError)),
+        stop=stop_after_attempt(5),
+        wait=wait_exponential(multiplier=2, min=5, max=30),
+        retry=retry_if_exception_type(
+            (requests.RequestException, KeyError, requests.exceptions.HTTPError)
+        ),
     )
     def embed(self, input: EmbeddingInput) -> Result[EmbeddingResult]:
+        response = requests.post(
+            self.__url,
+            headers=self.__headers,
+            json={"text": input.texts},
+            timeout=30,
+        )
+        response.raise_for_status()
         try:
-            response = requests.post(
-                self.__url,
-                headers=self.__headers,
-                json={"text": input.texts},
-                timeout=30,
-            )
-            response.raise_for_status()
             data = response.json()
             log.debug(f"vector dimensions: {len(data['result']['data'][0])}")
             return Result.ok(EmbeddingResult(vectors=data["result"]["data"]))

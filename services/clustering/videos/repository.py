@@ -74,15 +74,20 @@ class PostgresVideoRepository(BaseVideoRepository):
             conn = self.__conn.get()
             try:
                 with conn.cursor() as cur:
-                    cur.execute("""SELECT v.id, v.external_id, v.title 
+                    cur.execute("""SELECT v.id, v.external_id, v.title, v.embedding
                         FROM videos v
-                        LEFT JOIN cluster_items ci ON ci.ref_id = v.id AND ci.type = 'video'::feed_item_type 
+                        LEFT JOIN cluster_items ci ON ci.ref_id = v.id AND ci.type = 'video'::feed_item_type
                         WHERE ci.ref_id IS NULL
                         AND v.scrape_skipped = FALSE;""")
                     rows = cur.fetchall()
                     return Result.ok(
                         [
-                            VideoRow(id=str(row[0]), external_id=row[1], title=row[2])
+                            VideoRow(
+                                id=str(row[0]),
+                                external_id=row[1],
+                                title=row[2],
+                                embedding=row[3],
+                            )
                             for row in rows
                         ]
                     )

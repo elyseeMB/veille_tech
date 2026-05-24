@@ -107,9 +107,13 @@ Resources:
           ENVIRONMENT: "production"
           YOUTUBE_SCRAPING: "false"
           USE_MOCK: "false"
+          NAMER_PROVIDER: "gemini"
+          CF_GATEWAY_NAME: "default"
           DB_PARAM_NAME: "/veille/database_url"
           CF_ACCOUNT_ID: "/veille/cf_account_id"
           CF_API_TOKEN: "/veille/cf_api_token"
+          CF_API_TOKEN_GATEWAY: "/veille/cf_api_token_gateway"
+          GEMINI_API_KEY: "/veille/gemini_api_key"
       Policies:
         - SSMParameterReadPolicy:
             ParameterName: "veille/*"

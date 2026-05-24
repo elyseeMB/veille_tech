@@ -76,7 +76,7 @@ class MockRepository(BaseRepository):
                     url="https://aws.amazon.com/fr/blogs/compute/enhancing-network-observability-with-new-aws-outposts-racks-lag-metrics/",
                 ),
                 ArticleRow(
-                    id="10w",
+                    id="10",
                     title="Uh-oh, the International Space Station is leaking again",
                     url="https://arstechnica.com/space/2026/05/uh-oh-the-international-space-station-is-leaking-again/",
                 ),
@@ -111,7 +111,7 @@ class PostgresRepository(BaseRepository):
             conn = self.__conn.get()
             try:
                 with conn.cursor() as cur:
-                    cur.execute("""SELECT a.id, a.title, a.url
+                    cur.execute("""SELECT a.id, a.title, a.url, a.keywords, a.embedding
                         FROM articles a
                         LEFT JOIN cluster_items ci ON ci.ref_id = a.id AND ci.type = 'article'::feed_item_type
                         WHERE ci.ref_id IS NULL
@@ -120,7 +120,13 @@ class PostgresRepository(BaseRepository):
                     rows = cur.fetchall()
                     return Result.ok(
                         [
-                            ArticleRow(id=str(row[0]), title=row[1], url=row[2])
+                            ArticleRow(
+                                id=str(row[0]),
+                                title=row[1],
+                                url=row[2],
+                                keywords=row[3] or [],
+                                embedding=row[4],
+                            )
                             for row in rows
                         ]
                     )
