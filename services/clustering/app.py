@@ -97,7 +97,7 @@ def scrape_and_chunk(
             return None
 
     result = []
-    with ThreadPoolExecutor(max_workers=5) as executor:
+    with ThreadPoolExecutor(max_workers=2) as executor:
         futures = {executor.submit(process_item, item): item for item in items}
         for future in as_completed(futures):
             item_result = future.result()
