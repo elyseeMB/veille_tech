@@ -125,8 +125,6 @@ export function ArticleItem({ article: item }: { article: Article }) {
 
   const isCategoryDefault = !!BADGES_MAPPING[item.category];
 
-  console.log(BADGES_MAPPING["ai"].name);
-
   return (
     <>
       <article
