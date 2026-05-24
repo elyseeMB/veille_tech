@@ -17,6 +17,8 @@ import { ClustersPanel } from "@/components/ClustersPanel.tsx";
 import { Banner } from "./components/BannerContext.tsx";
 import { ModeToggle } from "./components/Mode-toggle.tsx";
 import ExpandableTabs from "./components/ExpandableTabs.tsx";
+import { useMobile } from "./hooks/useMobile.ts";
+import clsx from "clsx";
 
 const url = import.meta.env.PROD
   ? "https://api.veille.safecoffi.app/v1"
@@ -40,6 +42,7 @@ export function App() {
   } = useClusters(url);
   const { selectedCluster } = useClusterStore();
   const calendarData = useCalendarData();
+  const isMobile = useMobile();
 
   const feedItems: FeedItem[] = useMemo(() => {
     if (selectedCluster) {
@@ -54,7 +57,13 @@ export function App() {
       <div
         ref={headerRef}
         style={{ viewTransitionName: "calendar-header" }}
-        className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border ${calendarVisible ? "" : "lg:h-0 lg:pointer-events-none lg:overflow-hidden"}`}
+        className={clsx(
+          "fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md",
+          !isMobile && "border-b border-border",
+          calendarVisible
+            ? ""
+            : "lg:h-0 lg:pointer-events-none lg:overflow-hidden",
+        )}
       >
         <div className="mx-auto max-w-5xl lg:px-12 pt-3 lg:pt-4 pb-0 lg:pb-2">
           <section id="clusters">
