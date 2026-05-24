@@ -8,6 +8,8 @@ class ArticleRow(BaseModel):
     url: str
     description: Optional[str] = None
     scrape_skipped: bool = False
+    keywords: List[str] = []
+    embedding: Optional[List[float]] = None
 
 
 class ClusterRow(BaseModel):

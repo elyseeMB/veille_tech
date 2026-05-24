@@ -3,7 +3,8 @@ from scraper import ArticleScraper, YouTubeScraper
 from processing import (
     CloudflareEmbedder,
     Clusterer,
-    ClusterNamer,
+    CloudflareNamer,
+    GeminiNamer,
     TextChunker,
     MetadataExtractor,
 )
@@ -25,7 +26,16 @@ class Container:
         self.metadata_extractor = MetadataExtractor(cf_account_id, cf_api_token)
         self.embedder = CloudflareEmbedder(cf_account_id, cf_api_token)
         self.clusterer = Clusterer()
-        self.namer = ClusterNamer(cf_account_id, cf_api_token)
+        namer_provider = os.environ.get("NAMER_PROVIDER", "cloudflare")
+        if namer_provider == "gemini":
+            gemini_api_key = os.environ.get("GEMINI_API_KEY", "")
+            cf_gateway_name = os.environ.get("CF_GATEWAY_NAME", "default")
+            cf_api_token_gateway = os.environ.get("CF_API_TOKEN_GATEWAY", "default")
+            self.namer = GeminiNamer(
+                cf_account_id, cf_gateway_name, cf_api_token_gateway, gemini_api_key
+            )
+        else:
+            self.namer = CloudflareNamer(cf_account_id, cf_api_token)
 
         if disable_youtube:
             self.youtube_scraper = None

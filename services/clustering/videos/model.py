@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 
 class VideoRow(BaseModel):
@@ -7,6 +7,7 @@ class VideoRow(BaseModel):
     external_id: str
     title: str
     scrape_skipped: bool = False
+    embedding: Optional[List[float]] = None
 
 
 class VideoEmbeddingRow(BaseModel):
