@@ -1,7 +1,6 @@
-import { Fullscreen } from "lucide-react";
+import { Fullscreen, HeartIcon, Merge, Rss } from "lucide-react";
 import { Calendar } from "@/components/Calendar.tsx";
 import { SummaryPanel } from "@/components/SummaryPanel.tsx";
-import { Footer } from "@/components/Footer.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useHeaderHeight } from "@/hooks/useHeaderHeight.ts";
 import { useContainerLeftOffset } from "@/hooks/useContainerLeftOffset.ts";
@@ -19,14 +18,11 @@ import { ModeToggle } from "./components/Mode-toggle.tsx";
 import ExpandableTabs from "./components/ExpandableTabs.tsx";
 import { useMobile } from "./hooks/useMobile.ts";
 import clsx from "clsx";
+import { TabsContent } from "./components/ui/tabs.tsx";
 
 const url = import.meta.env.PROD
   ? "https://api.veille.safecoffi.app/v1"
   : "http://localhost:8081/v1";
-
-const now = new Date().toLocaleDateString(navigator.language, {
-  dateStyle: "medium",
-});
 
 export function App() {
   const { ref: headerRef, height: headerHeight } = useHeaderHeight();
@@ -50,6 +46,43 @@ export function App() {
     }
     return items;
   }, [selectedCluster, items]);
+
+  const tabs = [
+    {
+      name: "Feed",
+      value: "feed",
+      icon: <Rss className="size-4 shrink-0" />,
+      panel: (
+        <Feed
+          items={feedItems}
+          loading={loading}
+          loadingMore={loadingMore}
+          hasMore={hasMore}
+          loadMore={loadMore}
+        />
+      ),
+    },
+    {
+      name: "Clusters",
+      value: "clusters",
+      icon: <Merge className="size-4 shrink-0" />,
+      panel: (
+        <ClustersPanel
+          clusters={clusters}
+          loading={clustersLoading}
+          error={clustersError}
+          onRetry={clustersRetry}
+          baseUrl={url}
+        />
+      ),
+    },
+    {
+      name: "Summary",
+      value: "summary",
+      icon: <HeartIcon className="size-4 shrink-0" />,
+      panel: <SummaryPanel />,
+    },
+  ];
 
   return (
     <main className="min-h-screen bg-background font-sans relative">
@@ -131,14 +164,13 @@ export function App() {
 
         {/* Feed Mobile */}
         <div className="lg:hidden space-y-0">
-          <ExpandableTabs />
-          <Feed
-            items={items}
-            loading={loading}
-            loadingMore={loadingMore}
-            hasMore={hasMore}
-            loadMore={loadMore}
-          />
+          <ExpandableTabs tabs={tabs}>
+            {tabs.map((tab) => (
+              <TabsContent key={tab.value} value={tab.value}>
+                {tab.panel}
+              </TabsContent>
+            ))}
+          </ExpandableTabs>
         </div>
 
         {/* Pied de page */}

@@ -3,6 +3,8 @@ import { ArrowUpRight } from "lucide-react";
 import { marked } from "marked";
 import { useEffect, useRef } from "react";
 import { Button } from "./ui/button.tsx";
+import { useMobile } from "@/hooks/useMobile.ts";
+import clsx from "clsx";
 
 export function SummaryPanel() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -42,6 +44,8 @@ export function SummaryPanel() {
     highlightCode();
   }, [selectedArticle?.content]);
 
+  const isMobile = useMobile();
+
   return (
     <section
       ref={sectionRef}
@@ -51,7 +55,14 @@ export function SummaryPanel() {
       {/* <TemporalForceGraph feedData={Array.isArray(data) ? data : [data]} /> */}
 
       {/* Header */}
-      <div className="px-5 py-3 flex items-center justify-between">
+      <div
+        className={clsx(
+          "flex items-center justify-between",
+          isMobile
+            ? "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem] py-3"
+            : "px-5 py-3",
+        )}
+      >
         {/* <DropdownMenu>
           <DropdownMenuTrigger
             render={
@@ -101,7 +112,13 @@ export function SummaryPanel() {
       {/* Contenu */}
 
       {!selectedArticle ? (
-        <div className="px-5 py-8">
+        <div
+          className={clsx(
+            isMobile
+              ? "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem] py-8"
+              : "px-5 py-8",
+          )}
+        >
           <p className="text-sm text-muted-foreground">
             Select an article to see the summary.
           </p>
@@ -111,7 +128,12 @@ export function SummaryPanel() {
           onClick={() =>
             sectionRef.current?.scrollTo({ top: 0, behavior: "smooth" })
           }
-          className="px-5 py-2 flex flex-col gap-5"
+          className={clsx(
+            "flex flex-col gap-5",
+            isMobile
+              ? "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem] py-2"
+              : "px-5 py-2",
+          )}
         >
           <p className="border-b border-border pb-3 text-lg tracking-tight">
             {selectedArticle.title}
@@ -124,7 +146,13 @@ export function SummaryPanel() {
           />
         </div>
       ) : (
-        <div className="px-5 py-8">
+        <div
+          className={clsx(
+            isMobile
+              ? "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem] py-8"
+              : "px-5 py-8",
+          )}
+        >
           <p className="text-sm text-muted-foreground">
             No summary available yet.
           </p>

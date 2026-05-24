@@ -1,55 +1,31 @@
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import {
+  useState,
+  useRef,
+  useLayoutEffect,
+  type ReactNode,
+  type JSX,
+} from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookIcon, HeartIcon, GiftIcon } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const tabs = [
-  {
-    name: "Explore",
-    value: "explore",
-    icon: <BookIcon className="size-4 shrink-0" />,
-    content: (
-      <>
-        Discover{" "}
-        <span className="text-foreground font-semibold">fresh ideas</span>,
-        trending topics, and hidden gems curated just for you. Start exploring
-        and let your curiosity lead the way!
-      </>
-    ),
-  },
-  {
-    name: "Favorites",
-    value: "favorites",
-    icon: <HeartIcon className="size-4 shrink-0" />,
-    content: (
-      <>
-        All your{" "}
-        <span className="text-foreground font-semibold">favorites</span> are
-        saved here. Revisit articles, collections, and moments you love, any
-        time you want a little inspiration.
-      </>
-    ),
-  },
-  {
-    name: "Surprise Me",
-    value: "surprise",
-    icon: <GiftIcon className="size-4 shrink-0" />,
-    content: (
-      <>
-        <span className="text-foreground font-semibold">Surprise!</span>{" "}
-        Here&apos;s something unexpected — a fun fact, a quirky tip, or a daily
-        challenge. Come back for a new surprise every day!
-      </>
-    ),
-  },
-];
+type TabsListNode = Array<{
+  name: string;
+  value: string;
+  icon: JSX.Element;
+}>;
 
 const INACTIVE_W = 50;
 const GAP = 16;
 const PADDING = 0;
 
-export default function ExpandableTabs() {
-  const [activeTab, setActiveTab] = useState("explore");
+export default function ExpandableTabs({
+  tabs,
+  children,
+}: {
+  tabs: TabsListNode;
+  children?: ReactNode;
+}) {
+  const [activeTab, setActiveTab] = useState("feed");
   const [activeWidth, setActiveWidth] = useState(120);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -80,10 +56,10 @@ export default function ExpandableTabs() {
       obs.disconnect();
       document.documentElement.style.setProperty("--tabs-height", "0px");
     };
-  }, []);
+  }, [tabs.length]);
 
   return (
-    <div className="w-full max-w-md bg-emerald-700">
+    <div className="w-full max-w-md">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-4">
         <TabsList
           ref={listRef}
@@ -102,7 +78,7 @@ export default function ExpandableTabs() {
           before:absolute
           before:inset-x-0
           before:top-full
-          before:h-8
+          before:h-6
           before:content-['']
           before:pointer-events-none
           before:bg-gradient-to-b
@@ -144,12 +120,7 @@ export default function ExpandableTabs() {
             );
           })}
         </TabsList>
-
-        {/* {tabs.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value}>
-            <p className="text-muted-foreground text-sm">{tab.content}</p>
-          </TabsContent>
-        ))} */}
+        {children}
       </Tabs>
     </div>
   );

@@ -5,6 +5,8 @@ import { SourcesBadge } from "./SourcesBadge.tsx";
 import { TimeRelative } from "./TimeRelative.tsx";
 import { Button } from "./ui/button.tsx";
 import { Skeleton } from "./ui/skeleton.tsx";
+import { useMobile } from "@/hooks/useMobile.ts";
+import clsx from "clsx";
 
 function ClusterCard({
   cluster,
@@ -15,11 +17,16 @@ function ClusterCard({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const isMobile = useMobile();
   return (
     <div
-      className={`flex flex-col gap-2 p-5 border-b border-border last:border-0 transition-colors cursor-pointer ${
-        selected ? "bg-foreground/10" : "hover:bg-foreground/5"
-      }`}
+      className={clsx(
+        "flex flex-col gap-2 border-b border-border last:border-0 transition-colors cursor-pointer",
+        isMobile
+          ? "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem] py-5"
+          : "p-5",
+        selected ? "bg-foreground/10" : "hover:bg-foreground/5",
+      )}
       onClick={onSelect}
     >
       <div className="min-w-0 flex flex-col gap-1">
@@ -50,8 +57,16 @@ function ClusterCard({
 }
 
 function SkeletonCard() {
+  const isMobile = useMobile();
   return (
-    <div className="flex flex-col gap-5 p-5 border-b border-border">
+    <div
+      className={clsx(
+        "flex flex-col gap-5 border-b border-border",
+        isMobile
+          ? "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem] py-5"
+          : "p-5",
+      )}
+    >
       <div className="space-y-3">
         <Skeleton className="h-3 w-20 bg-muted" />
         <Skeleton className="h-5 w-2/3 bg-muted" />

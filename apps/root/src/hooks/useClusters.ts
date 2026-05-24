@@ -137,8 +137,6 @@ export async function fetchClusterItems(
 
     const mappedItems: ClusterItem[] = [];
 
-    console.log(res);
-
     if (res.articles) {
       for (const a of res.articles) {
         mappedItems.push({
