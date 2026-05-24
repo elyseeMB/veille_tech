@@ -90,6 +90,7 @@ export function ClustersPanel({
   onRetry: () => void;
   baseUrl: string;
 }) {
+  const isMobile = useMobile();
   const { selectedCluster, setSelectedCluster } = useClusterStore();
 
   const handleSelect = async (cluster: Cluster) => {
@@ -135,7 +136,12 @@ export function ClustersPanel({
   }
 
   return (
-    <section className="sticky overflow-y-auto scrollbar-hide h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))] border-r border-border">
+    <section
+      className={clsx(
+        !isMobile &&
+          "border-r border-border sticky overflow-y-auto scrollbar-hide h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]",
+      )}
+    >
       {clusters.map((cluster) => (
         <ClusterCard
           key={cluster.id}
