@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookIcon, HeartIcon, GiftIcon } from "lucide-react";
@@ -45,34 +45,70 @@ const tabs = [
 ];
 
 const INACTIVE_W = 50;
-const GAP = 8;
+const GAP = 16;
 const PADDING = 0;
 
 export default function ExpandableTabs() {
   const [activeTab, setActiveTab] = useState("explore");
-  const listRef = useRef<HTMLDivElement>(null);
   const [activeWidth, setActiveWidth] = useState(120);
+  const listRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (!listRef.current) {
+      return;
+    }
+    const node = listRef.current;
+    const rect = node.getBoundingClientRect();
+
     const calculate = () => {
-      if (!listRef.current) return;
-      const total = listRef.current.offsetWidth - PADDING;
+      document.documentElement.style.setProperty(
+        "--tabs-height",
+        `${rect.height}px`,
+      );
+
+      const total = rect.width - PADDING;
       const inactiveTotal =
         (tabs.length - 1) * INACTIVE_W + (tabs.length - 1) * GAP;
       setActiveWidth(total - inactiveTotal - GAP);
     };
 
     calculate();
-    window.addEventListener("resize", calculate);
-    return () => window.removeEventListener("resize", calculate);
+
+    const obs = new ResizeObserver(calculate);
+    obs.observe(node);
+    return () => {
+      obs.disconnect();
+      document.documentElement.style.setProperty("--tabs-height", "0px");
+    };
   }, []);
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full max-w-md bg-emerald-700">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-4">
         <TabsList
           ref={listRef}
-          className="flex justify-between p-0 h-auto w-full"
+          className="
+          rounded-none
+          flex
+          justify-between
+          px-4
+          w-full
+          h-auto
+          fixed
+          bg-background
+          top-[var(--header-height)]
+          left-0
+          z-50
+          before:absolute
+          before:inset-x-0
+          before:top-full
+          before:h-8
+          before:content-['']
+          before:pointer-events-none
+          before:bg-gradient-to-b
+          before:from-background
+          before:to-transparent
+          "
         >
           {tabs.map(({ icon, name, value }) => {
             const isActive = activeTab === value;
