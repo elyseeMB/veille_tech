@@ -4,7 +4,6 @@ import { FeedPage } from "@/pages/FeedPage";
 import { ClustersPanel } from "@/components/ClustersPanel";
 import { ClusterSection } from "@/pages/ClusterSection";
 import { feedLoader, clustersLoader, clusterLoader } from "@/loaders";
-import { db } from "@/lib/db";
 
 export const router = createBrowserRouter([
   {
@@ -21,24 +20,10 @@ export const router = createBrowserRouter([
       },
       {
         path: "r/:id",
-        loader: async ({ params, request }) => {
-          const { id } = params;
+        loader: async ({ request }) => {
           const url = new URL(request.url);
           const articleUrl = url.searchParams.get("url");
-          if (!articleUrl) return redirect("/feed");
-
-          db.clicks
-            .add({
-              articleId: id,
-              title: url.searchParams.get("title") ?? "",
-              url: articleUrl,
-              source: url.searchParams.get("source") ?? undefined,
-              sourceBaseUrl: url.searchParams.get("sourceBaseUrl") ?? undefined,
-              clickedAt: new Date().toISOString(),
-            })
-            .catch(() => {});
-
-          return redirect(articleUrl);
+          return articleUrl ? redirect(articleUrl) : redirect("/feed");
         },
       },
     ],
