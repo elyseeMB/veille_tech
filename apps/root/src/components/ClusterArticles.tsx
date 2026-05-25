@@ -95,7 +95,7 @@ export function ClusterArticles({
           <Button
             variant="ghost"
             className="cursor-pointer -mx-[1rem] px-[1rem]"
-            onClick={() => navigate("/feed")}
+            onClick={() => navigate("/clusters")}
           >
             <ArrowLeft size={18} />
             <span className="text-sm font-medium">{data.label}</span>

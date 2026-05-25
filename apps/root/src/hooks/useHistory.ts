@@ -4,10 +4,9 @@ import { db } from "@/lib/db";
 export function useHistory() {
   const queryClient = useQueryClient();
 
-  const { data: clicks = [] } = useQuery({
+  const { data: clicks = [], isLoading } = useQuery({
     queryKey: ["history"],
-    queryFn: () =>
-      db.clicks.orderBy("clickedAt").reverse().limit(50).toArray(),
+    queryFn: () => db.clicks.orderBy("clickedAt").reverse().limit(50).toArray(),
     staleTime: 0,
     refetchOnWindowFocus: true,
   });
@@ -17,5 +16,5 @@ export function useHistory() {
     queryClient.invalidateQueries({ queryKey: ["history"] });
   };
 
-  return { clicks, clearHistory };
+  return { clicks, clearHistory, isLoading };
 }
