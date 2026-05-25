@@ -1,10 +1,11 @@
-import type { Article } from "@/hooks/useFeed.ts";
+import type { Article } from "@/types";
 import { Astroid } from "lucide-react";
 import { useSummaryStore } from "@/store/summaryStore.ts";
 import { useRef, type MouseEventHandler } from "react";
 import { useBanner } from "./BannerContext.tsx";
+import { useToggle } from "usehooks-ts";
 import { TimeRelative } from "./TimeRelative.tsx";
-import { useMobile, useMobileMedium } from "@/hooks/useMobile.ts";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import clsx from "clsx";
 import { Badge } from "./ui/badge.tsx";
 
@@ -93,34 +94,41 @@ const BADGES_MAPPING = {
   },
 };
 
-export function ArticleItem({ article: item }: { article: Article }) {
-  const isDeviceMedium = useMobileMedium();
+export function ArticleItem({ article: item, clusterLabel }: { article: Article; clusterLabel?: string }) {
+  const isDeviceMedium = useMediaQuery("(max-width: 800px)");
   const articleRef = useRef<HTMLElement>(null);
   const { selectedArticle, setSelectedArticle } = useSummaryStore();
   const isSelected = selectedArticle?.id === item.id;
-  const { pushBanner } = useBanner();
   const isDesktop = !isDeviceMedium;
-  const isMobile = useMobile();
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const { pushBanner } = useBanner();
+  const [isOpen, toggleOpen] = useToggle(false);
 
   const handleSelect: MouseEventHandler<HTMLElement> = (e) => {
     e.preventDefault();
-    pushBanner({
-      title: item.title,
-      source: item.source,
-      pubDate: item.pubDate,
-      node: articleRef.current,
-    });
-
-    setSelectedArticle({
-      id: item.id,
-      title: item.title,
-      url: item.link,
-      summary: item.summary ?? null,
-      pubDate: item.pubDate,
-      source: item.source,
-      content: item.content,
-      node: articleRef.current,
-    });
+    if (isOpen) {
+      setSelectedArticle(null);
+      pushBanner(null);
+    } else {
+      pushBanner({
+        title: item.title,
+        source: item.source,
+        pubDate: item.pubDate,
+        node: articleRef.current,
+        clusterLabel,
+      });
+      setSelectedArticle({
+        id: item.id,
+        title: item.title,
+        url: item.link,
+        summary: item.summary ?? null,
+        pubDate: item.pubDate,
+        source: item.source,
+        content: item.content,
+        node: articleRef.current,
+      });
+    }
+    toggleOpen();
   };
 
   const isCategoryDefault = !!BADGES_MAPPING[item.category];

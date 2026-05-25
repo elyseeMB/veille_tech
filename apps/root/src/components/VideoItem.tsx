@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { TimeRelative } from "./TimeRelative.tsx";
-import type { YoutubeVideo } from "@/hooks/useFeed.ts";
+import type { YoutubeVideo } from "@/types";
 import clsx from "clsx";
-import { useMobile } from "@/hooks/useMobile.ts";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export function VideoItem({ video: item }: { video: YoutubeVideo }) {
-  const isMobile = useMobile();
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const articleRef = useRef<HTMLElement>(null);
   const [isInsideCarousel, setInsideCarousel] = useState(false);
   const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8081";

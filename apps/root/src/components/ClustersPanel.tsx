@@ -1,23 +1,34 @@
-import type { Cluster } from "@/hooks/useClusters.ts";
-import { fetchClusterItems } from "@/hooks/useClusters.ts";
-import { useClusterStore } from "@/store/clusterStore.ts";
+import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
+import { clustersQuery } from "@/queries";
+import { useBanner } from "./BannerContext.tsx";
+import { useSummaryStore } from "@/store/summaryStore.ts";
 import { SourcesBadge } from "./SourcesBadge.tsx";
 import { TimeRelative } from "./TimeRelative.tsx";
 import { Button } from "./ui/button.tsx";
 import { Skeleton } from "./ui/skeleton.tsx";
-import { useMobile } from "@/hooks/useMobile.ts";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import clsx from "clsx";
 
 function ClusterCard({
-  cluster,
+  label,
+  createdAt,
+  articleCount,
+  sources,
+  description,
   selected,
   onSelect,
+  isMobile,
 }: {
-  cluster: Cluster;
+  label: string;
+  createdAt: string;
+  articleCount: number;
+  sources: { name: string; baseUrl: string; type: string }[];
+  description?: string;
   selected: boolean;
   onSelect: () => void;
+  isMobile: boolean;
 }) {
-  const isMobile = useMobile();
   return (
     <div
       className={clsx(
@@ -31,33 +42,31 @@ function ClusterCard({
     >
       <div className="min-w-0 flex flex-col gap-1">
         <div className="flex items-center gap-2 mb-1">
-          <TimeRelative date={cluster.createdAt} className="text-sm" />
+          <TimeRelative date={createdAt} className="text-sm" />
           <span className="font-mono text-sm uppercase tracking-[0.25em] text-muted-foreground/50">
             ·
           </span>
           <span className="flex items-center gap-1 text-xs">
-            {cluster.articleCount}
+            {articleCount}
           </span>
         </div>
-        <div className="flex items-center gap-2 w-fit text-xs font-sans bg-muted border border-border rounded-full px-2.5 py-1 -ml-1 before:content-[''] before:block before:w-2 before:h-2 before:bg-secondary-foreground before:rounded-full ">
-          {cluster.label}
+        <div className="flex items-center gap-2 w-fit text-xs font-sans bg-muted border border-border rounded-full px-2.5 py-1 -ml-1 before:content-[''] before:block before:w-2 before:h-2 before:bg-secondary-foreground before:rounded-full">
+          {label}
         </div>
-
-        {cluster.sources.length > 0 && (
+        {sources.length > 0 && (
           <div className="mt-2">
-            <SourcesBadge sources={cluster.sources} />
+            <SourcesBadge sources={sources} />
           </div>
         )}
       </div>
-      {cluster.description && (
-        <p className="leading-relaxed text-sm">{cluster.description}</p>
+      {description && (
+        <p className="leading-relaxed text-sm">{description}</p>
       )}
     </div>
   );
 }
 
-function SkeletonCard() {
-  const isMobile = useMobile();
+function SkeletonCard({ isMobile }: { isMobile: boolean }) {
   return (
     <div
       className={clsx(
@@ -77,79 +86,76 @@ function SkeletonCard() {
   );
 }
 
-export function ClustersPanel({
-  clusters,
-  loading,
-  error,
-  onRetry,
-  baseUrl,
-}: {
-  clusters: Cluster[];
-  loading: boolean;
-  error: string | null;
-  onRetry: () => void;
-  baseUrl: string;
-}) {
-  const isMobile = useMobile();
-  const { selectedCluster, setSelectedCluster } = useClusterStore();
+export function ClustersPanel() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const { data: clusters, isLoading, error, refetch } = useQuery(clustersQuery);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedClusterId = searchParams.get("cluster");
+  const { pushBanner } = useBanner();
+  const { setSelectedArticle } = useSummaryStore();
 
-  const handleSelect = async (cluster: Cluster) => {
-    if (selectedCluster?.id === cluster.id) {
-      setSelectedCluster(null);
-      return;
+  const handleSelect = (id: string) => {
+    const isSelected = selectedClusterId === id;
+    if (!isSelected) {
+      const cluster = clusters?.find((c) => c.id === id);
+      if (cluster) {
+        setSelectedArticle(null);
+        pushBanner({
+          title: cluster.label,
+          source: "Cluster",
+          pubDate: cluster.createdAt,
+          node: null,
+        });
+      }
+    } else {
+      pushBanner(null);
     }
-    const items = await fetchClusterItems(baseUrl, cluster.id);
-    setSelectedCluster({
-      id: cluster.id,
-      label: cluster.label,
-      createdAt: cluster.createdAt,
-      items,
+    setSearchParams((p) => {
+      if (isSelected) {
+        p.delete("cluster");
+      } else {
+        p.set("cluster", id);
+      }
+      return p;
     });
   };
-
-  if (loading) {
-    return (
-      <section>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <SkeletonCard key={i} />
-        ))}
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-2 flex items-center justify-center">
-        <Button className="cursor-pointer" variant="outline" onClick={onRetry}>
-          {error} — Tap to retry
-        </Button>
-      </div>
-    );
-  }
-
-  if (clusters.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground py-5 px-5">
-        No clusters yet.
-      </p>
-    );
-  }
 
   return (
     <section
       className={clsx(
         !isMobile &&
-          "border-r border-border sticky overflow-y-auto scrollbar-hide h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]",
+          "border-l border-r border-border overflow-y-auto scrollbar-hide h-[calc(100vh-var(--header-height)-var(--banner-height,0px))]",
       )}
     >
-      {clusters.map((cluster) => (
-        <ClusterCard
-          key={cluster.id}
-          cluster={cluster}
-          selected={selectedCluster?.id === cluster.id}
-          onSelect={() => handleSelect(cluster)}
-        />
-      ))}
+      {isLoading ? (
+        Array.from({ length: 5 }).map((_, i) => (
+          <SkeletonCard key={i} isMobile={isMobile} />
+        ))
+      ) : error ? (
+        <div className="p-2 flex items-center justify-center">
+          <Button className="cursor-pointer" variant="outline" onClick={() => refetch()}>
+            Failed to load clusters — Tap to retry
+          </Button>
+        </div>
+      ) : !clusters || clusters.length === 0 ? (
+        <p className="text-sm text-muted-foreground py-5 px-5">
+          No clusters yet.
+        </p>
+      ) : (
+        clusters.map((cluster) => (
+          <ClusterCard
+            key={cluster.id}
+            label={cluster.label}
+            createdAt={cluster.createdAt}
+            articleCount={cluster.articleCount}
+            sources={cluster.sources}
+            description={cluster.description}
+            selected={selectedClusterId === cluster.id}
+            onSelect={() => handleSelect(cluster.id)}
+            isMobile={isMobile}
+          />
+        ))
+      )}
     </section>
   );
 }

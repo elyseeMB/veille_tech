@@ -1,9 +1,10 @@
 import { Fragment, lazy, Suspense, useEffect, useRef } from "react";
 import { Skeleton } from "./ui/skeleton.tsx";
-import type { FeedItem } from "@/hooks/useFeed.ts";
+import type { FeedItem } from "@/types";
 import { ArticleItem } from "./ArticleItem.tsx";
 import { VideoItem } from "./VideoItem.tsx";
-import { useMobile } from "@/hooks/useMobile.ts";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { Button } from "./ui/button.tsx";
 import clsx from "clsx";
 
 const VideoCarouselLazy = lazy(() => import("@/components/VideoCarousel"));
@@ -14,15 +15,19 @@ export function Feed({
   loadingMore,
   hasMore,
   loadMore,
+  error,
+  retry,
 }: {
   items: FeedItem[];
   loading: boolean;
   loadingMore: boolean;
   hasMore: boolean;
   loadMore: () => void;
+  error?: string | null;
+  retry?: () => void;
 }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const isMobile = useMobile();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   useEffect(() => {
     if (!sentinelRef.current) return;
@@ -58,15 +63,10 @@ export function Feed({
   };
 
   return (
-    <section
-      className={clsx(
-        !isMobile &&
-          "border-r border-border sticky overflow-y-auto scrollbar-hide h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]",
-      )}
-    >
+    <section className={clsx(!isMobile && "border-r border-border sticky")}>
       {loading ? (
         Array.from({ length: 5 }).map((_, i) => <ItemSkeleton2 key={i} />)
-      ) : items.length === 0 ? (
+      ) : items.length === 0 && !error ? (
         <p className="text-sm text-muted-foreground py-5">Nothing yet.</p>
       ) : (
         <>
@@ -80,6 +80,13 @@ export function Feed({
           ))}
           {loadingMore && <ItemSkeleton />}
         </>
+      )}
+      {error && (
+        <div className="p-2 flex items-center justify-center">
+          <Button className="cursor-pointer" variant="outline" onClick={retry}>
+            {error} — Tap to retry
+          </Button>
+        </div>
       )}
     </section>
   );

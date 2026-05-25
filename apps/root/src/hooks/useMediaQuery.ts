@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from "react";
 
-function useMediaQuery(query: string): boolean {
+export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(
     () => window.matchMedia(query).matches,
   );
@@ -13,12 +13,4 @@ function useMediaQuery(query: string): boolean {
   }, [query]);
 
   return matches;
-}
-
-export function useMobile() {
-  return useMediaQuery("(width <= 600px)");
-}
-
-export function useMobileMedium() {
-  return useMediaQuery("(width <= 800px)");
 }

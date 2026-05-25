@@ -5,6 +5,7 @@ import {
   type ReactNode,
   type JSX,
 } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -25,7 +26,8 @@ export default function ExpandableTabs({
   tabs: TabsListNode;
   children?: ReactNode;
 }) {
-  const [activeTab, setActiveTab] = useState("feed");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") ?? tabs[0]?.value ?? "feed";
   const [activeWidth, setActiveWidth] = useState(120);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -59,8 +61,17 @@ export default function ExpandableTabs({
   }, [tabs.length]);
 
   return (
-    <div className="w-full max-w-md">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-4">
+    <div className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) =>
+          setSearchParams((p) => {
+            p.set("tab", v);
+            return p;
+          })
+        }
+        className="gap-4"
+      >
         <TabsList
           ref={listRef}
           className="
