@@ -6,7 +6,7 @@ from tenacity import (
     wait_exponential,
     retry_if_exception_type,
 )
-from shared import Result, NamingResult
+from shared import Result, NamingResult, NamingResultGemini
 from logger import get_logger
 from processing.namers.base import (
     BaseNamer,
@@ -130,7 +130,37 @@ class GeminiNamer(BaseNamer):
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0.1,
                     "max_tokens": 2000,
-                    "response_format": {"type": "json_object"},
+                    "response_format": {
+                        "type": "json_schema",
+                        "json_schema": {
+                            "name": "cluster_naming_results",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "results": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "index": {"type": "integer"},
+                                                "label": {"type": "string"},
+                                                "description": {"type": "string"},
+                                            },
+                                            "required": [
+                                                "index",
+                                                "label",
+                                                "description",
+                                            ],
+                                            "additionalProperties": False,
+                                        },
+                                    }
+                                },
+                                "required": ["results"],
+                                "additionalProperties": False,
+                            },
+                            "strict": True,
+                        },
+                    },
                 },
                 timeout=60,
             )
@@ -209,7 +239,8 @@ class GeminiNamer(BaseNamer):
                     )
 
             results = [
-                NamingResult(
+                NamingResultGemini(
+                    index=int(item.get("index", -1)),
                     label=self._clean_label(item.get("label", "Unnamed Cluster")),
                     description=item.get("description", ""),
                 )

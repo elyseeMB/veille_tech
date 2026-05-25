@@ -51,6 +51,27 @@ def scrape_and_chunk(
 ):
     def process_item(item):
         try:
+            has_embedding = getattr(item, "embedding", None) is not None
+            has_keywords = bool(getattr(item, "keywords", []))
+            has_topic = bool(
+                getattr(item, "category", "") or getattr(item, "main_topic", "")
+            )
+
+            if has_embedding and has_keywords and has_topic:
+                log.debug(f"Cache hit: skipping '{item.title}'")
+                return {
+                    "id": getattr(item, id_field),
+                    "title": item.title,
+                    "full_text": "",
+                    "excerpt": "",
+                    "chunks": getattr(item, "chunks", []),
+                    "main_topic": getattr(item, "category", "")
+                    or getattr(item, "main_topic", ""),
+                    "keywords": getattr(item, "keywords", []),
+                    "type": item_type,
+                    "existing_embedding": item.embedding,
+                }
+
             url_or_id = getattr(item, url_field)
             scraped = scrape_fn(url_or_id)
             if scraped.success and scraped.value and scraped.value.full_text:
@@ -314,30 +335,43 @@ def handler(event, context):
         # ── 7. Nommer + sauvegarder ───────────────────────────────────────
         log.info(f"naming {len(groups)} clusters...")
 
-        batch_input = BatchNamingInput(
-            clusters=[
+        # On crée une liste ordonnée et un dictionnaire de correspondance pour la reconstruction
+        indexed_groups = {}
+        cluster_inputs = []
+
+        for idx, (label, members) in enumerate(groups.items()):
+            indexed_groups[idx] = members  # Sauvegarde la relation Index -> Membres
+            cluster_inputs.append(
                 ClusterInput(
                     index=idx,
                     titles=[m["title"] for m in members[:10]],
                     excerpts=[
-                        f"Category: {m['main_topic']} | Content: {' '.join(m['chunks'][:1])[:300]}"
+                        f"Category: {m['main_topic']} | Content: {' '.join(m['chunks'][:4])[:1000]}"
                         for m in members[:10]
                     ],
                 )
-                for idx, (label, members) in enumerate(groups.items())
-            ]
-        )
+            )
 
+        batch_input = BatchNamingInput(clusters=cluster_inputs)
         batch_result = container.namer.generate_batch(batch_input)
+
         if not batch_result.success:
             log.error(batch_result.error)
             return
 
-        group_list = list(groups.values())
         cluster_rows = []
 
-        for i, naming in enumerate(batch_result.value.results):
-            members = group_list[i]
+        # CORRECTION : On utilise naming.index pour retrouver les bons membres
+        for naming in batch_result.value.results:
+            cluster_idx = naming.index
+
+            if cluster_idx not in indexed_groups:
+                log.warning(
+                    f"Gemini a renvoyé un index invalide ({cluster_idx}), skipping"
+                )
+                continue
+
+            members = indexed_groups[cluster_idx]
             cluster_rows.append(
                 ClusterRow(
                     label=naming.label,

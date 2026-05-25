@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from json_repair import repair_json
 import json
-from typing import List
+from typing import List, Union
 from pydantic import BaseModel
-from shared import Result, NamingResult
+from shared import Result, NamingResult, NamingResultGemini
 from logger import get_logger
 
 log = get_logger("processing.namers.base")
@@ -25,7 +25,7 @@ class BatchNamingInput(BaseModel):
 
 
 class BatchNamingResult(BaseModel):
-    results: List[NamingResult]
+    results: List[Union[NamingResultGemini, NamingResult]]
 
 
 def extract_first_json(text: str) -> dict:

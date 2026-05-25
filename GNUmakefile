@@ -58,7 +58,7 @@ sam-build:
 	cd infra && sam build
 
 sam-deploy: sam-build
-	cd infra && sam deploy
+	cd infra && sam deploy --no-confirm-changeset
 
 dev-backend: stack-up
 	cd services/fetcher && go run ./cmd/fetcher/main.go & \
