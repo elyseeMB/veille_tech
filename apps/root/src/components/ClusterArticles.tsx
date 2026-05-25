@@ -104,7 +104,7 @@ export function ClusterArticles({
             }
           >
             <ArrowLeft size={18} />
-            <span className="text-sm font-medium">{data.label}</span>
+            <span className="text-sm text-secondary font-medium">{data.label}</span>
           </Button>
         </div>
       )}
