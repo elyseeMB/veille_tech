@@ -7,8 +7,10 @@ import {
   type PropsWithChildren,
   useLayoutEffect,
 } from "react";
+import { useSearchParams } from "react-router-dom";
+import { motion, AnimatePresence } from "motion/react";
 import { Button } from "./ui/button.tsx";
-import { ArrowDown, X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { useSummaryStore } from "@/store/summaryStore.ts";
 
 type BannerData = {
@@ -16,6 +18,7 @@ type BannerData = {
   source: string;
   pubDate: string;
   node: HTMLElement | null;
+  clusterLabel?: string;
 } | null;
 
 const defaultSet = (_: BannerData) => {};
@@ -45,16 +48,15 @@ export function Banner() {
   const [banner, setBanner] = useState<BannerData>(null);
   const { setBannerRef } = useContext(BannerContext);
   const { setSelectedArticle } = useSummaryStore();
+  const [, setSearchParams] = useSearchParams();
   const bannerRef = useRef<HTMLDivElement>(null);
-  setBannerRef.current = ({ ...props }) => {
+  setBannerRef.current = (props) => {
     setBanner(props);
   };
 
   useLayoutEffect(() => {
     const el = bannerRef.current;
-    if (!el) {
-      return;
-    }
+    if (!el) return;
 
     const measure = () => {
       document.documentElement.style.setProperty(
@@ -64,7 +66,6 @@ export function Banner() {
     };
 
     measure();
-
     const obs = new ResizeObserver(measure);
     obs.observe(el);
 
@@ -74,9 +75,7 @@ export function Banner() {
     };
   }, [banner]);
 
-  if (!banner) {
-    return null;
-  }
+  if (!banner) return null;
 
   return (
     <div
@@ -85,18 +84,50 @@ export function Banner() {
       style={{ top: "calc(var(--header-height))" }}
     >
       <div className="w-0.5 h-6 rounded-full bg-foreground shrink-0" />
-      <div className="min-w-0 flex-1 pl-1">
-        <p className="text-xs text-muted-foreground truncate">
-          {banner.source} ·{" "}
-          {new Date(banner.pubDate).toLocaleDateString("en", {
-            day: "numeric",
-            month: "short",
-          })}
-        </p>
-        <p className="text-sm font-medium truncate text-foreground">
-          {banner.title}
-        </p>
-      </div>
+
+      {banner.clusterLabel ? (
+        <div className="min-w-0 flex-1 pl-1 flex flex-col gap-0.5">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground truncate">
+            {banner.clusterLabel}
+          </p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-xs text-muted-foreground shrink-0">
+              {banner.source} ·{" "}
+              {new Date(banner.pubDate).toLocaleDateString("en", {
+                day: "numeric",
+                month: "short",
+              })}
+            </p>
+            <ArrowRight size={12} className="shrink-0 text-muted-foreground/50" />
+            <AnimatePresence mode="popLayout">
+              <motion.p
+                key={banner.title}
+                className="text-sm font-medium truncate text-foreground"
+                initial={{ opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 6 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                {banner.title}
+              </motion.p>
+            </AnimatePresence>
+          </div>
+        </div>
+      ) : (
+        <div className="min-w-0 flex-1 pl-1">
+          <p className="text-xs text-muted-foreground truncate">
+            {banner.source} ·{" "}
+            {new Date(banner.pubDate).toLocaleDateString("en", {
+              day: "numeric",
+              month: "short",
+            })}
+          </p>
+          <p className="text-sm font-medium truncate text-foreground">
+            {banner.title}
+          </p>
+        </div>
+      )}
+
       <div className="flex items-center gap-1">
         <Button
           variant="ghost"
@@ -109,7 +140,6 @@ export function Banner() {
             });
           }}
         >
-          <ArrowDown size="12" />
           Voir
         </Button>
         <Button
@@ -118,6 +148,10 @@ export function Banner() {
           onClick={() => {
             setBanner(null);
             setSelectedArticle(null);
+            setSearchParams((p) => {
+              p.delete("cluster");
+              return p;
+            });
           }}
         >
           <X size="12" />

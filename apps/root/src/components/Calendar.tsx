@@ -1,4 +1,4 @@
-import { useMobile, useMobileMedium } from "@/hooks/useMobile.ts";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { axisBottom, scaleUtc, select, timeDay, timeMonth, timeYear } from "d3";
 import { useEffect, useRef } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip.tsx";
@@ -208,8 +208,8 @@ export function Calendar({
 }) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const axisRef = useRef<SVGGElement | null>(null);
-  const isMobile = useMobile();
-  const isMediumMobile = useMobileMedium();
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMediumMobile = useMediaQuery("(max-width: 800px)");
   const scrollable = isMediumMobile;
 
   const periods = isMobile ? QUARTERSFN(3) : HALVESFN();

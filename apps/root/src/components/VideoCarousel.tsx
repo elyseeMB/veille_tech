@@ -8,12 +8,12 @@ import {
 import { VideoItem } from "./VideoItem.tsx";
 
 import Autoplay from "embla-carousel-autoplay";
-import type { YoutubeVideo } from "./VideosCard.tsx";
-import { useMobile } from "@/hooks/useMobile.ts";
+import type { YoutubeVideo } from "@/types";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import clsx from "clsx";
 
 export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
-  const isMobile = useMobile();
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
     <section
       aria-labelledby="carousel-video-yt"

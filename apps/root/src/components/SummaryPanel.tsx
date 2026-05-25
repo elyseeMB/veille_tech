@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { marked } from "marked";
 import { useEffect, useRef } from "react";
 import { Button } from "./ui/button.tsx";
-import { useMobile } from "@/hooks/useMobile.ts";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import clsx from "clsx";
 
 export function SummaryPanel() {
@@ -44,7 +44,7 @@ export function SummaryPanel() {
     highlightCode();
   }, [selectedArticle?.content]);
 
-  const isMobile = useMobile();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
     <section
