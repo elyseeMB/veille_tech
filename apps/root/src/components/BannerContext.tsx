@@ -10,7 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "./ui/button.tsx";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, Target, X } from "lucide-react";
 import { useSummaryStore } from "@/store/summaryStore.ts";
 
 type BannerData = {
@@ -118,20 +118,25 @@ export function Banner() {
         </div>
       ) : (
         <div className="min-w-0 flex-1 pl-1">
-          <p className="text-xs text-muted-foreground truncate">
-            {banner.source} ·
-            {new Date(banner.pubDate).toLocaleDateString("en", {
-              day: "numeric",
-              month: "short",
-            })}
-          </p>
-          <p className="text-sm font-medium truncate text-foreground">
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-muted-foreground truncate">
+              {banner.source}
+            </span>
+            <span>·</span>
+            <span className="text-muted-foreground truncate">
+              {new Date(banner.pubDate).toLocaleDateString("en", {
+                day: "numeric",
+                month: "short",
+              })}
+            </span>
+          </div>
+          <span className="font-medium truncate text-foreground">
             {banner.title}
-          </p>
+          </span>
         </div>
       )}
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center">
         <Button
           variant="ghost"
           className="text-xs flex gap-1 items-center text-muted-foreground cursor-pointer"
@@ -143,7 +148,8 @@ export function Banner() {
             });
           }}
         >
-          Voir
+          <Target />
+          Target
         </Button>
         <Button
           variant="ghost"
@@ -155,6 +161,7 @@ export function Banner() {
           }}
         >
           <X size="12" />
+          Close
         </Button>
       </div>
     </div>
