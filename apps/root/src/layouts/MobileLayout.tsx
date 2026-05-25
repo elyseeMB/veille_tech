@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Outlet, useSearchParams } from "react-router-dom";
 import ExpandableTabs from "@/components/ExpandableTabs";
 import { ClustersPanel } from "@/components/ClustersPanel";
@@ -7,6 +8,8 @@ import { TabsContent } from "@/components/ui/tabs";
 import { Calendar } from "@/components/Calendar";
 import { useHeaderHeight } from "@/hooks/useHeaderHeight";
 import { useCalendarData } from "@/hooks/useCalendarData";
+import { useBanner } from "@/components/BannerContext";
+import { useSummaryStore } from "@/store/summaryStore";
 import { Rss, Merge, HeartIcon } from "lucide-react";
 
 const tabs = [
@@ -36,8 +39,23 @@ const panels: Record<string, React.ReactNode> = {
 export function MobileLayout() {
   const [searchParams, setSearchParams] = useSearchParams();
   const clusterId = searchParams.get("cluster");
+  const activeTab = searchParams.get("tab") ?? "feed";
   const { ref: headerRef, height: headerHeight } = useHeaderHeight();
   const calendarData = useCalendarData();
+  const { pushBanner } = useBanner();
+  const { setSelectedArticle } = useSummaryStore();
+
+  useEffect(() => {
+    setSelectedArticle(null);
+    pushBanner(null);
+    setSearchParams((p) => {
+      p.delete("cluster");
+      return p;
+    });
+    if (activeTab !== "clusters") {
+      document.documentElement.style.setProperty("--cluster-back-height", "0px");
+    }
+  }, [activeTab]);
 
   const headerCss = { "--header-height": `${headerHeight}px` } as React.CSSProperties;
 
@@ -56,7 +74,7 @@ export function MobileLayout() {
         <ExpandableTabs tabs={tabs}>
           {tabs.map((tab) => (
             <TabsContent key={tab.value} value={tab.value}>
-              {(tab.value === "feed" || tab.value === "clusters") && clusterId ? (
+              {tab.value === "clusters" && clusterId ? (
                 <ClusterArticles id={clusterId} variant="mobile" setSearchParams={setSearchParams} />
               ) : (
                 panels[tab.value]
