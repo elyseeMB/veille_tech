@@ -11,6 +11,11 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/Mode-toggle";
 import { Fullscreen } from "lucide-react";
 import clsx from "clsx";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip.tsx";
 
 export function DesktopLayout() {
   const location = useLocation();
@@ -69,14 +74,29 @@ export function DesktopLayout() {
         className="fixed flex flex-col gap-0.5 top-[calc(var(--header-height)_+_0.5rem)] z-100"
         style={{ left: `${buttonLeft}px` }}
       >
-        <Button
-          variant="ghost"
-          onClick={toggle}
-          className="cursor-pointer text-muted-foreground/60 hover:text-foreground"
-        >
-          <Fullscreen size={16} />
-        </Button>
-        <ModeToggle />
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                onClick={toggle}
+                className="cursor-pointer text-muted-foreground/60 hover:text-foreground"
+              >
+                <Fullscreen size={16} />
+              </Button>
+            }
+          />
+          <TooltipContent side="right">
+            <p>Fullscreen</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger render={<ModeToggle />} />
+          <TooltipContent side="right">
+            <p>Theme</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
     </main>
   );
