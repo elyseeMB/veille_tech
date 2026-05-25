@@ -61,7 +61,7 @@ export function ClusterArticles({
         "0px",
       );
     };
-  }, [variant]);
+  }, [variant, data]);
 
   if (isLoading) {
     return <ClusterSkeleton />;
@@ -104,7 +104,7 @@ export function ClusterArticles({
             }
           >
             <ArrowLeft size={18} />
-            <span className="text-sm font-medium">Cluster: {data.label}</span>
+            <span className="text-sm font-medium">{data.label}</span>
           </Button>
         </div>
       )}
