@@ -83,7 +83,7 @@ export function HistoryPanel() {
               <Button
                 variant="destructive"
                 onClick={clearHistory}
-                className="cursor-pointer w-full h-10 rounded-full"
+                className="cursor-pointer w-full h-15 rounded-full"
               >
                 <Trash2 size={14} /> Clear history
               </Button>
