@@ -130,9 +130,9 @@ export function Banner() {
               })}
             </span>
           </div>
-          <span className="font-medium truncate text-foreground">
+          <div className="font-medium truncate text-foreground">
             {banner.title}
-          </span>
+          </div>
         </div>
       )}
 
