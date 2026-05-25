@@ -92,11 +92,23 @@ export function DesktopLayout() {
         </Tooltip>
 
         <Tooltip>
-          <TooltipTrigger render={<ModeToggle />} />
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                onClick={toggle}
+                className="cursor-pointer text-muted-foreground/60 hover:text-foreground"
+              >
+                <Fullscreen size={16} />
+              </Button>
+            }
+          />
           <TooltipContent side="right">
-            <p>Theme</p>
+            <p>Fullscreen</p>
           </TooltipContent>
         </Tooltip>
+
+        <ModeToggle />
       </div>
     </main>
   );
