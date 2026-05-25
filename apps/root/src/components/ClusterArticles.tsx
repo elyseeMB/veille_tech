@@ -115,6 +115,7 @@ export function ClusterArticles({
             key={item.data.id}
             article={item.data}
             clusterLabel={data.label}
+            clusterCreatedAt={data.createdAt}
           />
         ) : (
           <VideoItem key={item.data.id} video={item.data} />
