@@ -31,6 +31,10 @@ class NamingResult(BaseModel):
     description: Optional[str] = None
 
 
+class NamingResultGemini(NamingResult):
+    index: int
+
+
 class MetadataResult(BaseModel):
     main_topic: str
     keywords: List[str]
@@ -41,5 +45,5 @@ __all__ = [
     "EmbeddingResult",
     "ClusterResult",
     "NamingResult",
-    "MetadataResult",
+    "NamingResultGemini" "MetadataResult",
 ]
