@@ -51,11 +51,10 @@ export function DesktopLayout() {
           <div className="grid grid-cols-3">
             <ClustersPanel />
             <main className="overflow-y-auto scrollbar-hide border-r border-border h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]">
-              {clusterId ? (
-                <ClusterArticles id={clusterId} variant="desktop" />
-              ) : (
+              <div className={clusterId ? "invisible h-0 overflow-hidden pointer-events-none" : ""}>
                 <Outlet />
-              )}
+              </div>
+              {clusterId && <ClusterArticles id={clusterId} variant="desktop" />}
             </main>
             <SummaryPanel />
           </div>
