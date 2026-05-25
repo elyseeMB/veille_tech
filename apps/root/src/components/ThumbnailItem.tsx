@@ -22,7 +22,9 @@ export function ThumbnailItem({
           (e.currentTarget as HTMLImageElement).style.display = "none";
         }}
       />
-      <span className="font-medium text-muted-foreground">{domain}</span>
+      <span className="font-medium text-muted-foreground max-w-[200px] truncate">
+        {domain}
+      </span>
     </div>
   );
 }
