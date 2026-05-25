@@ -1,26 +1,21 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import { RootLayout } from "@/layouts/RootLayout";
 import { FeedPage } from "@/pages/FeedPage";
-import { feedLoader, clusterLoader } from "@/loaders";
+import { ClustersPanel } from "@/components/ClustersPanel";
+import { ClusterSection } from "@/pages/ClusterSection";
+import { feedLoader, clustersLoader, clusterLoader } from "@/loaders";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
     children: [
+      { index: true, loader: () => redirect("/feed") },
+      { path: "feed", element: <FeedPage />, loader: feedLoader },
+      { path: "clusters", element: <ClustersPanel />, loader: clustersLoader },
       {
-        index: true,
-        element: <FeedPage />,
-        loader: feedLoader,
-      },
-      {
-        path: "feed",
-        element: <FeedPage />,
-        loader: feedLoader,
-      },
-      {
-        path: "cluster/:id",
-        element: <FeedPage />,
+        path: "clusters/:id",
+        element: <ClusterSection />,
         loader: clusterLoader,
       },
     ],

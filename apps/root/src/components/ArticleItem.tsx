@@ -1,5 +1,5 @@
 import type { Article } from "@/types";
-import { Astroid } from "lucide-react";
+import { Astroid, Link } from "lucide-react";
 import { useSummaryStore } from "@/store/summaryStore.ts";
 import { useRef, type MouseEventHandler } from "react";
 import { useBanner } from "./BannerContext.tsx";
@@ -8,6 +8,7 @@ import { TimeRelative } from "./TimeRelative.tsx";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import clsx from "clsx";
 import { Badge } from "./ui/badge.tsx";
+import { Button } from "./ui/button.tsx";
 
 const SOURCE_COLORS: Record<string, string> = {
   "Hacker News": "text-orange-400",
@@ -94,7 +95,15 @@ const BADGES_MAPPING = {
   },
 };
 
-export function ArticleItem({ article: item, clusterLabel, clusterCreatedAt }: { article: Article; clusterLabel?: string; clusterCreatedAt?: string }) {
+export function ArticleItem({
+  article: item,
+  clusterLabel,
+  clusterCreatedAt,
+}: {
+  article: Article;
+  clusterLabel?: string;
+  clusterCreatedAt?: string;
+}) {
   const isDeviceMedium = useMediaQuery("(max-width: 800px)");
   const articleRef = useRef<HTMLElement>(null);
   const { selectedArticle, setSelectedArticle } = useSummaryStore();
@@ -164,14 +173,31 @@ export function ArticleItem({ article: item, clusterLabel, clusterCreatedAt }: {
 
         <div className="space-y-3 w-full">
           <div className="flex flex-col items-start gap-1">
-            <TimeRelative date={item.pubDate} />
+            <div className="w-full flex items-center justify-between">
+              <TimeRelative date={item.pubDate} />
+              <a
+                href={`/r/${item.id}?title=${encodeURIComponent(item.title)}&url=${encodeURIComponent(item.link)}&source=${encodeURIComponent(item.source)}&sourceBaseUrl=${encodeURIComponent(new URL(item.link).hostname)}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  className="text-xs cursor-pointer z-10 text-muted-foreground flex items-center gap-1"
+                >
+                  <Link size={12} />
+                  read article
+                </Button>
+              </a>
+            </div>
             <div className="flex items-center gap-2 w-full">
               <span
                 className={`text-xs uppercase tracking-widest ${SOURCE_COLORS[item.source] ?? "text-muted-foreground"}`}
               >
                 {item.source}
               </span>
-              <span className="text-xs text-muted-foreground/50">·</span>
+              <span>·</span>
               <span className="text-xs max-w-60 truncate text-muted-foreground/60 capitalize">
                 <Badge
                   className={
@@ -204,19 +230,9 @@ export function ArticleItem({ article: item, clusterLabel, clusterCreatedAt }: {
             <span>{item.author}</span>
           </div>
 
-          <a
-            href={item.link}
-            className="block before:absolute before:content-[''] before:inset-0 before:w-full before:h-full"
-            target="_blank"
-            rel="noreferrer"
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <h2 className="text-lg font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
-              {item.title}
-            </h2>
-          </a>
+          <h2 className="text-lg font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
+            {item.title}
+          </h2>
 
           {item.content &&
             !item.content.includes("Comments URL:") &&

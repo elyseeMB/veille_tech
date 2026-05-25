@@ -63,7 +63,7 @@ export function Feed({
   };
 
   return (
-    <section className={clsx(!isMobile && "border-r border-border sticky")}>
+    <section>
       {loading ? (
         Array.from({ length: 5 }).map((_, i) => <ItemSkeleton2 key={i} />)
       ) : items.length === 0 && !error ? (

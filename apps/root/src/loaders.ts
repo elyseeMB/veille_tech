@@ -1,10 +1,14 @@
 import { queryClient } from "@/queryClient";
-import { feedQuery, clusterQuery } from "@/queries";
+import { feedQuery, clustersQuery, clusterQuery } from "@/queries";
 import type { LoaderFunctionArgs } from "react-router-dom";
 
 export async function feedLoader(_: LoaderFunctionArgs) {
   await queryClient.ensureInfiniteQueryData(feedQuery);
+  return null;
+}
 
+export async function clustersLoader() {
+  await queryClient.ensureQueryData(clustersQuery);
   return null;
 }
 

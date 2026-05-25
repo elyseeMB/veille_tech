@@ -88,6 +88,8 @@ func setupRouter() *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
 
+	r.GET("/r/:id", handlers.RedirectArticle())
+
 	v1 := r.Group("/v1")
 	{
 		// Cache 5 min

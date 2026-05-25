@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useLocation, matchPath } from "react-router-dom";
 import { clustersQuery } from "@/queries";
 import { useBanner } from "./BannerContext.tsx";
 import { useSummaryStore } from "@/store/summaryStore.ts";
@@ -33,9 +33,7 @@ function ClusterCard({
     <div
       className={clsx(
         "flex flex-col gap-2 border-b border-border last:border-0 transition-colors cursor-pointer",
-        isMobile
-          ? "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem] py-5"
-          : "p-5",
+        isMobile ? "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem] py-5" : "p-5",
         selected ? "bg-foreground/10" : "hover:bg-foreground/5",
       )}
       onClick={onSelect}
@@ -43,9 +41,7 @@ function ClusterCard({
       <div className="min-w-0 flex flex-col gap-1">
         <div className="flex items-center gap-2 mb-1">
           <TimeRelative date={createdAt} className="text-sm" />
-          <span className="font-mono text-sm uppercase tracking-[0.25em] text-muted-foreground/50">
-            ·
-          </span>
+          <span>·</span>
           <span className="flex items-center gap-1 text-xs">
             {articleCount}
           </span>
@@ -59,9 +55,7 @@ function ClusterCard({
           </div>
         )}
       </div>
-      {description && (
-        <p className="leading-relaxed text-sm">{description}</p>
-      )}
+      {description && <p className="leading-relaxed">{description}</p>}
     </div>
   );
 }
@@ -71,9 +65,7 @@ function SkeletonCard({ isMobile }: { isMobile: boolean }) {
     <div
       className={clsx(
         "flex flex-col gap-5 border-b border-border",
-        isMobile
-          ? "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem] py-5"
-          : "p-5",
+        isMobile ? "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem] py-5" : "p-5",
       )}
     >
       <div className="space-y-3">
@@ -89,8 +81,10 @@ function SkeletonCard({ isMobile }: { isMobile: boolean }) {
 export function ClustersPanel() {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { data: clusters, isLoading, error, refetch } = useQuery(clustersQuery);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const selectedClusterId = searchParams.get("cluster");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const clusterMatch = matchPath("/clusters/:id", location.pathname);
+  const selectedClusterId = clusterMatch?.params.id ?? null;
   const { pushBanner } = useBanner();
   const { setSelectedArticle } = useSummaryStore();
 
@@ -107,17 +101,11 @@ export function ClustersPanel() {
           node: null,
         });
       }
+      navigate(`/clusters/${id}`);
     } else {
       pushBanner(null);
+      navigate("/feed");
     }
-    setSearchParams((p) => {
-      if (isSelected) {
-        p.delete("cluster");
-      } else {
-        p.set("cluster", id);
-      }
-      return p;
-    });
   };
 
   return (
@@ -133,7 +121,11 @@ export function ClustersPanel() {
         ))
       ) : error ? (
         <div className="p-2 flex items-center justify-center">
-          <Button className="cursor-pointer" variant="outline" onClick={() => refetch()}>
+          <Button
+            className="cursor-pointer"
+            variant="outline"
+            onClick={() => refetch()}
+          >
             Failed to load clusters — Tap to retry
           </Button>
         </div>

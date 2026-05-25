@@ -7,7 +7,7 @@ import {
   type PropsWithChildren,
   useLayoutEffect,
 } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "./ui/button.tsx";
 import { ArrowRight, X } from "lucide-react";
@@ -48,7 +48,7 @@ export function Banner() {
   const [banner, setBanner] = useState<BannerData>(null);
   const { setBannerRef } = useContext(BannerContext);
   const { setSelectedArticle } = useSummaryStore();
-  const [, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const bannerRef = useRef<HTMLDivElement>(null);
   setBannerRef.current = (props) => {
     setBanner(props);
@@ -92,13 +92,16 @@ export function Banner() {
           </p>
           <div className="flex items-center gap-1.5">
             <p className="text-xs text-muted-foreground shrink-0">
-              {banner.source} ·{" "}
+              {banner.source} ·
               {new Date(banner.pubDate).toLocaleDateString("en", {
                 day: "numeric",
                 month: "short",
               })}
             </p>
-            <ArrowRight size={12} className="shrink-0 text-muted-foreground/50" />
+            <ArrowRight
+              size={12}
+              className="shrink-0 text-muted-foreground/50"
+            />
             <AnimatePresence mode="popLayout">
               <motion.p
                 key={banner.title}
@@ -116,7 +119,7 @@ export function Banner() {
       ) : (
         <div className="min-w-0 flex-1 pl-1">
           <p className="text-xs text-muted-foreground truncate">
-            {banner.source} ·{" "}
+            {banner.source} ·
             {new Date(banner.pubDate).toLocaleDateString("en", {
               day: "numeric",
               month: "short",
@@ -148,10 +151,7 @@ export function Banner() {
           onClick={() => {
             setBanner(null);
             setSelectedArticle(null);
-            setSearchParams((p) => {
-              p.delete("cluster");
-              return p;
-            });
+            navigate("/feed");
           }}
         >
           <X size="12" />
