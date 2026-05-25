@@ -14,7 +14,6 @@ from processing.namers.base import (
     BatchNamingInput,
     BatchNamingResult,
     ClusterInput,
-    extract_first_json,
 )
 
 log = get_logger("processing.namers.gemini")
@@ -84,43 +83,20 @@ class GeminiNamer(BaseNamer):
                 ]
             )
 
-            prompt = f"""You are a semantic labeling engine for a tech news aggregator.
+            prompt = f"""
+                        You are a semantic labeling engine for tech news clustering.
 
-            You receive multiple clusters of tech articles. Each cluster shares a common topic.
-            Your job is to identify and name each cluster's topic with maximum precision.
+                        CLUSTERS:
+                        {clusters_block}
 
-            CLUSTERS:
-            {clusters_block}
+                        RULES:
+                        - 2 to 4 words max
+                        - lowercase only
+                        - no punctuation
+                        - be specific (prefer entities, companies, events)
 
-            SPECIFICITY RULE — the most important rule:
-            Given two accurate labels, always pick the more specific one.
-            Ask: "Could this label apply to 100 different news cycles?"
-            If yes, it is too generic. Go one level deeper.
-
-            LABEL RULES:
-            - 2 to 4 words maximum
-            - lowercase only
-            - no punctuation, no quotes, no dashes, no emojis
-            - name the actual entity or event — not its parent category
-            - ALWAYS prefer a proper noun, product name, company name, or version number
-            - "[company] reputation crisis" beats "ai backlash"
-            - "[group] supply chain attack" beats "github repository breaches"
-            - "[company A] [company B] acquisition" beats "tech and society"
-
-            DESCRIPTION RULES:
-            - exactly 1 sentence
-            - describes what is happening, not just what the domain is
-            - no marketing tone
-
-            OUTPUT FORMAT:
-            Respond ONLY with a valid JSON object containing a "results" array.
-
-            {{
-                "results": [
-                    {{"index": 0, "label": "The cluster title", "description": "A short one-sentence description."}},
-                    {{"index": 1, "label": "Another cluster title", "description": "Another short description."}}
-                ]
-            }}"""
+                        Return strictly valid JSON following schema.
+                        """
 
             response = requests.post(
                 self.__url,
@@ -129,7 +105,7 @@ class GeminiNamer(BaseNamer):
                     "model": GEMINI_MODEL,
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0.1,
-                    "max_tokens": 2000,
+                    "max_tokens": 800,
                     "response_format": {
                         "type": "json_schema",
                         "json_schema": {
@@ -164,92 +140,43 @@ class GeminiNamer(BaseNamer):
                 },
                 timeout=60,
             )
+
             response.raise_for_status()
-            data = response.json()
 
-            log.debug(f"full data: {json.dumps(data)[:500]}")
+            raw = response.json()["choices"][0]["message"]["content"]
+            parsed = json.loads(raw)
 
-            raw_response = data["choices"][0]["message"]["content"].strip()
-            log.debug(f"raw response: {raw_response[:500]}")
+            raw_list = parsed.get("results", [])
 
-            raw_list = extract_first_json(raw_response)
-
-            if isinstance(raw_list, dict):
-                raw_list = raw_list.get("results", [])
-
-            if isinstance(raw_list, dict):
-                raw_list = [raw_list]
-
-            # FIX : On convertit l'index en int pour sécuriser le tri Python
-            if isinstance(raw_list, list):
-                try:
-                    raw_list = sorted(
-                        raw_list,
-                        key=lambda x: (
-                            int(x.get("index", 0)) if isinstance(x, dict) else 0
-                        ),
-                    )
-                except (ValueError, TypeError):
-                    raw_list = sorted(
-                        raw_list,
-                        key=lambda x: (
-                            str(x.get("index", 0)) if isinstance(x, dict) else ""
-                        ),
-                    )
-            else:
-                raw_list = []
-
-            expected = {c.index for c in input.clusters}
-
-            # FIX : Sécurisation de la récupération des index pour le set d'évaluation
-            got = set()
+            # --- strict validation ---
+            cleaned = []
             for item in raw_list:
-                if isinstance(item, dict) and "index" in item:
-                    try:
-                        got.add(int(item["index"]))
-                    except (ValueError, TypeError):
-                        pass
+                if not isinstance(item, dict):
+                    continue
 
-            missing = expected - got
-
-            if missing:
-                log.warning(f"missing clusters in response: {missing}")
-                for idx in missing:
-                    raw_list.append(
-                        {
-                            "index": idx,
-                            "label": "Unnamed Cluster",
-                            "description": "",
-                        }
-                    )
-                # Re-tri sécurisé après ajout des manquants
                 try:
-                    raw_list = sorted(
-                        raw_list,
-                        key=lambda x: (
-                            int(x.get("index", 0)) if isinstance(x, dict) else 0
-                        ),
-                    )
-                except (ValueError, TypeError):
-                    raw_list = sorted(
-                        raw_list,
-                        key=lambda x: (
-                            str(x.get("index", 0)) if isinstance(x, dict) else ""
-                        ),
-                    )
+                    idx = int(item["index"])
+                except:
+                    continue
+
+                cleaned.append(
+                    {
+                        "index": idx,
+                        "label": self._clean_label(item.get("label", "")),
+                        "description": item.get("description", ""),
+                    }
+                )
+
+            cleaned.sort(key=lambda x: x["index"])
 
             results = [
                 NamingResultGemini(
-                    index=int(item.get("index", -1)),
-                    label=self._clean_label(item.get("label", "Unnamed Cluster")),
-                    description=item.get("description", ""),
+                    index=item["index"],
+                    label=item["label"],
+                    description=item["description"],
                 )
-                for item in raw_list
-                if isinstance(item, dict)
+                for item in cleaned
             ]
-
-            for r in results:
-                log.info(f"cluster named: '{r.label}'")
 
             return Result.ok(BatchNamingResult(results=results))
 

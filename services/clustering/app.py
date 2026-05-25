@@ -335,51 +335,58 @@ def handler(event, context):
         # ── 7. Nommer + sauvegarder ───────────────────────────────────────
         log.info(f"naming {len(groups)} clusters...")
 
-        # On crée une liste ordonnée et un dictionnaire de correspondance pour la reconstruction
-        indexed_groups = {}
-        cluster_inputs = []
-
-        for idx, (label, members) in enumerate(groups.items()):
-            indexed_groups[idx] = members  # Sauvegarde la relation Index -> Membres
-            cluster_inputs.append(
-                ClusterInput(
-                    index=idx,
-                    titles=[m["title"] for m in members[:10]],
-                    excerpts=[
-                        f"Category: {m['main_topic']} | Content: {' '.join(m['chunks'][:4])[:1000]}"
-                        for m in members[:10]
-                    ],
-                )
-            )
-
-        batch_input = BatchNamingInput(clusters=cluster_inputs)
-        batch_result = container.namer.generate_batch(batch_input)
-
-        if not batch_result.success:
-            log.error(batch_result.error)
-            return
+        cluster_items = list(groups.items())
 
         cluster_rows = []
 
-        # CORRECTION : On utilise naming.index pour retrouver les bons membres
-        for naming in batch_result.value.results:
-            cluster_idx = naming.index
+        for batch_start in range(0, len(cluster_items), 3):
+            batch = cluster_items[batch_start : batch_start + 3]
 
-            if cluster_idx not in indexed_groups:
-                log.warning(
-                    f"Gemini a renvoyé un index invalide ({cluster_idx}), skipping"
+            indexed_groups = {}
+            cluster_inputs = []
+
+            for local_idx, (label, members) in enumerate(batch):
+                global_idx = batch_start + local_idx
+
+                indexed_groups[global_idx] = members
+
+                cluster_inputs.append(
+                    ClusterInput(
+                        index=global_idx,
+                        titles=[m["title"] for m in members[:10]],
+                        excerpts=[
+                            f"Category: {m['main_topic']} | Content: {' '.join(m['chunks'][:4])[:1000]}"
+                            for m in members[:10]
+                        ],
+                    )
                 )
+
+            batch_input = BatchNamingInput(clusters=cluster_inputs)
+            batch_result = container.namer.generate_batch(batch_input)
+
+            if not batch_result.success:
+                log.error(batch_result.error)
                 continue
 
-            members = indexed_groups[cluster_idx]
-            cluster_rows.append(
-                ClusterRow(
-                    label=naming.label,
-                    description=naming.description,
-                    article_ids=[m["id"] for m in members if m["type"] == "article"],
-                    video_ids=[m["id"] for m in members if m["type"] == "video"],
+            for naming in batch_result.value.results:
+                cluster_idx = naming.index
+
+                if cluster_idx not in indexed_groups:
+                    log.warning(f"invalid index {cluster_idx}")
+                    continue
+
+                members = indexed_groups[cluster_idx]
+
+                cluster_rows.append(
+                    ClusterRow(
+                        label=naming.label,
+                        description=naming.description,
+                        article_ids=[
+                            m["id"] for m in members if m["type"] == "article"
+                        ],
+                        video_ids=[m["id"] for m in members if m["type"] == "video"],
+                    )
                 )
-            )
 
         log.info(f"saving {len(cluster_rows)} clusters...")
         saved = container.repository.save_clusters(cluster_rows)
