@@ -52,7 +52,9 @@ export function DesktopLayout() {
             <main className="overflow-y-auto scrollbar-hide border-r border-border h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]">
               {isClustersList ? (
                 <div className="flex items-center justify-center h-full">
-                  <p className="text-sm text-muted-foreground px-5">Select a cluster from the list</p>
+                  <p className="text-sm text-muted-foreground px-5">
+                    Select a cluster from the list
+                  </p>
                 </div>
               ) : (
                 <Outlet />
@@ -67,7 +69,11 @@ export function DesktopLayout() {
         className="fixed flex flex-col gap-0.5 top-[calc(var(--header-height)_+_0.5rem)] z-100"
         style={{ left: `${buttonLeft}px` }}
       >
-        <Button variant="ghost" onClick={toggle} className="cursor-pointer">
+        <Button
+          variant="ghost"
+          onClick={toggle}
+          className="cursor-pointer text-muted-foreground/60 hover:text-foreground"
+        >
           <Fullscreen size={16} />
         </Button>
         <ModeToggle />
