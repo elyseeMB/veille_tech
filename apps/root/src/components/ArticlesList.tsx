@@ -109,9 +109,7 @@ export function ArticlesList({
                       >
                         {item.source}
                       </span>
-                      <span className="text-xs text-muted-foreground/50">
-                        ·
-                      </span>
+                      <span>·</span>
                       <span className="text-xs text-muted-foreground/60 capitalize">
                         {item.category}
                       </span>
@@ -131,7 +129,7 @@ export function ArticlesList({
                   </div>
 
                   <a
-                    href={item.link}
+                    href={`/r/${item.id}?title=${encodeURIComponent(item.title)}&url=${encodeURIComponent(item.link)}&source=${encodeURIComponent(item.source)}&sourceBaseUrl=${encodeURIComponent(new URL(item.link).hostname)}`}
                     className="block before:absolute before:content-[''] before:inset-0 before:w-full before:h-full"
                     target="_blank"
                     rel="noreferrer"

@@ -3,9 +3,13 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
-// https://vite.dev/config/
 export default defineConfig({
-  server: { allowedHosts: ["proud-owls-change.loca.lt"] },
+  server: {
+    allowedHosts: ["proud-owls-change.loca.lt"],
+    proxy: {
+      "/r": "http://localhost:8081",
+    },
+  },
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

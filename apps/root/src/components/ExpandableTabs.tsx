@@ -2,10 +2,9 @@ import {
   useState,
   useRef,
   useLayoutEffect,
-  type ReactNode,
   type JSX,
 } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -19,17 +18,20 @@ const INACTIVE_W = 50;
 const GAP = 16;
 const PADDING = 0;
 
-export default function ExpandableTabs({
-  tabs,
-  children,
-}: {
-  tabs: TabsListNode;
-  children?: ReactNode;
-}) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = searchParams.get("tab") ?? tabs[0]?.value ?? "feed";
+export default function ExpandableTabs({ tabs }: { tabs: TabsListNode }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [activeWidth, setActiveWidth] = useState(120);
   const listRef = useRef<HTMLDivElement>(null);
+
+  const activeTab = searchParams.get("tab") === "history"
+    ? "history"
+    : location.pathname === "/feed"
+      ? "feed"
+      : location.pathname.startsWith("/clusters")
+        ? "clusters"
+        : "feed";
 
   useLayoutEffect(() => {
     if (!listRef.current) {
@@ -64,12 +66,11 @@ export default function ExpandableTabs({
     <div className="w-full">
       <Tabs
         value={activeTab}
-        onValueChange={(v) =>
-          setSearchParams((p) => {
-            p.set("tab", v);
-            return p;
-          })
-        }
+        onValueChange={(v) => {
+          if (v === "history") navigate("/feed?tab=history");
+          else if (v === "feed") navigate("/feed");
+          else navigate("/clusters");
+        }}
         className="gap-4"
       >
         <TabsList
@@ -132,7 +133,6 @@ export default function ExpandableTabs({
             );
           })}
         </TabsList>
-        {children}
       </Tabs>
     </div>
   );

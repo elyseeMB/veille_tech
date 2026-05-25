@@ -1,7 +1,6 @@
-import { Outlet, useSearchParams } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { ClustersPanel } from "@/components/ClustersPanel";
-import { ClusterArticles } from "@/components/ClusterArticles";
-import { SummaryPanel } from "@/components/SummaryPanel";
+import { HistoryPanel } from "@/components/HistoryPanel";
 import { Calendar } from "@/components/Calendar";
 import { Banner } from "@/components/BannerContext";
 import { useHeaderHeight } from "@/hooks/useHeaderHeight";
@@ -14,8 +13,8 @@ import { Fullscreen } from "lucide-react";
 import clsx from "clsx";
 
 export function DesktopLayout() {
-  const [searchParams] = useSearchParams();
-  const clusterId = searchParams.get("cluster");
+  const location = useLocation();
+  const isClustersList = location.pathname === "/clusters";
   const { ref: headerRef, height: headerHeight } = useHeaderHeight();
   const { visible: calendarVisible, toggle } = useCalendarToggle();
   const calendarData = useCalendarData();
@@ -51,12 +50,15 @@ export function DesktopLayout() {
           <div className="grid grid-cols-3">
             <ClustersPanel />
             <main className="overflow-y-auto scrollbar-hide border-r border-border h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]">
-              <div className={clusterId ? "invisible h-0 overflow-hidden pointer-events-none" : ""}>
+              {isClustersList ? (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-sm text-muted-foreground px-5">Select a cluster from the list</p>
+                </div>
+              ) : (
                 <Outlet />
-              </div>
-              {clusterId && <ClusterArticles id={clusterId} variant="desktop" />}
+              )}
             </main>
-            <SummaryPanel />
+            <HistoryPanel />
           </div>
         </div>
       </div>

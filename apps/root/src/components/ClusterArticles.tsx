@@ -5,8 +5,8 @@ import { ArticleItem } from "@/components/ArticleItem";
 import { VideoItem } from "@/components/VideoItem";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { SetURLSearchParams } from "react-router-dom";
 import { useRef, useLayoutEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function ClusterSkeleton() {
   return (
@@ -24,13 +24,12 @@ function ClusterSkeleton() {
 export function ClusterArticles({
   id,
   variant,
-  setSearchParams,
 }: {
   id: string;
   variant: "mobile" | "desktop";
-  setSearchParams?: SetURLSearchParams;
 }) {
   const { data, isLoading } = useQuery(clusterQuery(id));
+  const navigate = useNavigate();
   const backRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -73,7 +72,7 @@ export function ClusterArticles({
 
   return (
     <div className="flex flex-col">
-      {variant === "mobile" && setSearchParams && (
+      {variant === "mobile" && (
         <div
           ref={backRef}
           className="w-full px-4 h-fit flex items-center gap-2 pt-3 fixed
@@ -96,12 +95,7 @@ export function ClusterArticles({
           <Button
             variant="ghost"
             className="cursor-pointer -mx-[1rem] px-[1rem]"
-            onClick={() =>
-              setSearchParams((p) => {
-                p.delete("cluster");
-                return p;
-              })
-            }
+            onClick={() => navigate("/feed")}
           >
             <ArrowLeft size={18} />
             <span className="text-sm font-medium">{data.label}</span>
