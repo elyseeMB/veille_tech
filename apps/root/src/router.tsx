@@ -3,6 +3,7 @@ import { RootLayout } from "@/layouts/RootLayout";
 import { FeedPage } from "@/pages/FeedPage";
 import { ClustersPanel } from "@/components/ClustersPanel";
 import { ClusterSection } from "@/pages/ClusterSection";
+import { RedirectArticle } from "@/components/RedirectArticle";
 import { feedLoader, clustersLoader, clusterLoader } from "@/loaders";
 
 export const router = createBrowserRouter([
@@ -18,6 +19,7 @@ export const router = createBrowserRouter([
         element: <ClusterSection />,
         loader: clusterLoader,
       },
+      { path: "r/:id", element: <RedirectArticle /> },
     ],
   },
 ]);
