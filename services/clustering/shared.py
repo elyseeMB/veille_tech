@@ -45,5 +45,6 @@ __all__ = [
     "EmbeddingResult",
     "ClusterResult",
     "NamingResult",
-    "NamingResultGemini" "MetadataResult",
+    "NamingResultGemini",
+    "MetadataResult",
 ]

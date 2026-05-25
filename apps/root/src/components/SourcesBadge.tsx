@@ -24,15 +24,15 @@ export function SourcesBadge({ sources }: SourcesBadgeProps) {
             src={`${API_URL}/v1/favicon?domain=${source.baseUrl}`}
             alt={source.name}
             title={source.name}
-            className="w-5 h-5 rounded-full border-2 border-background object-contain bg-muted"
-            style={{ marginLeft: i === 0 ? 0 : -6 }}
+            className="w-6 h-6 rounded-full border-2 border-background object-contain bg-muted"
+            style={{ marginLeft: i === 0 ? 0 : -7 }}
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = "none";
             }}
           />
         ))}
       </div>
-      <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+      <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
         {count} source{count > 1 ? "s" : ""}
       </span>
     </div>

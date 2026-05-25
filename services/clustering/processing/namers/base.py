@@ -61,4 +61,9 @@ class BaseNamer(ABC):
                 label = label[len(prefix) :].strip()
 
         words = label.split()[:4]
-        return " ".join(words) if words else "Unnamed Cluster"
+        result = " ".join(words) if words else "Unnamed Cluster"
+        result = result.lower()
+
+        log.debug(f"_clean_label: '{label}' → '{result}'")
+
+        return result

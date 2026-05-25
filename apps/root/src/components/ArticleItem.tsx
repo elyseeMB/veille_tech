@@ -3,7 +3,6 @@ import { Astroid, Link } from "lucide-react";
 import { useSummaryStore } from "@/store/summaryStore.ts";
 import { useRef, type MouseEventHandler } from "react";
 import { useBanner } from "./BannerContext.tsx";
-import { useToggle } from "usehooks-ts";
 import { TimeRelative } from "./TimeRelative.tsx";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import clsx from "clsx";
@@ -111,11 +110,10 @@ export function ArticleItem({
   const isDesktop = !isDeviceMedium;
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { pushBanner } = useBanner();
-  const [isOpen, toggleOpen] = useToggle(false);
 
   const handleSelect: MouseEventHandler<HTMLElement> = (e) => {
     e.preventDefault();
-    if (isOpen) {
+    if (isSelected) {
       setSelectedArticle(null);
       if (clusterLabel) {
         pushBanner({
@@ -146,7 +144,6 @@ export function ArticleItem({
         node: articleRef.current,
       });
     }
-    toggleOpen();
   };
 
   const isCategoryDefault = !!BADGES_MAPPING[item.category];
@@ -187,7 +184,7 @@ export function ArticleItem({
                   className="text-xs cursor-pointer z-10 text-muted-foreground flex items-center gap-1"
                 >
                   <Link size={12} />
-                  read article
+                  read
                 </Button>
               </a>
             </div>
@@ -226,11 +223,11 @@ export function ArticleItem({
             </div>
           </div>
 
-          <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          <div className="flex items-center gap-3 font-mono text-sm uppercase tracking-normal text-muted-foreground">
             <span>{item.author}</span>
           </div>
 
-          <h2 className="text-lg font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
+          <h2 className="text-lg font-medium leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
             {item.title}
           </h2>
 

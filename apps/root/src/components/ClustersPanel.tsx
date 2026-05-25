@@ -46,7 +46,7 @@ function ClusterCard({
             {articleCount}
           </span>
         </div>
-        <div className="flex items-center gap-2 w-fit text-xs font-sans bg-muted border border-border rounded-full px-2.5 py-1 -ml-1 before:content-[''] before:block before:w-2 before:h-2 before:bg-secondary-foreground before:rounded-full">
+        <div className="flex items-center gap-2 w-fit text-lg font-medium font-sans">
           {label}
         </div>
         {sources.length > 0 && (
@@ -55,7 +55,11 @@ function ClusterCard({
           </div>
         )}
       </div>
-      {description && <p className="leading-relaxed">{description}</p>}
+      {description && (
+        <p className="leading-relaxed text-lg lg:text-base text-muted-foreground">
+          {description}
+        </p>
+      )}
     </div>
   );
 }

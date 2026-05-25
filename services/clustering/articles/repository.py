@@ -112,11 +112,11 @@ class PostgresRepository(BaseRepository):
             try:
                 with conn.cursor() as cur:
                     cur.execute("""SELECT a.id, a.title, a.url, a.keywords, a.embedding
-                        FROM articles a
-                        LEFT JOIN cluster_items ci ON ci.ref_id = a.id AND ci.type = 'article'::feed_item_type
-                        WHERE ci.ref_id IS NULL
-                        AND a.scrape_skipped = FALSE
-                        AND a.published_at >= NOW() - INTERVAL '48 hours'""")
+                    FROM articles a
+                    LEFT JOIN cluster_items ci ON ci.ref_id = a.id AND ci.type = 'article'::feed_item_type
+                    WHERE ci.ref_id IS NULL
+                    AND a.scrape_skipped = FALSE
+                    AND a.published_at >= NOW() - INTERVAL '48 hours'""")
                     rows = cur.fetchall()
                     return Result.ok(
                         [
@@ -125,7 +125,9 @@ class PostgresRepository(BaseRepository):
                                 title=row[1],
                                 url=row[2],
                                 keywords=row[3] or [],
-                                embedding=row[4],
+                                embedding=(
+                                    list(row[4]) if row[4] is not None else None
+                                ),
                             )
                             for row in rows
                         ]
@@ -163,17 +165,17 @@ class PostgresRepository(BaseRepository):
             try:
                 with conn.cursor() as cur:
                     cur.execute(
-                        """
-                        UPDATE articles 
-                        SET 
-                            embedding = %s::vector,
-                            category = %s,
-                            keywords = %s
-                        WHERE id = %s
-                        """,
+                        """UPDATE articles 
+                            SET 
+                                embedding = %s::vector,
+                                category = CASE WHEN %s != '' THEN %s ELSE category END,
+                                keywords = CASE WHEN array_length(%s::text[], 1) > 0 THEN %s ELSE keywords END
+                            WHERE id = %s""",
                         (
                             str(row.vector),
                             row.main_topic,
+                            row.main_topic,
+                            row.keywords,
                             row.keywords,
                             row.article_id,
                         ),

@@ -75,7 +75,7 @@ export function ClusterArticles({
       {variant === "mobile" && (
         <div
           ref={backRef}
-          className="w-full px-4 h-fit flex items-center gap-2 pt-3 fixed
+          className="w-full px-4 pt-3 fixed
           bg-background
           top-[calc(var(--tabs-height)_+_var(--header-height))]
           left-0
@@ -94,7 +94,7 @@ export function ClusterArticles({
         >
           <Button
             variant="ghost"
-            className="cursor-pointer -mx-[1rem] px-[1rem]"
+            className="cursor-pointer w-full h-10 rounded-full bg-primary-foreground"
             onClick={() => navigate("/clusters")}
           >
             <ArrowLeft size={18} />
