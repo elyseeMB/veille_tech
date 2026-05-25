@@ -94,7 +94,7 @@ const BADGES_MAPPING = {
   },
 };
 
-export function ArticleItem({ article: item, clusterLabel }: { article: Article; clusterLabel?: string }) {
+export function ArticleItem({ article: item, clusterLabel, clusterCreatedAt }: { article: Article; clusterLabel?: string; clusterCreatedAt?: string }) {
   const isDeviceMedium = useMediaQuery("(max-width: 800px)");
   const articleRef = useRef<HTMLElement>(null);
   const { selectedArticle, setSelectedArticle } = useSummaryStore();
@@ -108,7 +108,16 @@ export function ArticleItem({ article: item, clusterLabel }: { article: Article;
     e.preventDefault();
     if (isOpen) {
       setSelectedArticle(null);
-      pushBanner(null);
+      if (clusterLabel) {
+        pushBanner({
+          title: clusterLabel,
+          source: "Cluster",
+          pubDate: clusterCreatedAt || new Date().toISOString(),
+          node: null,
+        });
+      } else {
+        pushBanner(null);
+      }
     } else {
       pushBanner({
         title: item.title,
