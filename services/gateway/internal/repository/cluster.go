@@ -47,7 +47,7 @@ func GetRecentClusters() ([]models.ClusterDB, map[string][]models.SourceDTO, err
 					JOIN videos v ON v.id = ci.ref_id AND ci.type = 'video'
 					JOIN sources s ON s.id = v.source_id
 				) items ON items.cluster_id = c.id
-				WHERE c.created_at >= NOW() - INTERVAL '7 days'
+				WHERE c.created_at >= NOW() - INTERVAL '3 days'
 				ORDER BY c.created_at DESC`
 
 	rows, err := config.DB.Query(context.Background(), query)
