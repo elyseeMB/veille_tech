@@ -8,7 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/Theme-provider";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip.tsx";
 
 export function ModeToggle() {
   const { setTheme } = useTheme();
@@ -17,23 +16,14 @@ export function ModeToggle() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  className="text-muted-foreground/60 hover:text-foreground"
-                >
-                  <Sun className="h-3 w-3 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                  <Moon className="absolute h-3 w-3 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                  <span className="sr-only">Toggle theme</span>
-                </Button>
-              }
-            />
-            <TooltipContent side="right">
-              <p>Theme</p>
-            </TooltipContent>
-          </Tooltip>
+          <Button
+            variant="ghost"
+            className="text-muted-foreground/60 hover:text-foreground"
+          >
+            <Sun className="h-3 w-3 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+            <Moon className="absolute h-3 w-3 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
         }
       ></DropdownMenuTrigger>
       <DropdownMenuContent className="font-sans" align="end">

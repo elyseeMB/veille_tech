@@ -9,7 +9,7 @@ import { useCalendarData } from "@/hooks/useCalendarData";
 import { useContainerLeftOffset } from "@/hooks/useContainerLeftOffset";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/Mode-toggle";
-import { Fullscreen } from "lucide-react";
+import { Divide, Fullscreen } from "lucide-react";
 import clsx from "clsx";
 import {
   Tooltip,
@@ -94,21 +94,15 @@ export function DesktopLayout() {
         <Tooltip>
           <TooltipTrigger
             render={
-              <Button
-                variant="ghost"
-                onClick={toggle}
-                className="cursor-pointer text-muted-foreground/60 hover:text-foreground"
-              >
-                <Fullscreen size={16} />
-              </Button>
+              <span>
+                <ModeToggle />
+              </span>
             }
           />
           <TooltipContent side="right">
-            <p>Fullscreen</p>
+            <p>Theme</p>
           </TooltipContent>
         </Tooltip>
-
-        <ModeToggle />
       </div>
     </main>
   );

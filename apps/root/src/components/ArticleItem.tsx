@@ -158,7 +158,7 @@ export function ArticleItem({
         onClick={handleSelect}
         key={item.id}
         className={clsx(
-          "relative p-4 border-b border-border last:border-0 transition-colors overflow-hidden",
+          "relative p-4 border-b border-border last:border-0 transition-colors cursor-pointer overflow-hidden",
           isMobile && "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem]",
           isDesktop &&
             "group relative grid grid-cols-[1px_1fr] gap-5 w-full mx-0 py-5 pl-0 pr-5",
