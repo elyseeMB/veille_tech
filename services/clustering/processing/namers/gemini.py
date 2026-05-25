@@ -15,6 +15,7 @@ from processing.namers.base import (
     BatchNamingResult,
     ClusterInput,
 )
+from json_repair import repair_json
 
 log = get_logger("processing.namers.gemini")
 
@@ -83,20 +84,37 @@ class GeminiNamer(BaseNamer):
                 ]
             )
 
-            prompt = f"""
-                        You are a semantic labeling engine for tech news clustering.
+            prompt = f"""You are a semantic labeling engine for a tech news aggregator.
 
-                        CLUSTERS:
-                        {clusters_block}
+            You receive multiple clusters of tech articles. Each cluster shares a common topic.
+            Your job is to identify and name each cluster's topic with maximum precision.
 
-                        RULES:
-                        - 2 to 4 words max
-                        - lowercase only
-                        - no punctuation
-                        - be specific (prefer entities, companies, events)
+            CLUSTERS:
+            {clusters_block}
 
-                        Return strictly valid JSON following schema.
-                        """
+            SPECIFICITY RULE — the most important rule:
+            Given two accurate labels, always pick the more specific one.
+            Ask: "Could this label apply to 100 different news cycles?"
+            If yes, it is too generic. Go one level deeper.
+
+            LABEL RULES:
+            - 2 to 4 words maximum
+            - lowercase only
+            - no punctuation, no quotes, no dashes, no emojis
+            - name the actual entity or event — not its parent category
+            - ALWAYS prefer a proper noun, product name, company name, or version number
+            - "[company] reputation crisis" beats "ai backlash"
+            - "[group] supply chain attack" beats "github repository breaches"
+
+            DESCRIPTION RULES:
+            - exactly 1 sentence
+            - describes what is happening, not just what the domain is
+            - no marketing tone
+
+            You MUST return exactly {len(input.clusters)} results, one per cluster index shown above.
+
+            OUTPUT: valid JSON only, no markdown, no explanation.
+            {{"results": [{{"index": 0, "label": "specific label", "description": "One sentence."}}, ...]}}"""
 
             response = requests.post(
                 self.__url,
@@ -105,38 +123,8 @@ class GeminiNamer(BaseNamer):
                     "model": GEMINI_MODEL,
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0.1,
-                    "max_tokens": 800,
-                    "response_format": {
-                        "type": "json_schema",
-                        "json_schema": {
-                            "name": "cluster_naming_results",
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "results": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "index": {"type": "integer"},
-                                                "label": {"type": "string"},
-                                                "description": {"type": "string"},
-                                            },
-                                            "required": [
-                                                "index",
-                                                "label",
-                                                "description",
-                                            ],
-                                            "additionalProperties": False,
-                                        },
-                                    }
-                                },
-                                "required": ["results"],
-                                "additionalProperties": False,
-                            },
-                            "strict": True,
-                        },
-                    },
+                    "max_tokens": 1500,
+                    "response_format": {"type": "json_object"},
                 },
                 timeout=60,
             )
@@ -144,7 +132,7 @@ class GeminiNamer(BaseNamer):
             response.raise_for_status()
 
             raw = response.json()["choices"][0]["message"]["content"]
-            parsed = json.loads(raw)
+            parsed = json.loads(repair_json(raw))
 
             raw_list = parsed.get("results", [])
 

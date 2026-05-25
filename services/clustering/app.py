@@ -3,11 +3,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
+import time
 import boto3
 from collections import defaultdict
 from container import Container
 from processing import MetadataInput
-from processing.namers.base import BatchNamingInput, ClusterInput
+from processing.namers.base import NamingInput
 from articles import ClusterRow, EmbeddingRow
 from videos import VideoEmbeddingRow
 from shared import EmbeddingResult
@@ -90,41 +91,16 @@ def scrape_and_chunk(
                     item, "main_topic", ""
                 )
 
-                if getattr(item, "keywords", None) and existing_category.strip() != "":
-                    keywords = item.keywords
-                    main_topic = existing_category
-                    existing_embedding = getattr(item, "embedding", None)
-                    log.debug(
-                        f"keywords + category already exist for '{item.title}' — skipping extraction"
-                    )
-                else:
-                    meta_result = metadata_extractor_fn(
-                        MetadataInput(title=item.title, chunks=chunks)
-                    )
-
-                    if meta_result.success:
-                        main_topic = meta_result.value.main_topic
-                        keywords = meta_result.value.keywords
-                    else:
-                        log.warning(
-                            f"metadata extraction failed for {item.title}: {meta_result.error}"
-                        )
-                        main_topic = existing_category
-                        keywords = getattr(item, "keywords", []) or []
-
-                    # Forcer régénération embedding — metadata a changé
-                    existing_embedding = None
-
                 return {
                     "id": getattr(item, id_field),
                     "title": item.title,
                     "full_text": scraped.value.full_text,
                     "excerpt": " ".join(chunks[:5]),
                     "chunks": chunks,
-                    "main_topic": main_topic,
-                    "keywords": keywords,
+                    "main_topic": existing_category,
+                    "keywords": getattr(item, "keywords", []) or [],
                     "type": item_type,
-                    "existing_embedding": existing_embedding,
+                    "existing_embedding": None,
                 }
             else:
                 log.warning(f"scraping failed for {url_or_id}, skipping")
@@ -136,12 +112,33 @@ def scrape_and_chunk(
             return None
 
     result = []
-    with ThreadPoolExecutor(max_workers=2) as executor:
+    with ThreadPoolExecutor(max_workers=5) as executor:
         futures = {executor.submit(process_item, item): item for item in items}
         for future in as_completed(futures):
             item_result = future.result()
             if item_result:
                 result.append(item_result)
+
+    for item in result:
+        if item["keywords"] and item["main_topic"].strip():
+            log.debug(
+                f"keywords + category exist for '{item['title']}' — skipping extraction"
+            )
+            continue
+
+        meta_result = metadata_extractor_fn(
+            MetadataInput(title=item["title"], chunks=item["chunks"])
+        )
+        if meta_result.success:
+            item["main_topic"] = meta_result.value.main_topic
+            item["keywords"] = meta_result.value.keywords
+            item["existing_embedding"] = None
+        else:
+            log.warning(
+                f"metadata extraction failed for '{item['title']}': {meta_result.error}"
+            )
+
+        time.sleep(1)
     return result
 
 
@@ -335,58 +332,33 @@ def handler(event, context):
         # ── 7. Nommer + sauvegarder ───────────────────────────────────────
         log.info(f"naming {len(groups)} clusters...")
 
-        cluster_items = list(groups.items())
-
         cluster_rows = []
 
-        for batch_start in range(0, len(cluster_items), 3):
-            batch = cluster_items[batch_start : batch_start + 3]
-
-            indexed_groups = {}
-            cluster_inputs = []
-
-            for local_idx, (label, members) in enumerate(batch):
-                global_idx = batch_start + local_idx
-
-                indexed_groups[global_idx] = members
-
-                cluster_inputs.append(
-                    ClusterInput(
-                        index=global_idx,
-                        titles=[m["title"] for m in members[:10]],
-                        excerpts=[
-                            f"Category: {m['main_topic']} | Content: {' '.join(m['chunks'][:4])[:1000]}"
-                            for m in members[:10]
-                        ],
-                    )
+        for label, members in groups.items():
+            naming = container.namer.generate(
+                NamingInput(
+                    titles=[m["title"] for m in members[:10]],
+                    excerpts=[
+                        f"Category: {m['main_topic']} | Content: {' '.join(m['chunks'][:4])[:1000]}"
+                        for m in members[:10]
+                    ],
                 )
+            )
 
-            batch_input = BatchNamingInput(clusters=cluster_inputs)
-            batch_result = container.namer.generate_batch(batch_input)
-
-            if not batch_result.success:
-                log.error(batch_result.error)
+            if not naming.success:
+                log.error(f"naming error: {naming.error}")
                 continue
 
-            for naming in batch_result.value.results:
-                cluster_idx = naming.index
+            log.info(f"cluster named: '{naming.value.label}'")
 
-                if cluster_idx not in indexed_groups:
-                    log.warning(f"invalid index {cluster_idx}")
-                    continue
-
-                members = indexed_groups[cluster_idx]
-
-                cluster_rows.append(
-                    ClusterRow(
-                        label=naming.label,
-                        description=naming.description,
-                        article_ids=[
-                            m["id"] for m in members if m["type"] == "article"
-                        ],
-                        video_ids=[m["id"] for m in members if m["type"] == "video"],
-                    )
+            cluster_rows.append(
+                ClusterRow(
+                    label=naming.value.label,
+                    description=naming.value.description,
+                    article_ids=[m["id"] for m in members if m["type"] == "article"],
+                    video_ids=[m["id"] for m in members if m["type"] == "video"],
                 )
+            )
 
         log.info(f"saving {len(cluster_rows)} clusters...")
         saved = container.repository.save_clusters(cluster_rows)
