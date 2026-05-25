@@ -112,12 +112,12 @@ export function HistoryPanel() {
               )}
             >
               <div className="flex items-center gap-1.5">
-                <ThumbnailItem
-                  source={click.source || new URL(click.url).hostname}
-                  sourceBaseUrl={
-                    click.sourceBaseUrl || new URL(click.url).hostname
-                  }
-                />
+                {click.source && (
+                  <ThumbnailItem
+                    source={click.source}
+                    sourceBaseUrl={click.sourceBaseUrl}
+                  />
+                )}
                 <span>·</span>
                 <span className="text-muted-foreground">
                   {new Date(click.clickedAt).toLocaleDateString("en", {
