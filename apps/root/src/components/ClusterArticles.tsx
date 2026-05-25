@@ -95,7 +95,7 @@ export function ClusterArticles({
         >
           <Button
             variant="ghost"
-            className="cursor-pointer -mx-[1rem] px-[1rem]"
+            className="cursor-pointer text-muted-foreground -mx-[1rem] px-[1rem]"
             onClick={() =>
               setSearchParams((p) => {
                 p.delete("cluster");
@@ -104,7 +104,7 @@ export function ClusterArticles({
             }
           >
             <ArrowLeft size={18} />
-            <span className="text-sm text-secondary font-medium">{data.label}</span>
+            <span className="text-sm font-medium">{data.label}</span>
           </Button>
         </div>
       )}
