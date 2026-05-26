@@ -3,7 +3,6 @@ import { Skeleton } from "./ui/skeleton.tsx";
 import type { FeedItem } from "@/types";
 import { ArticleItem } from "./ArticleItem.tsx";
 import { VideoItem } from "./VideoItem.tsx";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Button } from "./ui/button.tsx";
 import clsx from "clsx";
 
@@ -27,7 +26,6 @@ export function Feed({
   retry?: () => void;
 }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const isMobile = useMediaQuery("(max-width: 768px)");
 
   useEffect(() => {
     if (!sentinelRef.current) return;

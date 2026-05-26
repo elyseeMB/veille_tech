@@ -82,7 +82,7 @@ function SkeletonCard({ isMobile }: { isMobile: boolean }) {
   );
 }
 
-export function ClustersPanel() {
+export default function ClustersPanel() {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { data: clusters, isLoading, error, refetch } = useQuery(clustersQuery);
   const navigate = useNavigate();

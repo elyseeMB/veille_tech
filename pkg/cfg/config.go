@@ -1,6 +1,7 @@
 package cfg
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -68,7 +69,10 @@ func (c *Config) DatabaseURL() string {
 
 func (c *Config) AllowedOrigins() []string {
 	if v := os.Getenv("ALLOWED_ORIGINS"); v != "" {
-		return []string{v}
+		var origins []string
+		if err := json.Unmarshal([]byte(v), &origins); err == nil {
+			return origins
+		}
 	}
 	return c.Server.CORS.AllowedOrigins
 }

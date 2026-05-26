@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { ClustersPanel } from "@/components/ClustersPanel";
+import ClustersPanel from "@/components/ClustersPanel";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Calendar } from "@/components/Calendar";
 import { Banner } from "@/components/BannerContext";
@@ -9,7 +9,7 @@ import { useCalendarData } from "@/hooks/useCalendarData";
 import { useContainerLeftOffset } from "@/hooks/useContainerLeftOffset";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/Mode-toggle";
-import { Divide, Fullscreen } from "lucide-react";
+import { Fullscreen } from "lucide-react";
 import clsx from "clsx";
 import {
   Tooltip,
