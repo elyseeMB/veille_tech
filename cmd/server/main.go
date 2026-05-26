@@ -10,6 +10,7 @@ import (
 	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
 	"github.com/joho/godotenv"
 	"github.com/mbous/veille_tech/pkg/awsconfig"
+	"github.com/mbous/veille_tech/pkg/cfg"
 	"github.com/mbous/veille_tech/pkg/db"
 	"github.com/mbous/veille_tech/pkg/server"
 )
@@ -42,10 +43,16 @@ func main() {
 	db.InitLogger()
 	loadSecrets()
 
+	config, err := cfg.Load("cfg/dev.yaml")
+	if err != nil {
+		slog.Error("failed to load config", "error", err)
+		os.Exit(1)
+	}
+
 	conn := db.MustConnect(context.Background())
 	defer conn.Close()
 
-	r := server.NewRouter(conn)
+	r := server.NewRouter(conn, config)
 
 	if os.Getenv("AWS_LAMBDA_RUNTIME_API") != "" {
 		ginLambda = httpadapter.NewV2(r)

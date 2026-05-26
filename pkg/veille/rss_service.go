@@ -105,6 +105,12 @@ func FetchRSS(ctx context.Context, conn *db.PostgresConnection) error {
 				})
 			}
 
+			slog.Debug("feed fetched",
+				"source", t.Source,
+				"category", t.Category,
+				"count", len(articles),
+			)
+
 			results <- Result{articles: articles, source: t.Source}
 		}(target)
 	}

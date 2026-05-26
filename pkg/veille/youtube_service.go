@@ -146,6 +146,11 @@ func FetchYouTube(ctx context.Context, conn *db.PostgresConnection) error {
 				})
 			}
 
+			slog.Debug("youtube channel fetched",
+				"channel", ch.Name,
+				"count", len(videos),
+			)
+
 			results <- Result{videos: videos}
 		}(channel)
 	}

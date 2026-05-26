@@ -7,6 +7,7 @@ import path from "path";
 export default defineConfig({
   server: {
     allowedHosts: ["proud-owls-change.loca.lt"],
+    hmr: { overlay: false },
     proxy: {
       "/r": "http://localhost:8081",
     },
