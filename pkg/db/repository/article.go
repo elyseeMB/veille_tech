@@ -112,6 +112,8 @@ func UpdateSourceBaseURL(conn *db.PostgresConnection, name, baseURL string) erro
 	return err
 }
 
+// ========================== API ==================================================
+
 func GetArticles(conn *db.PostgresConnection, filter coredata.ArticleFilter) ([]coredata.ArticleDB, int, error) {
 	if filter.Page == 0 {
 		filter.Page = 1
