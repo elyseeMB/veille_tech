@@ -105,12 +105,15 @@ export function ClusterArticles({
 
       {data.items.map((item) =>
         item.type === "article" ? (
-          <ArticleItem
-            key={item.data.id}
-            article={item.data}
-            clusterLabel={data.label}
-            clusterCreatedAt={data.createdAt}
-          />
+          <>
+            <title>{data.label}</title>
+            <ArticleItem
+              key={item.data.id}
+              article={item.data}
+              clusterLabel={data.label}
+              clusterCreatedAt={data.createdAt}
+            />
+          </>
         ) : (
           <VideoItem key={item.data.id} video={item.data} />
         ),
