@@ -21,14 +21,13 @@ Globals:
       ThrottlingRateLimit: 100
 
 Resources:
-  # ─── Lambda Fetcher RSS + YouTube ───────────────────────────────
   FetcherFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
     Properties:
       FunctionName: veille-fetcher
-      CodeUri: ../services/fetcher/function
+      CodeUri: ../lambdas/fetcher
       Handler: bootstrap
       Runtime: provided.al2023
       Architectures:
@@ -61,14 +60,13 @@ Resources:
             Name: tech-watch-night-4h
             Enabled: true
 
-  # ─── Lambda Gateway API ──────────────────────────────────────────
   GatewayFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
     Properties:
       FunctionName: veille-gateway
-      CodeUri: ../services/gateway/function
+      CodeUri: ../lambdas/server
       Handler: bootstrap
       Runtime: provided.al2023
       Architectures:
@@ -88,7 +86,33 @@ Resources:
             Path: /{proxy+}
             Method: ANY
 
-  # ─── Lambda Clustering (Python / Docker) ────────────────────────
+  # ArchiverFunction:
+  #   Type: AWS::Serverless::Function
+  #   Metadata:
+  #     BuildMethod: makefile
+  #   Properties:
+  #     FunctionName: veille-archiver
+  #     CodeUri: ../lambdas/archiver
+  #     Handler: bootstrap
+  #     Runtime: provided.al2023
+  #     Architectures:
+  #       - x86_64
+  #     MemorySize: 256
+  #     Timeout: 300
+  #     Environment:
+  #       Variables:
+  #         DB_PARAM_NAME: "/veille/database_url"
+  #     Policies:
+  #       - SSMParameterReadPolicy:
+  #           ParameterName: "veille/*"
+  #     Events:
+  #       DailySchedule:
+  #         Type: Schedule
+  #         Properties:
+  #           Schedule: cron(0 3 ? * * *)
+  #           Name: archiver-daily
+  #           Enabled: true
+
   ClusteringFunction:
     Type: AWS::Serverless::Function
     Metadata:
