@@ -1,1 +1,1 @@
-# Welcome to veille.safecoffi.app !
+# Welcome to veille.safecoffi !
