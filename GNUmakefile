@@ -47,10 +47,10 @@ deploy-archiver: build-archiver
 deploy: deploy-fetcher deploy-gateway
 
 setup-clustering:
-	cd services/clustering && pip install -r requirements.txt
+	cd workers/clustering && pip install -r requirements.txt
 
 run-clustering: setup-clustering
-	cd services/clustering && USE_MOCK=false DATABASE_URL="postgres://veille:veille@localhost:5432/veille_db" python app.py
+	cd workers/clustering && USE_MOCK=false DATABASE_URL="postgres://veille:veille@localhost:5432/veille_db" python app.py
 
 run-fetcher:
 	go run ./cmd/fetcher/main.go
@@ -62,10 +62,10 @@ run-archiver:
 	go run ./cmd/archiver/main.go
 
 sam-build:
-	cd infra && sam build
+	cd iac && sam build
 
 sam-deploy: sam-build
-	cd infra && sam deploy --no-confirm-changeset
+	cd iac && sam deploy --no-confirm-changeset
 
 dev-backend: stack-up
 	go run ./cmd/fetcher/main.go & \

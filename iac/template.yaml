@@ -118,7 +118,7 @@ Resources:
     Type: AWS::Serverless::Function
     Metadata:
       Dockerfile: Dockerfile
-      DockerContext: ../services/clustering
+      DockerContext: ../workers/clustering
       DockerTag: latest
     Properties:
       FunctionName: veille-clustering
