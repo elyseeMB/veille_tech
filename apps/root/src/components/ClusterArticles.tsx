@@ -94,7 +94,7 @@ export function ClusterArticles({
         >
           <Button
             variant="ghost"
-            className="cursor-pointer w-full h-10 rounded-full bg-primary-foreground"
+            className="cursor-pointer w-full h-13 rounded-full bg-primary-foreground"
             onClick={() => navigate("/clusters")}
           >
             <ArrowLeft size={18} />
