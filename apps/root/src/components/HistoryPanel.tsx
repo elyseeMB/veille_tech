@@ -85,7 +85,7 @@ export function HistoryPanel() {
                 onClick={clearHistory}
                 className="cursor-pointer w-full h-10 rounded-full"
               >
-                <Trash2 size={14} /> Effacer
+                <Trash2 size={14} /> clear history
               </Button>
             )}
           </div>
@@ -97,12 +97,12 @@ export function HistoryPanel() {
           <span className="text-sm font-medium">History</span>
           {clicks && clicks.length > 0 && (
             <Button
-              variant="ghost"
+              variant="destructive"
               size="xs"
               onClick={clearHistory}
-              className="text-xs cursor-pointer text-muted-foreground flex items-center gap-1"
+              className="cursor-pointer flex items-center gap-1"
             >
-              <Trash2 size={14} /> Effacer
+              <Trash2 size={14} /> clear history
             </Button>
           )}
         </div>
