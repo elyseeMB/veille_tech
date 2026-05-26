@@ -68,7 +68,8 @@ sam-deploy: sam-build
 	cd infra && sam deploy --no-confirm-changeset
 
 dev-backend: stack-up
-	$(GOW) run ./cmd/server/main.go
+	go run ./cmd/fetcher/main.go & \
+	go run ./cmd/server/main.go
 
 dev-frontend:
 	cd apps/root && pnpm run dev

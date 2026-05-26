@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/mbous/veille_tech/pkg/cfg"
 	"github.com/mbous/veille_tech/pkg/db"
 	"github.com/mbous/veille_tech/pkg/server/handlers"
 	v1handler "github.com/mbous/veille_tech/pkg/server/handlers/v1"
@@ -18,13 +19,10 @@ func cacheControl(value string) gin.HandlerFunc {
 	}
 }
 
-func NewRouter(conn *db.PostgresConnection) *gin.Engine {
+func NewRouter(conn *db.PostgresConnection, config *cfg.Config) *gin.Engine {
 	r := gin.Default()
 
-	allowOrigins := []string{
-		"https://veille.safecoffi.app",
-		"https://beta.veille.safecoffi.app",
-	}
+	allowOrigins := config.AllowedOrigins()
 
 	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" || os.Getenv("LOCAL_DEV") == "true" {
 		allowOrigins = append(allowOrigins,
