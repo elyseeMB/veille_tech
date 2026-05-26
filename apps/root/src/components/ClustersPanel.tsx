@@ -42,7 +42,7 @@ function ClusterCard({
         <div className="flex items-center gap-2 mb-1">
           <TimeRelative date={createdAt} className="text-sm" />
           <span>·</span>
-          <span className="flex items-center gap-1 text-xs">
+          <span className="flex items-center gap-1 text-sm">
             {articleCount} articles
           </span>
         </div>
