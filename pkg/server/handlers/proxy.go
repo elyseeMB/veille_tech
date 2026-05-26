@@ -18,7 +18,7 @@ func ProxyFavicon() gin.HandlerFunc {
 			return
 		}
 
-		url := "https://www.google.com/s2/favicons?domain=" + domain + "&sz=64"
+		url := "https://icons.duckduckgo.com/ip3/" + domain + ".ico"
 		req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodGet, url, nil)
 		if err != nil {
 			c.Status(http.StatusInternalServerError)

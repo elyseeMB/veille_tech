@@ -2,7 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { feedQuery } from "@/queries";
 import { Feed } from "@/components/Feed";
 
-export function FeedPage() {
+export default function FeedPage() {
   const {
     data,
     isLoading,

@@ -76,6 +76,7 @@ Resources:
         Variables:
           DB_PARAM_NAME: "/veille/database_url"
           GIN_MODE: "release"
+          ALLOWED_ORIGINS: '["https://veille.safecoffi.app", "https://beta.veille.safecoffi.app"]'
       Policies:
         - SSMParameterReadPolicy:
             ParameterName: "veille/*"

@@ -1,21 +1,39 @@
-import { createBrowserRouter, redirect } from "react-router-dom";
 import { RootLayout } from "@/layouts/RootLayout";
-import { FeedPage } from "@/pages/FeedPage";
-import { ClustersPanel } from "@/components/ClustersPanel";
-import { ClusterSection } from "@/pages/ClusterSection";
-import { feedLoader, clustersLoader, clusterLoader } from "@/loaders";
+import { clusterLoader, clustersLoader, feedLoader } from "@/loaders";
+import { lazy, Suspense, type FC, type LazyExoticComponent } from "react";
+import {
+  createBrowserRouter,
+  redirect,
+  type LoaderFunction,
+  type RouteObject,
+} from "react-router-dom";
 
-export const router = createBrowserRouter([
+type AppRoute = {
+  Component?: FC<any> | LazyExoticComponent<FC<any>>;
+  fallback?: FC;
+  loader?: LoaderFunction;
+  children?: AppRoute[];
+} & Omit<RouteObject, "Component" | "children">;
+
+const routes: AppRoute[] = [
   {
     path: "/",
-    element: <RootLayout />,
+    Component: RootLayout,
     children: [
       { index: true, loader: () => redirect("/feed") },
-      { path: "feed", element: <FeedPage />, loader: feedLoader },
-      { path: "clusters", element: <ClustersPanel />, loader: clustersLoader },
+      {
+        path: "feed",
+        Component: lazy(() => import("@/pages/FeedPage")),
+        loader: feedLoader,
+      },
+      {
+        path: "clusters",
+        Component: lazy(() => import("@/components/ClustersPanel")),
+        loader: clustersLoader,
+      },
       {
         path: "clusters/:id",
-        element: <ClusterSection />,
+        Component: lazy(() => import("@/pages/ClusterSection")),
         loader: clusterLoader,
       },
       {
@@ -28,4 +46,28 @@ export const router = createBrowserRouter([
       },
     ],
   },
-]);
+];
+
+function routeTransformer({
+  fallback: FallbackComponent,
+  ...route
+}: AppRoute): RouteObject {
+  let result = { ...route };
+  if (FallbackComponent) {
+    result = {
+      ...result,
+      Component: (props) => (
+        <Suspense fallback={<FallbackComponent />}>
+          <route.Component {...props} />
+        </Suspense>
+      ),
+    };
+  }
+
+  return {
+    ...result,
+    children: route.children?.map(routeTransformer),
+  } as RouteObject;
+}
+
+export const router = createBrowserRouter(routes.map(routeTransformer));
