@@ -37,7 +37,7 @@ export function DesktopLayout() {
       <div
         ref={headerRef}
         className={clsx(
-          "fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md",
+          "fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-md",
           "border-b border-border",
           calendarVisible ? "" : "h-0 pointer-events-none overflow-hidden",
         )}

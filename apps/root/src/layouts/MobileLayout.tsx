@@ -30,13 +30,15 @@ export function MobileLayout() {
   const { ref: headerRef, height: headerHeight } = useHeaderHeight();
   const calendarData = useCalendarData();
 
-  const headerCss = { "--header-height": `${headerHeight}px` } as React.CSSProperties;
+  const headerCss = {
+    "--header-height": `${headerHeight}px`,
+  } as React.CSSProperties;
 
   return (
     <main className="min-h-screen bg-background" style={headerCss}>
       <div
         ref={headerRef}
-        className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md"
+        className="fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-md"
       >
         <div className="mx-auto max-w-5xl lg:px-12 pt-3 lg:pt-4 pb-0 lg:pb-2">
           <Calendar data={calendarData} />
