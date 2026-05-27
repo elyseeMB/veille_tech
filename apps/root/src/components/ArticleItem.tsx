@@ -239,9 +239,11 @@ export function ArticleItem({
             )}
 
           {item.keywords && (
-            <div className="flex flex-wrap gap-1">
+            <div className="flex -mx-2 flex-wrap gap-1.5">
               {item.keywords.map((keyword) => (
-                <Badge variant="secondary">{keyword}</Badge>
+                <Badge variant="secondary" className="border border-border">
+                  {keyword}
+                </Badge>
               ))}
             </div>
           )}
