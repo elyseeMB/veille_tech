@@ -1,5 +1,5 @@
 import type { Article } from "@/types";
-import { Astroid, Link } from "lucide-react";
+import { Astroid, Divide, Link } from "lucide-react";
 import { useSummaryStore } from "@/store/summaryStore.ts";
 import { useRef, type MouseEventHandler } from "react";
 import { useBanner } from "./BannerContext.tsx";
@@ -148,6 +148,8 @@ export function ArticleItem({
 
   const isCategoryDefault = !!BADGES_MAPPING[item.category];
 
+  console.log(item);
+
   return (
     <>
       <article
@@ -188,7 +190,7 @@ export function ArticleItem({
                 </Button>
               </a>
             </div>
-            <div className="flex items-center gap-2 w-full">
+            <div className="flex flex-wrap items-center gap-2 w-full">
               <span
                 className={`text-xs uppercase tracking-widest ${SOURCE_COLORS[item.source] ?? "text-muted-foreground"}`}
               >
@@ -222,15 +224,12 @@ export function ArticleItem({
               </span>
             </div>
           </div>
-
           <div className="flex items-center gap-3 font-mono text-sm uppercase tracking-normal text-muted-foreground">
             <span>{item.author}</span>
           </div>
-
           <h2 className="text-lg font-medium leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
             {item.title}
           </h2>
-
           {item.content &&
             !item.content.includes("Comments URL:") &&
             !item.source.includes("Lobsters") && (
@@ -238,6 +237,14 @@ export function ArticleItem({
                 {item.content.replace(/<[^>]*>/g, "").slice(0, 140)}
               </p>
             )}
+
+          {item.keywords && (
+            <div className="flex flex-wrap gap-1">
+              {item.keywords.map((keyword) => (
+                <Badge variant="secondary">{keyword}</Badge>
+              ))}
+            </div>
+          )}
         </div>
       </article>
     </>

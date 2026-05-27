@@ -116,7 +116,7 @@ class PostgresRepository(BaseRepository):
                     LEFT JOIN cluster_items ci ON ci.ref_id = a.id AND ci.type = 'article'::feed_item_type
                     WHERE ci.ref_id IS NULL
                     AND a.scrape_skipped = FALSE
-                    AND a.published_at >= NOW() - INTERVAL '48 hours'""")
+                    AND a.published_at >= NOW() - INTERVAL '48 hours' LIMIT 15""")
                     rows = cur.fetchall()
                     return Result.ok(
                         [

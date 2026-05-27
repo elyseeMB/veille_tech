@@ -8,6 +8,7 @@ export type Article = {
   summary?: string | null;
   source: string;
   category: string;
+  keywords?: string[] | null;
 };
 
 export type YoutubeVideo = {
@@ -18,6 +19,7 @@ export type YoutubeVideo = {
   channelAvatar?: string;
   thumbnail: string;
   publishedAt: string;
+  keywords?: string[] | null;
 };
 
 export type FeedItem =

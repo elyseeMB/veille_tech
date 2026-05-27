@@ -13,20 +13,22 @@ type ArticleDB struct {
 	Content     string
 	Summary     *string
 	Category    string
+	Keywords    []string
 	Source      string
 	PublishedAt time.Time
 }
 
 type ArticleDTO struct {
-	ID       string  `json:"id"`
-	Title    string  `json:"title"`
-	Link     string  `json:"link"`
-	Author   string  `json:"author"`
-	PubDate  string  `json:"pubDate"`
-	Content  string  `json:"content"`
-	Source   string  `json:"source"`
-	Category string  `json:"category"`
-	Summary  *string `json:"summary"`
+	ID       string   `json:"id"`
+	Title    string   `json:"title"`
+	Link     string   `json:"link"`
+	Author   string   `json:"author"`
+	PubDate  string   `json:"pubDate"`
+	Content  string   `json:"content"`
+	Source   string   `json:"source"`
+	Category string   `json:"category"`
+	Keywords []string `json:"keywords"`
+	Summary  *string  `json:"summary"`
 }
 
 type ArticlesResponse struct {
@@ -58,6 +60,7 @@ func ToArticleDTO(a ArticleDB) ArticleDTO {
 		Content:  content,
 		Source:   a.Source,
 		Category: a.Category,
+		Keywords: a.Keywords,
 		Summary:  a.Summary,
 	}
 }

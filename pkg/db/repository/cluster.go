@@ -120,13 +120,13 @@ func GetClusterWithItems(conn *db.PostgresConnection, clusterID string) (coredat
 		) item_counts ON item_counts.cluster_id = c.id
 		JOIN (
 			SELECT ci.cluster_id, ci.type as item_type, s.name as source_name,
-				regexp_replace(a.url, '^https?://(?:www\.)?([^/]+).*', '\1') as item_domain
+				regexp_replace(a.url, '^https?://(?:www\.)?([^/]+).*', '\1') as item_domain, a.keywords
 			FROM cluster_items ci
 			JOIN articles a ON a.id = ci.ref_id AND ci.type = 'article'
 			JOIN sources s ON s.id = a.source_id
 			UNION ALL
 			SELECT ci.cluster_id, ci.type as item_type, s.name as source_name,
-				v.external_id as item_domain
+				v.external_id as item_domain, NULL::text[] as keywords
 			FROM cluster_items ci
 			JOIN videos v ON v.id = ci.ref_id AND ci.type = 'video'
 			JOIN sources s ON s.id = v.source_id

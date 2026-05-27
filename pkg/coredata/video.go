@@ -14,17 +14,19 @@ type VideoDB struct {
 	ChannelTitle  string
 	ChannelAvatar string
 	Thumbnail     string
+	Keywords      []string
 	PublishedAt   time.Time
 }
 
 type VideoDTO struct {
-	ID            string `json:"id"`
-	Title         string `json:"title"`
-	Description   string `json:"description"`
-	ChannelTitle  string `json:"channelTitle"`
-	ChannelAvatar string `json:"channelAvatar"`
-	Thumbnail     string `json:"thumbnail"`
-	PublishedAt   string `json:"publishedAt"`
+	ID            string   `json:"id"`
+	Title         string   `json:"title"`
+	Description   string   `json:"description"`
+	ChannelTitle  string   `json:"channelTitle"`
+	ChannelAvatar string   `json:"channelAvatar"`
+	Thumbnail     string   `json:"thumbnail"`
+	Keywords      []string `json:"keywords"`
+	PublishedAt   string   `json:"publishedAt"`
 }
 
 type VideosResponse struct {
@@ -82,6 +84,7 @@ func ToVideoDTO(v VideoDB) VideoDTO {
 		ChannelTitle:  v.ChannelTitle,
 		ChannelAvatar: avatar,
 		Thumbnail:     v.Thumbnail,
+		Keywords:      v.Keywords,
 		PublishedAt:   v.PublishedAt.Format(time.RFC3339),
 	}
 }

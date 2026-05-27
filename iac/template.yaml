@@ -118,7 +118,7 @@ Resources:
     Type: AWS::Serverless::Function
     Metadata:
       Dockerfile: Dockerfile
-      DockerContext: ../services/clustering
+      DockerContext: ../workers/clustering
       DockerTag: latest
     Properties:
       FunctionName: veille-clustering
@@ -148,4 +148,10 @@ Resources:
           Properties:
             Schedule: cron(0 6 ? * * *)
             Name: clustering-morning
+            Enabled: true
+        EveningSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 18 ? * * *)
+            Name: clustering-evening
             Enabled: true
