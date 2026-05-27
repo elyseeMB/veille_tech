@@ -18,7 +18,6 @@ export function ModeToggle() {
         render={
           <Button
             variant="ghost"
-            size="icon-xs"
             className="text-muted-foreground/60 hover:text-foreground"
           >
             <Sun className="h-3 w-3 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
@@ -27,7 +26,7 @@ export function ModeToggle() {
           </Button>
         }
       ></DropdownMenuTrigger>
-      <DropdownMenuContent className="font-serif" align="end">
+      <DropdownMenuContent className="font-sans" align="end">
         <DropdownMenuItem onClick={() => setTheme("light")} className="gap-2">
           <Sun className="h-3.5 w-3.5" />
           Light

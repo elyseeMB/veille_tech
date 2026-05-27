@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { TimeRelative } from "./TimeRelative.tsx";
-import type { YoutubeVideo } from "@/hooks/useFeed.ts";
+import type { YoutubeVideo } from "@/types";
 import clsx from "clsx";
-import { useMobile } from "@/hooks/useMobile.ts";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export function VideoItem({ video: item }: { video: YoutubeVideo }) {
-  const isMobile = useMobile();
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const articleRef = useRef<HTMLElement>(null);
   const [isInsideCarousel, setInsideCarousel] = useState(false);
   const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8081";
@@ -46,7 +46,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
           <TimeRelative date={item.publishedAt} />
 
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            <div className="flex items-center gap-2 font-serif">
+            <div className="flex items-center gap-2 font-sans">
               {item.channelAvatar && (
                 <img
                   className="object-cover w-10 rounded-full inline-block"
@@ -62,17 +62,10 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
                 {item.channelTitle}
               </span>
             </div>
-            <span className="h-px flex-1 bg-foreground/10" />
-            <time>
-              {new Date(item.publishedAt).toLocaleDateString("en", {
-                day: "numeric",
-                month: "short",
-              })}
-            </time>
           </div>
 
           {item.thumbnail && (
-            <div className="rounded overflow-hidden border border-border aspect-video w-full">
+            <div className="rounded-md overflow-hidden border border-border aspect-video w-full">
               <img
                 src={item.thumbnail}
                 alt={item.title}

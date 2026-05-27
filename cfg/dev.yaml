@@ -1,0 +1,19 @@
+server:
+  port: 8081
+  cors:
+    allowed_origins:
+      - http://localhost:5173
+      - http://127.0.0.1:5173
+      - https://veille.safecoffi.app
+      - https://beta.veille.safecoffi.app
+
+db:
+  url: "postgres://veille:veille@localhost:5432/veille_db"
+
+aws:
+  region: us-east-1
+  endpoint: ""
+
+log:
+  level: debug
+  format: text

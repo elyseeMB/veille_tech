@@ -1,0 +1,15 @@
+trafilatura
+newspaper4k
+psycopg2-binary
+umap-learn
+hdbscan
+numpy
+requests
+pydantic
+pgvector
+tenacity
+boto3
+json-repair
+python-dotenv
+langchain-text-splitters
+youtube_transcript_api

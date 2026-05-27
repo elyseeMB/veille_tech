@@ -18,6 +18,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 CREATE TYPE content_type AS ENUM ('rss', 'youtube');
 CREATE TYPE feed_item_type AS ENUM ('article', 'video');
+CREATE TYPE cluster_type AS ENUM ('article', 'video', 'mixed');
 
 CREATE TABLE sources (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -54,6 +55,8 @@ CREATE TABLE articles (
     content TEXT,
     summary TEXT,
     embedding vector(1024),
+    keywords text[];
+    scrape_skipped BOOLEAN DEFAULT FALSE,
     category TEXT,
     published_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -68,6 +71,10 @@ CREATE TABLE videos (
     channel_title TEXT,
     channel_avatar TEXT,
     thumbnail TEXT,
+    keywords text[],
+    category text,
+    scrape_skipped BOOLEAN DEFAULT FALSE,
+    embedding vector(1024),
     published_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -101,6 +108,26 @@ CREATE TABLE feed_items (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE TABLE clusters (
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    label      TEXT NOT NULL,
+    type cluster_type NOT NULL DEFAULT 'article',
+    description TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE cluster_items (
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    cluster_id UUID NOT NULL REFERENCES clusters(id) ON DELETE CASCADE,
+    type       feed_item_type NOT NULL,
+    ref_id     UUID NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    UNIQUE (cluster_id, type, ref_id)
+);
+
+CREATE INDEX idx_cluster_items_cluster_id ON cluster_items(cluster_id);
+CREATE INDEX idx_cluster_items_ref_id ON cluster_items(ref_id);
+
 CREATE INDEX idx_articles_published_at ON articles(published_at DESC);
 CREATE INDEX idx_articles_source_id ON articles(source_id);
 CREATE INDEX idx_articles_category ON articles(category);
@@ -119,5 +146,11 @@ CREATE INDEX idx_graph_similarity ON graph_edges(similarity DESC);
 CREATE INDEX idx_feed_items_published_at ON feed_items(published_at DESC);
 CREATE INDEX idx_feed_items_type ON feed_items(type);
 CREATE INDEX idx_feed_items_ref_id ON feed_items(ref_id);
+
+CREATE INDEX idx_clusters_created_at ON clusters(created_at DESC);
+
+CREATE INDEX idx_videos_category ON videos (category);
+CREATE INDEX idx_articles_keywords ON articles USING GIN(keywords);
+CREATE INDEX idx_videos_keywords ON videos USING GIN(keywords);
 
 EOF

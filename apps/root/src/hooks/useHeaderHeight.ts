@@ -1,23 +1,19 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
 export function useHeaderHeight() {
-  const desktopRef = useRef<HTMLDivElement>(null);
-  const mobileRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(80);
 
   useLayoutEffect(() => {
     const update = () => {
-      const desktopH = desktopRef.current?.getBoundingClientRect().height ?? 0;
-      const mobileH = mobileRef.current?.getBoundingClientRect().height ?? 0;
-      setHeight(desktopH > 0 ? desktopH : mobileH);
+      setHeight(ref.current?.getBoundingClientRect().height ?? 80);
     };
 
     update();
     const observer = new ResizeObserver(update);
-    if (desktopRef.current) observer.observe(desktopRef.current);
-    if (mobileRef.current) observer.observe(mobileRef.current);
+    if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
 
-  return { desktopRef, mobileRef, height };
+  return { ref, height };
 }
