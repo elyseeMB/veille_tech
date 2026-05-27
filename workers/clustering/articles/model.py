@@ -9,6 +9,7 @@ class ArticleRow(BaseModel):
     description: Optional[str] = None
     scrape_skipped: bool = False
     keywords: List[str] = []
+    category: Optional[str] = ""
     embedding: Optional[List[float]] = None
 
 

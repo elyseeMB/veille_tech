@@ -111,12 +111,14 @@ class PostgresRepository(BaseRepository):
             conn = self.__conn.get()
             try:
                 with conn.cursor() as cur:
-                    cur.execute("""SELECT a.id, a.title, a.url, a.keywords, a.embedding
-                    FROM articles a
-                    LEFT JOIN cluster_items ci ON ci.ref_id = a.id AND ci.type = 'article'::feed_item_type
-                    WHERE ci.ref_id IS NULL
-                    AND a.scrape_skipped = FALSE
-                    AND a.published_at >= NOW() - INTERVAL '48 hours' LIMIT 15""")
+                    cur.execute(
+                        """SELECT a.id, a.title, a.url, a.keywords, a.embedding, a.category
+                        FROM articles a
+                        LEFT JOIN cluster_items ci ON ci.ref_id = a.id AND ci.type = 'article'::feed_item_type
+                        WHERE ci.ref_id IS NULL
+                        AND a.scrape_skipped = FALSE
+                        AND a.published_at >= NOW() - INTERVAL '48 hours' LIMIT 50"""
+                    )
                     rows = cur.fetchall()
                     return Result.ok(
                         [
@@ -128,6 +130,7 @@ class PostgresRepository(BaseRepository):
                                 embedding=(
                                     list(row[4]) if row[4] is not None else None
                                 ),
+                                category=row[5] or "",
                             )
                             for row in rows
                         ]
