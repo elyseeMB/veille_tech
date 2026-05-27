@@ -17,6 +17,7 @@ type GatewayArticle = {
   summary?: string | null;
   source: string;
   category: string;
+  keywords?: string[] | null;
 };
 
 type GatewayVideo = {
@@ -28,6 +29,7 @@ type GatewayVideo = {
   publishedAt: string;
   thumbnail: string;
   title: string;
+  keywords?: string[] | null;
 };
 
 type GatewayCluster = {
@@ -53,6 +55,7 @@ function toArticle(a: GatewayArticle): Article {
     summary: a.summary,
     source: a.source,
     category: a.category,
+    keywords: a.keywords ?? [],
   };
 }
 
@@ -65,6 +68,7 @@ function toVideo(v: GatewayVideo): YoutubeVideo {
     channelAvatar: v.channelAvatar,
     thumbnail: v.thumbnail,
     publishedAt: v.publishedAt,
+    keywords: v.keywords ?? [],
   };
 }
 

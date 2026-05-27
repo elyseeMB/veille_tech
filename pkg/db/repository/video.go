@@ -178,6 +178,7 @@ func GetVideosFeedByIDs(conn *db.PostgresConnection, ids []string) (map[string]c
 			id, external_id, title,
 			COALESCE(description, ''),
 			COALESCE(channel_title, ''),
+			COALESCE(keywords, '{}'),
 			COALESCE(channel_avatar, ''),
 			COALESCE(thumbnail, ''),
 			published_at
@@ -197,7 +198,7 @@ func GetVideosFeedByIDs(conn *db.PostgresConnection, ids []string) (map[string]c
 		var v coredata.VideoDB
 		if err := rows.Scan(
 			&v.ID, &v.ExternalID, &v.Title,
-			&v.Description, &v.ChannelTitle,
+			&v.Description, &v.ChannelTitle, &v.Keywords,
 			&v.ChannelAvatar, &v.Thumbnail, &v.PublishedAt,
 		); err != nil {
 			return nil, fmt.Errorf("videos scan: %w", err)

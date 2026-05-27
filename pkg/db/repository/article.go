@@ -170,6 +170,7 @@ func GetArticles(conn *db.PostgresConnection, filter coredata.ArticleFilter) ([]
 			COALESCE(a.content, ''),
 			a.summary,
 			COALESCE(a.category, ''),
+			COALESCE(a.keywords, '{}'),
 			s.name AS source,
 			a.published_at
 		FROM articles a
@@ -192,7 +193,7 @@ func GetArticles(conn *db.PostgresConnection, filter coredata.ArticleFilter) ([]
 		err := rows.Scan(
 			&a.ID, &a.ExternalID, &a.Title, &a.URL,
 			&a.Author, &a.Content, &a.Summary,
-			&a.Category, &a.Source, &a.PublishedAt,
+			&a.Category, &a.Keywords, &a.Source, &a.PublishedAt,
 		)
 		if err != nil {
 			return nil, 0, err
@@ -215,6 +216,7 @@ func GetArticleByID(conn *db.PostgresConnection, id string) (*coredata.ArticleDB
 			a.id, a.external_id, a.title, a.url,
 			COALESCE(a.author, ''), COALESCE(a.content, ''),
 			a.summary, COALESCE(a.category, ''),
+			COALESCE(a.keywords, '{}'),
 			s.name AS source, a.published_at
 		FROM articles a
 		JOIN sources s ON s.id = a.source_id AND active = true
@@ -223,7 +225,8 @@ func GetArticleByID(conn *db.PostgresConnection, id string) (*coredata.ArticleDB
 	).Scan(
 		&a.ID, &a.ExternalID, &a.Title, &a.URL,
 		&a.Author, &a.Content, &a.Summary,
-		&a.Category, &a.Source, &a.PublishedAt,
+		&a.Category, &a.Keywords,
+		&a.Source, &a.PublishedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -249,6 +252,7 @@ func GetArticlesFeedByIDs(conn *db.PostgresConnection, ids []string) (map[string
 			COALESCE(a.author, ''),
 			COALESCE(a.content, ''),
 			a.summary,
+			COALESCE(a.keywords, '{}'),
 			COALESCE(a.category, ''),
 			s.name AS source,
 			a.published_at
@@ -269,7 +273,7 @@ func GetArticlesFeedByIDs(conn *db.PostgresConnection, ids []string) (map[string
 		var a coredata.ArticleDB
 		if err := rows.Scan(
 			&a.ID, &a.ExternalID, &a.Title, &a.URL,
-			&a.Author, &a.Content, &a.Summary,
+			&a.Author, &a.Content, &a.Summary, &a.Keywords,
 			&a.Category, &a.Source, &a.PublishedAt,
 		); err != nil {
 			return nil, fmt.Errorf("articles scan: %w", err)

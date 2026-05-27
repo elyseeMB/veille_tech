@@ -77,7 +77,7 @@ def scrape_and_chunk(
             scraped = scrape_fn(url_or_id)
             if scraped.success and scraped.value and scraped.value.full_text:
                 chunks = chunker.chunk(scraped.value.full_text)
-                # chunks = chunker.select_best_chunks(item.title, chunks, embedder)
+                chunks = chunker.select_best_chunks(item.title, chunks, embedder)
                 chunks = chunks[:3]
 
                 log.debug(f"--- BEST CHUNKS : {item.title} ---")

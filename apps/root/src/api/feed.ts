@@ -10,6 +10,7 @@ type GatewayArticle = {
   summary?: string | null;
   source: string;
   category: string;
+  keywords?: string[] | null;
 };
 
 type GatewayVideo = {
@@ -20,6 +21,7 @@ type GatewayVideo = {
   channelAvatar?: string;
   thumbnail: string;
   publishedAt: string;
+  keywords?: string[] | null;
 };
 
 function toArticle(a: GatewayArticle): Article {
@@ -33,6 +35,7 @@ function toArticle(a: GatewayArticle): Article {
     summary: a.summary,
     source: a.source,
     category: a.category,
+    keywords: a.keywords ?? [],
   };
 }
 
@@ -45,13 +48,19 @@ function toVideo(v: GatewayVideo): YoutubeVideo {
     channelAvatar: v.channelAvatar,
     thumbnail: v.thumbnail,
     publishedAt: v.publishedAt,
+    keywords: v.keywords ?? [],
   };
 }
 
 export async function fetchFeed(
   baseUrl: string,
   page: number,
-): Promise<{ items: FeedItem[]; hasMore: boolean; page: number; total: number }> {
+): Promise<{
+  items: FeedItem[];
+  hasMore: boolean;
+  page: number;
+  total: number;
+}> {
   const PER_PAGE = 20;
   const res = await fetch(
     `${baseUrl}/feed?page=${page}&per_page=${PER_PAGE}&video_format=carousel`,

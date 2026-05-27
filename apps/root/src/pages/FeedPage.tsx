@@ -23,8 +23,6 @@ export default function FeedPage() {
     }
   };
 
-  const retry = () => refetch();
-
   return (
     <Feed
       items={items}
@@ -33,7 +31,7 @@ export default function FeedPage() {
       hasMore={hasMore}
       loadMore={loadMore}
       error={error ? "Connexion perdue. Réessaie plus tard." : null}
-      retry={retry}
+      retry={() => refetch()}
     />
   );
 }
