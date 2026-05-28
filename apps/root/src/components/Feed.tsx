@@ -105,7 +105,7 @@ function ItemSkeleton() {
   );
 }
 
-function ItemSkeleton2() {
+export function ItemSkeleton2() {
   return (
     <div
       className={clsx(
