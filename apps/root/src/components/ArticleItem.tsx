@@ -148,7 +148,6 @@ export function ArticleItem({
 
   const isCategoryDefault = !!BADGES_MAPPING[item.category];
 
-  console.log(item);
 
   return (
     <>
