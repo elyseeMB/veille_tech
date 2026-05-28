@@ -87,31 +87,46 @@ Resources:
             Path: /{proxy+}
             Method: ANY
 
-  # ArchiverFunction:
+  # ScatterBucket:
+  #   Type: AWS::S3::Bucket
+  #   Properties:
+  #     BucketName: !Sub "${AWS::StackName}-scatter"
+  #     PublicAccessBlockConfiguration:
+  #       BlockPublicAcls: false
+  #       BlockPublicPolicy: false
+  #       IgnorePublicAcls: false
+  #       RestrictPublicBuckets: false
+
+  # ScatterFunction:
   #   Type: AWS::Serverless::Function
   #   Metadata:
-  #     BuildMethod: makefile
+  #     Dockerfile: Dockerfile
+  #     DockerContext: ../workers/scatter
+  #     DockerTag: latest
   #   Properties:
-  #     FunctionName: veille-archiver
-  #     CodeUri: ../lambdas/archiver
-  #     Handler: bootstrap
-  #     Runtime: provided.al2023
+  #     FunctionName: veille-scatter
+  #     PackageType: Image
   #     Architectures:
   #       - x86_64
   #     MemorySize: 256
-  #     Timeout: 300
+  #     Timeout: 60
   #     Environment:
   #       Variables:
+  #         ENVIRONMENT: "production"
+  #         USE_MOCK: "false"
+  #         S3_BUCKET: !Ref ScatterBucket
   #         DB_PARAM_NAME: "/veille/database_url"
   #     Policies:
   #       - SSMParameterReadPolicy:
   #           ParameterName: "veille/*"
+  #       - S3WritePolicy:
+  #           BucketName: !Ref ScatterBucket
   #     Events:
-  #       DailySchedule:
+  #       ScatterSchedule:
   #         Type: Schedule
   #         Properties:
-  #           Schedule: cron(0 3 ? * * *)
-  #           Name: archiver-daily
+  #           Schedule: cron(0 7 1,15 * ? *)
+  #           Name: scatter-biweekly
   #           Enabled: true
 
   ClusteringFunction:
@@ -132,7 +147,7 @@ Resources:
           ENVIRONMENT: "production"
           YOUTUBE_SCRAPING: "false"
           USE_MOCK: "false"
-          NAMER_PROVIDER: "gemini"
+          NAMER_PROVIDER: "cloudflare"
           CF_GATEWAY_NAME: "default"
           DB_PARAM_NAME: "/veille/database_url"
           CF_ACCOUNT_ID: "/veille/cf_account_id"

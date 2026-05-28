@@ -22,7 +22,7 @@ class CloudflareEmbedder:
     __headers: dict
 
     def __init__(self, account_id: str, api_token: str):
-        self.__url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/qwen/qwen3-embedding-0.6b"
+        self.__url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/baai/bge-m3"
         self.__headers = {
             "Authorization": f"Bearer {api_token}",
             "Content-Type": "application/json",

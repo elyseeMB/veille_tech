@@ -15,22 +15,25 @@ class Clusterer:
         import umap
         import hdbscan
 
-        n_neighbors = min(15, max(5, n_articles // 10))
+        n_neighbors = min(15, max(5, n_articles // 5))
         if n_neighbors >= n_articles:
             n_neighbors = max(2, n_articles - 1)
 
-        min_cluster_size = max(2, n_articles // 20)
-        if min_cluster_size >= n_articles:
-            min_cluster_size = 2
-
-        n_components = min(5, max(2, n_articles // 3))
+        min_cluster_size = max(3, n_articles // 10)
 
         self.__umap = umap.UMAP(
-            n_neighbors=n_neighbors, n_components=n_components, random_state=42
+            n_neighbors=n_neighbors,
+            n_components=2,
+            min_dist=0.0,
+            metric="cosine",
+            random_state=42,
         )
 
         self.__clusterer = hdbscan.HDBSCAN(
-            min_cluster_size=min_cluster_size, min_samples=2, metric="euclidean"
+            min_cluster_size=min_cluster_size,
+            min_samples=2,
+            metric="euclidean",
+            cluster_selection_method="eom",
         )
 
     def cluster(self, embeddings: EmbeddingResult) -> Result[ClusterResult]:
@@ -39,7 +42,7 @@ class Clusterer:
 
             if n_articles < 3:
                 print(f"not enough articles to cluster ({n_articles}), skipping")
-                return Result.ok(ClusterResult(labels=[0] * n_articles))
+                return Result.ok(ClusterResult(labels=[1] * n_articles))
 
             if n_articles > 300:
                 print(f"warning: large dataset ({n_articles} articles), may be slow")

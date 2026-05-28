@@ -19,6 +19,7 @@ const routes: AppRoute[] = [
   {
     path: "/",
     Component: RootLayout,
+
     children: [
       { index: true, loader: () => redirect("/feed") },
       {
