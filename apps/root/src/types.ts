@@ -46,3 +46,37 @@ export type Cluster = {
 export type ClusterItem =
   | { type: "article"; date: Date; data: Article }
   | { type: "video"; date: Date; data: YoutubeVideo };
+
+export type ScatterCluster = {
+  id: string;
+  name: string;
+  volume: number;
+  period: string;
+  link?: string;
+};
+
+export type ScatterData = {
+  generated_at: string;
+  periods: string[];
+  clusters: ScatterCluster[];
+};
+
+export type Umap1dArticle = {
+  title: string;
+  pubDate: string;
+  clusterId: string;
+  clusterName: string;
+  link: string;
+};
+
+export type Umap1dCluster = {
+  id: string;
+  name: string;
+};
+
+export type Umap1dData = {
+  generated_at: string;
+  month: string;
+  articles: Umap1dArticle[];
+  clusters: Umap1dCluster[];
+};

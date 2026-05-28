@@ -1,0 +1,1091 @@
+{
+  "generated_at": "2026-05-27T18:44:50Z",
+  "month": "2026-05",
+  "articles": [
+    {
+      "title": "Native all the way, until you need text",
+      "pubDate": "2026-05-17T12:57:07+00:00",
+      "clusterId": "1a41272e-dbe1-4ed3-8c7a-e6d55dd83ae4",
+      "clusterName": "Tech Development Issues",
+      "link": "https://justsitandgrin.im/posts/native-all-the-way-until-you-need-text/"
+    },
+    {
+      "title": "Claude Code managed to get Adobe Lightroom working on Linux",
+      "pubDate": "2026-05-17T12:58:13+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://github.com/sander110419/lightroom-cc-on-linux"
+    },
+    {
+      "title": "I turned a $80 RK3562 Android tablet into a Debian Linux workstation",
+      "pubDate": "2026-05-17T13:16:27+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://github.com/tech4bot/rk3562deb"
+    },
+    {
+      "title": "Coding on Paper",
+      "pubDate": "2026-05-17T15:28:30+00:00",
+      "clusterId": "42f2154f-6d3c-465d-ba8f-9c3b52c978fe",
+      "clusterName": "Alternative Tech Choices",
+      "link": "https://wickstrom.tech/2026-05-16-coding-on-paper.html"
+    },
+    {
+      "title": "Show HN: Semble – Code search for agents that uses 98% fewer tokens than grep",
+      "pubDate": "2026-05-17T15:37:07+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://github.com/MinishLab/semble"
+    },
+    {
+      "title": "Reviewing so called Pull Requests at $dayjob",
+      "pubDate": "2026-05-17T15:40:32+00:00",
+      "clusterId": "af36c435-e35a-4ba3-9ac7-ddf7a6e6d693",
+      "clusterName": "Emacs and Git Tools",
+      "link": "https://rkta.de/dayjob-pr-review.html"
+    },
+    {
+      "title": "GDS weighs in on the NHS's decision to retreat from Open Source",
+      "pubDate": "2026-05-17T15:59:41+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://simonwillison.net/2026/May/17/gds-weighs-in/#atom-everything"
+    },
+    {
+      "title": "Mistral's CEO: Europe has 2 years to stop becoming America's AI 'vassal state'",
+      "pubDate": "2026-05-17T16:04:28+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://www.businessinsider.com/mistral-ceo-warns-europe-2-years-avoid-us-ai-dependence-2026-5"
+    },
+    {
+      "title": "Don't answer the first question",
+      "pubDate": "2026-05-17T16:28:54+00:00",
+      "clusterId": "89ac79f6-84f2-4761-b2b6-16bb25ecba7d",
+      "clusterName": "AI Security and Safety",
+      "link": "https://lalitm.com/post/dont-answer-the-first-question/"
+    },
+    {
+      "title": "Bun's problem may be developing in the open",
+      "pubDate": "2026-05-17T16:37:47+00:00",
+      "clusterId": "89ac79f6-84f2-4761-b2b6-16bb25ecba7d",
+      "clusterName": "AI Security and Safety",
+      "link": "https://00f.net/2026/05/17/developping-in-the-open/"
+    },
+    {
+      "title": "Designing a Scientific Calculator from scratch in FPGA",
+      "pubDate": "2026-05-17T16:44:35+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://baltazarstudios.com/calculator/"
+    },
+    {
+      "title": "At least 25 Flock cameras have been destroyed in five states since April 2025",
+      "pubDate": "2026-05-17T17:09:15+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://stateofsurveillance.org/news/flock-cameras-destroyed-nationwide-ice-backlash-2026/"
+    },
+    {
+      "title": "Meta deletes popular 1M follower account after Kuwaiti request",
+      "pubDate": "2026-05-17T17:10:48+00:00",
+      "clusterId": "1a41272e-dbe1-4ed3-8c7a-e6d55dd83ae4",
+      "clusterName": "Tech Development Issues",
+      "link": "https://twitter.com/ryangrim/status/2055992439031185782"
+    },
+    {
+      "title": "EU weighs restricting use of US cloud platforms to process government data",
+      "pubDate": "2026-05-17T17:29:38+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://www.osnews.com/story/144943/eu-weighs-restricting-use-of-us-cloud-platforms-to-process-sensitive-government-data/"
+    },
+    {
+      "title": "New design for the FreeBSD website",
+      "pubDate": "2026-05-17T18:36:41+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://www.freebsd.org/"
+    },
+    {
+      "title": "Fits on a Floppy - A Manifesto for Small Software",
+      "pubDate": "2026-05-17T21:14:23+00:00",
+      "clusterId": "42f2154f-6d3c-465d-ba8f-9c3b52c978fe",
+      "clusterName": "Alternative Tech Choices",
+      "link": "https://fitsonafloppy.com"
+    },
+    {
+      "title": "Prolog Coding Horror",
+      "pubDate": "2026-05-17T21:15:51+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://www.metalevel.at/prolog/horror"
+    },
+    {
+      "title": "GenCAD",
+      "pubDate": "2026-05-17T21:40:35+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://gencad.github.io/"
+    },
+    {
+      "title": "Two EA-18 fighter jets collide at Mountain Home airshow, pilots ejected safely",
+      "pubDate": "2026-05-17T21:45:30+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://idahonews.com/news/local/two-f-18-fighter-jets-have-crashed-during-an-airshow-at-mountain-home-air-force-base"
+    },
+    {
+      "title": "The History of ThinkPad: From IBM’s Bento Box to Lenovo’s AI Workstations",
+      "pubDate": "2026-05-17T21:56:40+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://www.jdhodges.com/blog/thinkpad-history/"
+    },
+    {
+      "title": "May I recommend eww for Emacs’s innovative UI?",
+      "pubDate": "2026-05-17T23:41:06+00:00",
+      "clusterId": "af36c435-e35a-4ba3-9ac7-ddf7a6e6d693",
+      "clusterName": "Emacs and Git Tools",
+      "link": "https://www.matem.unam.mx/~omar/apropos-emacs.html#may-i-recommend-eww-for-emacs-innovative-ui"
+    },
+    {
+      "title": "Rust async and the ARM generic timer",
+      "pubDate": "2026-05-18T00:28:51+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://thejpster.org.uk/blog/blog-2026-05-17/"
+    },
+    {
+      "title": "Most Americans don't trust AI – or the people in charge of it (2025)",
+      "pubDate": "2026-05-18T01:39:30+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://www.theverge.com/ai-artificial-intelligence/644853/pew-gallup-data-americans-dont-trust-ai"
+    },
+    {
+      "title": "Reversing ‘Grateful Dead: D2S2’ on Mac (2022)",
+      "pubDate": "2026-05-18T01:46:23+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://blog.os9.ca/2022/04/21/001-reversing-grateful-dead-d2s2/"
+    },
+    {
+      "title": "It is time to give up the dualism introduced by the debate on consciousness",
+      "pubDate": "2026-05-18T02:59:34+00:00",
+      "clusterId": "b4d9181d-2e0e-4402-a15b-9041b413c150",
+      "clusterName": "Global Economy and Science",
+      "link": "https://www.noemamag.com/there-is-no-hard-problem-of-consciousness/"
+    },
+    {
+      "title": "spr: Stacked Pull Requests on GitHub",
+      "pubDate": "2026-05-18T04:22:48+00:00",
+      "clusterId": "af36c435-e35a-4ba3-9ac7-ddf7a6e6d693",
+      "clusterName": "Emacs and Git Tools",
+      "link": "https://github.com/ejoffe/spr"
+    },
+    {
+      "title": "Review: Sylve on FreeBSD",
+      "pubDate": "2026-05-18T04:28:13+00:00",
+      "clusterId": "42f2154f-6d3c-465d-ba8f-9c3b52c978fe",
+      "clusterName": "Alternative Tech Choices",
+      "link": "https://distrowatch.com/weekly-mobile.php?issue=20260518#sylve"
+    },
+    {
+      "title": "Calvin - Determinism, Distributed ACID transactions (2020)",
+      "pubDate": "2026-05-18T06:35:14+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://www.mydistributed.systems/2020/08/calvin.html"
+    },
+    {
+      "title": "The occasional `ECONNRESET`",
+      "pubDate": "2026-05-18T06:42:29+00:00",
+      "clusterId": "1a41272e-dbe1-4ed3-8c7a-e6d55dd83ae4",
+      "clusterName": "Tech Development Issues",
+      "link": "https://movq.de/blog/postings/2026-05-05/1/POSTING-en.html"
+    },
+    {
+      "title": "Multiple commencement speakers booed for AI comments during graduation speeches",
+      "pubDate": "2026-05-18T09:12:10+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://www.nbcnews.com/video/multiple-commencement-speakers-booed-for-ai-comments-during-graduation-speeches-263486021518"
+    },
+    {
+      "title": "Where Are the Vibecoded Photoshops?",
+      "pubDate": "2026-05-18T09:28:56+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://indiepixel.de/blog/posts/where-are-the-vibecoded-photoshops/"
+    },
+    {
+      "title": "An ICE Firearms Trainer Was Involved in At Least 4 Deadly Shootings",
+      "pubDate": "2026-05-18T09:30:00+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://www.wired.com/story/an-ice-firearms-trainer-was-involved-in-at-least-4-deadly-shootings/"
+    },
+    {
+      "title": "FediMeteo, HAProxy, and the art of not wasting snac threads",
+      "pubDate": "2026-05-18T09:30:30+00:00",
+      "clusterId": "1a41272e-dbe1-4ed3-8c7a-e6d55dd83ae4",
+      "clusterName": "Tech Development Issues",
+      "link": "https://it-notes.dragas.net/2026/05/18/fedimeteo-haproxy-and-the-art-of-not-wasting-snac-threads/"
+    },
+    {
+      "title": "Find bugs in YOUR code using OpenCode, Llama.cpp and Qwen3.6",
+      "pubDate": "2026-05-18T09:51:24+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "http://wtarreau.blogspot.com/2026/05/find-bugs-in-your-code-using-opencode.html"
+    },
+    {
+      "title": "Eric Schmidt speech about AI booed during graduation",
+      "pubDate": "2026-05-18T10:50:25+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://www.nbcnews.com/tech/tech-news/former-google-ceo-booed-graduation-speech-ai-rcna345585"
+    },
+    {
+      "title": "The US space enterprise is desperately waiting for Starship—will it finally deliver?",
+      "pubDate": "2026-05-18T11:00:20+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://arstechnica.com/space/2026/05/the-us-space-enterprise-is-desperately-waiting-for-starship-will-it-finally-deliver/"
+    },
+    {
+      "title": "I automated opt-outs for 500 data broker sites (open source)",
+      "pubDate": "2026-05-18T11:32:42+00:00",
+      "clusterId": "af36c435-e35a-4ba3-9ac7-ddf7a6e6d693",
+      "clusterName": "Emacs and Git Tools",
+      "link": "https://github.com/stephenlthorn/auto-identity-remove"
+    },
+    {
+      "title": "Learn Harness Engineering",
+      "pubDate": "2026-05-18T12:17:04+00:00",
+      "clusterId": "89ac79f6-84f2-4761-b2b6-16bb25ecba7d",
+      "clusterName": "AI Security and Safety",
+      "link": "https://walkinglabs.github.io/learn-harness-engineering/en/"
+    },
+    {
+      "title": "Linux security mailing list 'almost unmanageable'",
+      "pubDate": "2026-05-18T12:20:50+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://www.theregister.com/security/2026/05/18/linus-torvalds-says-ai-powered-bug-hunters-have-made-linux-security-mailing-list-almost-entirely-unmanageable/5241633"
+    },
+    {
+      "title": "A 16-byte x86 demo: Matrix rain with sound",
+      "pubDate": "2026-05-18T12:40:10+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://hellmood.111mb.de//wake_up_16b_writeup.html"
+    },
+    {
+      "title": "Enough with the AI FOMO, go slow-mo, says Domo CDO",
+      "pubDate": "2026-05-18T12:49:54+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://www.theregister.com/ai-ml/2026/05/17/enough-with-the-ai-fomo-go-slow-mo-says-domo-cdo/5240840"
+    },
+    {
+      "title": "'We mould trees to grow into the shape of chairs'",
+      "pubDate": "2026-05-18T13:01:18+00:00",
+      "clusterId": "b4d9181d-2e0e-4402-a15b-9041b413c150",
+      "clusterName": "Global Economy and Science",
+      "link": "https://www.bbc.co.uk/news/articles/cvg0yy3gp71o"
+    },
+    {
+      "title": "Reacts biggest Mistake",
+      "pubDate": "2026-05-18T13:01:36+00:00",
+      "clusterId": "1a41272e-dbe1-4ed3-8c7a-e6d55dd83ae4",
+      "clusterName": "Tech Development Issues",
+      "link": "https://youtube.com/watch?v=y5tlwWVYPek"
+    },
+    {
+      "title": "Why Multi-Threaded Code Can Sometimes Misbehave (Weak Memory Concurrency) - Computerphile",
+      "pubDate": "2026-05-18T13:30:20+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://youtube.com/watch?v=E3hvLz717zM"
+    },
+    {
+      "title": "Show HN: Files.md – Open-source alternative to Obsidian",
+      "pubDate": "2026-05-18T13:33:33+00:00",
+      "clusterId": "af36c435-e35a-4ba3-9ac7-ddf7a6e6d693",
+      "clusterName": "Emacs and Git Tools",
+      "link": "https://github.com/zakirullin/files.md"
+    },
+    {
+      "title": "Project Glasswing: what Mythos showed us",
+      "pubDate": "2026-05-18T13:37:11+00:00",
+      "clusterId": "89ac79f6-84f2-4761-b2b6-16bb25ecba7d",
+      "clusterName": "AI Security and Safety",
+      "link": "https://blog.cloudflare.com/cyber-frontier-models/"
+    },
+    {
+      "title": "Did Artemis II break through? Registrations at Space Camp double afterward.",
+      "pubDate": "2026-05-18T13:49:37+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://arstechnica.com/space/2026/05/did-artemis-ii-break-through-registrations-at-space-camp-double-afterward/"
+    },
+    {
+      "title": "De‐bloating Javascript",
+      "pubDate": "2026-05-18T13:55:20+00:00",
+      "clusterId": "1a41272e-dbe1-4ed3-8c7a-e6d55dd83ae4",
+      "clusterName": "Tech Development Issues",
+      "link": "https://github.com/naver/lispe/wiki/6.23-De%E2%80%90bloating-Javascript"
+    },
+    {
+      "title": "Where Did the Antimatter Go?",
+      "pubDate": "2026-05-18T14:00:30+00:00",
+      "clusterId": "b4d9181d-2e0e-4402-a15b-9041b413c150",
+      "clusterName": "Global Economy and Science",
+      "link": "https://youtube.com/watch?v=DfB2qYJqAkA"
+    },
+    {
+      "title": "1024000^2 Blocks, 2B2T Minecraft Server World Download Project, and Discoveries",
+      "pubDate": "2026-05-18T14:13:07+00:00",
+      "clusterId": "42f2154f-6d3c-465d-ba8f-9c3b52c978fe",
+      "clusterName": "Alternative Tech Choices",
+      "link": "https://github.com/2b2tplace/1m_release"
+    },
+    {
+      "title": "A Linux-like kernel in a browser tab - deep dive in the BrowserPod architecture",
+      "pubDate": "2026-05-18T15:00:12+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://labs.leaningtech.com/blog/browserpod-deep-dive.html"
+    },
+    {
+      "title": "Oh no, I sympathized with a Victorian arms dealer.",
+      "pubDate": "2026-05-18T15:00:57+00:00",
+      "clusterId": "b4d9181d-2e0e-4402-a15b-9041b413c150",
+      "clusterName": "Global Economy and Science",
+      "link": "https://youtube.com/watch?v=V2lEgMHF2Fo"
+    },
+    {
+      "title": "Ils traquent les navires pirates qui tentent de disparaître",
+      "pubDate": "2026-05-18T15:19:12+00:00",
+      "clusterId": "b4d9181d-2e0e-4402-a15b-9041b413c150",
+      "clusterName": "Global Economy and Science",
+      "link": "https://youtube.com/watch?v=DQ8nEd9_zVA"
+    },
+    {
+      "title": "Cross-Document View Transitions: The Gotchas Nobody Mentions",
+      "pubDate": "2026-05-18T15:34:43+00:00",
+      "clusterId": "1a41272e-dbe1-4ed3-8c7a-e6d55dd83ae4",
+      "clusterName": "Tech Development Issues",
+      "link": "https://css-tricks.com/cross-document-view-transitions-part-1/"
+    },
+    {
+      "title": "AI Agent Security - MIT 6.566 guest lecture",
+      "pubDate": "2026-05-18T15:41:09+00:00",
+      "clusterId": "89ac79f6-84f2-4761-b2b6-16bb25ecba7d",
+      "clusterName": "AI Security and Safety",
+      "link": "https://github.com/anishathalye/ai-agent-security-lecture"
+    },
+    {
+      "title": "Inside Anduril and Meta’s quest to make smart glasses for warfare",
+      "pubDate": "2026-05-18T16:01:39+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://www.technologyreview.com/2026/05/18/1137412/inside-anduril-and-metas-quest-to-make-smart-glasses-for-warfare/"
+    },
+    {
+      "title": "The implementation of select in Go",
+      "pubDate": "2026-05-18T16:05:34+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://internals-for-interns.com/posts/go-runtime-select/"
+    },
+    {
+      "title": "Qwen 3.7 Preview",
+      "pubDate": "2026-05-18T16:24:11+00:00",
+      "clusterId": "1a41272e-dbe1-4ed3-8c7a-e6d55dd83ae4",
+      "clusterName": "Tech Development Issues",
+      "link": "https://twitter.com/Alibaba_Qwen/status/2056403591464984753"
+    },
+    {
+      "title": "How to select a mobile OS",
+      "pubDate": "2026-05-18T16:33:33+00:00",
+      "clusterId": "42f2154f-6d3c-465d-ba8f-9c3b52c978fe",
+      "clusterName": "Alternative Tech Choices",
+      "link": "https://blog.gridranger.dev/mobile-oses-featuring-fairphone-5/"
+    },
+    {
+      "title": "Git blame for code comprehension",
+      "pubDate": "2026-05-18T17:08:29+00:00",
+      "clusterId": "af36c435-e35a-4ba3-9ac7-ddf7a6e6d693",
+      "clusterName": "Emacs and Git Tools",
+      "link": "https://matklad.github.io/2026/05/18/always-be-blaming.html"
+    },
+    {
+      "title": "What to expect from Google this week",
+      "pubDate": "2026-05-18T17:35:43+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://www.technologyreview.com/2026/05/18/1137439/what-to-expect-from-google-this-week/"
+    },
+    {
+      "title": "Iran will impose fees on subsea internet cables in Strait of Hormuz",
+      "pubDate": "2026-05-18T17:55:55+00:00",
+      "clusterId": "b4d9181d-2e0e-4402-a15b-9041b413c150",
+      "clusterName": "Global Economy and Science",
+      "link": "https://www.cnn.com/2026/05/17/middleeast/iran-hormuz-undersea-cables-intl"
+    },
+    {
+      "title": "Pompeii victim ID'd as a likely doctor",
+      "pubDate": "2026-05-18T18:03:32+00:00",
+      "clusterId": "b4d9181d-2e0e-4402-a15b-9041b413c150",
+      "clusterName": "Global Economy and Science",
+      "link": "https://arstechnica.com/science/2026/05/pompeii-victim-idd-as-a-likely-doctor/"
+    },
+    {
+      "title": "Not Not Porting 9front to Power64",
+      "pubDate": "2026-05-18T18:27:11+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://posixcafe.org/blogs/2024/04/03/0/"
+    },
+    {
+      "title": "The Quiet Renovation at Bitwarden",
+      "pubDate": "2026-05-18T18:28:13+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://blog.ppb1701.com/the-quiet-renovation-at-bitwarden"
+    },
+    {
+      "title": "Haiku OS runs on M1 Macs now",
+      "pubDate": "2026-05-18T18:29:26+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://www.osnews.com/story/144985/haiku-os-runs-on-m1-macs-now/"
+    },
+    {
+      "title": "Haiku OS runs on M1 Macs now",
+      "pubDate": "2026-05-18T18:30:55+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://discuss.haiku-os.org/t/my-haiku-arm64-progress/19044?page=2"
+    },
+    {
+      "title": "Australian Aboriginals cared for a dingo's grave for decades",
+      "pubDate": "2026-05-18T18:37:55+00:00",
+      "clusterId": "b4d9181d-2e0e-4402-a15b-9041b413c150",
+      "clusterName": "Global Economy and Science",
+      "link": "https://arstechnica.com/science/2026/05/1000-year-old-burial-reveals-close-bonds-between-people-and-dingoes/"
+    },
+    {
+      "title": "Agora-1: The Multi-Agent World Model",
+      "pubDate": "2026-05-18T18:43:30+00:00",
+      "clusterId": "89ac79f6-84f2-4761-b2b6-16bb25ecba7d",
+      "clusterName": "AI Security and Safety",
+      "link": "https://odyssey.ml/introducing-agora-1"
+    },
+    {
+      "title": "New York to tax luxury second homes in NYC",
+      "pubDate": "2026-05-18T18:45:29+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://apnews.com/article/mamdani-nyc-hochul-tax-rich-a30833850bfdbd638634def266ca76dd"
+    },
+    {
+      "title": "Hyperpolyglot Lisp: Common Lisp, Racket, Clojure, Emacs Lisp",
+      "pubDate": "2026-05-18T19:27:25+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://hyperpolyglot.org/lisp"
+    },
+    {
+      "title": "The FBI Wants to Buy Nationwide Access to License Plate Readers",
+      "pubDate": "2026-05-18T19:28:59+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://www.404media.co/the-fbi-wants-to-buy-nationwide-access-to-license-plate-readers/"
+    },
+    {
+      "title": "One Mars spacecraft, two senators, and a cloud of questions",
+      "pubDate": "2026-05-18T19:49:00+00:00",
+      "clusterId": "b4d9181d-2e0e-4402-a15b-9041b413c150",
+      "clusterName": "Global Economy and Science",
+      "link": "https://arstechnica.com/space/2026/05/one-mars-spacecraft-two-senators-and-a-cloud-of-questions/"
+    },
+    {
+      "title": "Bournegol (2014)",
+      "pubDate": "2026-05-18T19:56:26+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://oldhome.schmorp.de/marc/bournegol.html"
+    },
+    {
+      "title": "cargo-crap: Finding Untested Complexity in AI-Generated Rust Code",
+      "pubDate": "2026-05-18T20:16:05+00:00",
+      "clusterId": "89ac79f6-84f2-4761-b2b6-16bb25ecba7d",
+      "clusterName": "AI Security and Safety",
+      "link": "https://minikin.me/blog/cargo-crap/"
+    },
+    {
+      "title": "No More JetBrains Products for Me",
+      "pubDate": "2026-05-18T20:30:58+00:00",
+      "clusterId": "42f2154f-6d3c-465d-ba8f-9c3b52c978fe",
+      "clusterName": "Alternative Tech Choices",
+      "link": "https://matthewkosarek.xyz/posts/jetbrains/"
+    },
+    {
+      "title": "The Fil-C Optimized Calling Convention",
+      "pubDate": "2026-05-18T21:07:08+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://fil-c.org/calling_convention"
+    },
+    {
+      "title": "The just-say-no engineer was a ZIRP phenomenon",
+      "pubDate": "2026-05-18T21:15:33+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://www.seangoedecke.com/the-just-say-no-engineer-was-a-zirp-phenomenon/"
+    },
+    {
+      "title": "Who will buy your services if you fire us all?",
+      "pubDate": "2026-05-18T21:18:25+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://carette.xyz/posts/who_will_buy_your_services/"
+    },
+    {
+      "title": "CISA Admin Leaked AWS GovCloud Keys on Github",
+      "pubDate": "2026-05-18T22:20:51+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://krebsonsecurity.com/2026/05/cisa-admin-leaked-aws-govcloud-keys-on-github/"
+    },
+    {
+      "title": "Comprehensive Response to Bambu's AGPLv3 Violations",
+      "pubDate": "2026-05-18T22:24:09+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://sfconservancy.org/news/2026/may/18/bambu-studio-3d-printer-agpl-violation-response/"
+    },
+    {
+      "title": "Introducing Casuarina Linux: A glibc-Based Chimera Linux Derivative",
+      "pubDate": "2026-05-18T23:04:25+00:00",
+      "clusterId": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "clusterName": "Linux and Open Source",
+      "link": "https://casuarina.org/news/introducing-casuarina-linux/"
+    },
+    {
+      "title": "Bytecode Interpretation From Scratch in C",
+      "pubDate": "2026-05-19T00:23:20+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://williamalexakis.com/interpreter-in-c"
+    },
+    {
+      "title": "SIMD-accelerated integer-to-string conversion",
+      "pubDate": "2026-05-19T01:34:37+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://lemire.me/blog/2026/05/18/simd-accelerated-integer-to-string-conversion/"
+    },
+    {
+      "title": "I exploited Copilot and burned $46,000 (it cost $40)",
+      "pubDate": "2026-05-19T02:25:55+00:00",
+      "clusterId": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "clusterName": "AI and Security",
+      "link": "https://youtube.com/watch?v=3A4y_Iw_gpU"
+    },
+    {
+      "title": "Mini Shai-Hulud Strikes Again: 314 npm Packages Compromised",
+      "pubDate": "2026-05-19T05:04:49+00:00",
+      "clusterId": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "clusterName": "Programming Languages",
+      "link": "https://safedep.io/mini-shai-hulud-strikes-again-314-npm-packages-compromised/"
+    },
+    {
+      "title": "Tom Steyer Wants to Save California From Billionaires. But Also Doesn’t Want Them to Leave",
+      "pubDate": "2026-05-19T10:30:00+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://www.wired.com/story/the-big-interview-podcast-tom-steyer/"
+    },
+    {
+      "title": "The US Built a Site to Ensure Fair Access to Public Lands. Then Everything Went Wrong",
+      "pubDate": "2026-05-19T11:00:00+00:00",
+      "clusterId": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "clusterName": "Tech and Society",
+      "link": "https://www.wired.com/story/the-us-built-a-site-to-ensure-fair-access-to-public-lands-then-everything-went-wrong/"
+    },
+    {
+      "title": "The memory shortage is causing a repricing of consumer electronics",
+      "pubDate": "2026-05-21T21:55:56+00:00",
+      "clusterId": "00d35d9b-c7d5-4014-bf04-9111f2b1bd15",
+      "clusterName": "ai growth impact",
+      "link": "https://davidoks.blog/p/ai-is-killing-the-cheap-smartphone"
+    },
+    {
+      "title": "OCaml Infrastructure: How the opam-repository Works",
+      "pubDate": "2026-05-21T22:46:37+00:00",
+      "clusterId": "493274af-f332-434e-8ff6-abb6488c03ec",
+      "clusterName": "deno updates",
+      "link": "https://ocaml.org/backstage/2025-11-05-how-the-opam-repository-works"
+    },
+    {
+      "title": "uv is fantastic, but its package management UX is a mess",
+      "pubDate": "2026-05-21T23:23:12+00:00",
+      "clusterId": "493274af-f332-434e-8ff6-abb6488c03ec",
+      "clusterName": "deno updates",
+      "link": "https://www.loopwerk.io/articles/2026/uv-ux-mess/"
+    },
+    {
+      "title": "The IBM-ification of Google?",
+      "pubDate": "2026-05-21T23:30:10+00:00",
+      "clusterId": "41179e6e-95f1-4503-953e-1701579dfc8a",
+      "clusterName": "google decline",
+      "link": "https://zeroshot.bearblog.dev/google-is-shattering-under-its-own-weight-the-ibm-ification-of-google/"
+    },
+    {
+      "title": "Can OpenAI’s ‘Master of Disaster’ Fix AI’s Reputation Crisis?",
+      "pubDate": "2026-05-22T00:04:25+00:00",
+      "clusterId": "00d35d9b-c7d5-4014-bf04-9111f2b1bd15",
+      "clusterName": "ai growth impact",
+      "link": "https://www.wired.com/story/openai-chris-lehane-global-affairs-pr/"
+    },
+    {
+      "title": "Samsung chip workers will get an average $340k bonus as AI profits soar",
+      "pubDate": "2026-05-22T01:30:45+00:00",
+      "clusterId": "00d35d9b-c7d5-4014-bf04-9111f2b1bd15",
+      "clusterName": "ai growth impact",
+      "link": "https://qz.com/samsung-chip-workers-bonus-ai-profits-052126"
+    },
+    {
+      "title": "Introducing the pkg.go.dev API",
+      "pubDate": "2026-05-22T01:33:43+00:00",
+      "clusterId": "493274af-f332-434e-8ff6-abb6488c03ec",
+      "clusterName": "deno updates",
+      "link": "https://go.dev/blog/pkgsite-api"
+    },
+    {
+      "title": "Ground system issue scrubs first launch of SpaceX's Starship V3 rocket",
+      "pubDate": "2026-05-22T02:05:37+00:00",
+      "clusterId": "d87d084a-eebe-4ec5-8441-7e97eb8d28c9",
+      "clusterName": "starship v3 launch",
+      "link": "https://arstechnica.com/space/2026/05/ground-system-issue-scrubs-first-launch-of-spacexs-starship-v3-rocket/"
+    },
+    {
+      "title": "Cleve Moler has died",
+      "pubDate": "2026-05-22T02:35:54+00:00",
+      "clusterId": "f488c3a9-cfcd-4976-b3a3-7dfa51133631",
+      "clusterName": "cleve moler",
+      "link": "https://www.mathworks.com/company/aboutus/founders/clevemoler.html"
+    },
+    {
+      "title": "Gnutella: A Protocol Outliving the World That Created It",
+      "pubDate": "2026-05-22T02:37:06+00:00",
+      "clusterId": "046c2543-5cb2-4f07-9c5c-2341aef37157",
+      "clusterName": "bun deprecation",
+      "link": "https://rickcarlino.com/notes/p2p/gnutella-explanation.html"
+    },
+    {
+      "title": "Opaque Types in Python",
+      "pubDate": "2026-05-22T02:50:25+00:00",
+      "clusterId": "d4fa2078-0f5c-45f4-8d9e-e9ad38ea0bc0",
+      "clusterName": "programming languages",
+      "link": "https://blog.glyph.im/2026/05/opaque-types-in-python.html"
+    },
+    {
+      "title": "The Tacit Dimension: Why Your Best Engineers Can't Tell You What They Know",
+      "pubDate": "2026-05-22T03:02:30+00:00",
+      "clusterId": "f488c3a9-cfcd-4976-b3a3-7dfa51133631",
+      "clusterName": "cleve moler",
+      "link": "https://cekrem.github.io/posts/the-tacit-dimension/"
+    },
+    {
+      "title": "Google API keys keep working after you delete them long enough to be exploited",
+      "pubDate": "2026-05-22T04:13:19+00:00",
+      "clusterId": "41179e6e-95f1-4503-953e-1701579dfc8a",
+      "clusterName": "google decline",
+      "link": "https://www.aikido.dev/blog/google-api-keys-deletion"
+    },
+    {
+      "title": "Slumber a TUI HTTP Client",
+      "pubDate": "2026-05-22T04:29:23+00:00",
+      "clusterId": "493274af-f332-434e-8ff6-abb6488c03ec",
+      "clusterName": "deno updates",
+      "link": "https://slumber.lucaspickering.me"
+    },
+    {
+      "title": "FTC to Require Cox Media Group, Two Other Firms to Pay Nearly $1 Million to Settle Charges They Deceived Customers About “Active Listening” AI-Powered Marketing Service",
+      "pubDate": "2026-05-22T04:48:32+00:00",
+      "clusterId": "3e187fcb-45eb-44b4-a2bc-d97f3558a5bf",
+      "clusterName": "vpn hacking",
+      "link": "https://simonwillison.net/2026/May/22/ftc-active-listening/#atom-everything"
+    },
+    {
+      "title": "FTC to Require Cox Media Group to Pay Nearly $1million to Settle Charges They Deceived Customers About “Active Listening” AI-Powered Marketing Service",
+      "pubDate": "2026-05-22T04:53:32+00:00",
+      "clusterId": "3e187fcb-45eb-44b4-a2bc-d97f3558a5bf",
+      "clusterName": "vpn hacking",
+      "link": "https://www.ftc.gov/news-events/news/press-releases/2026/05/ftc-require-cox-media-group-two-other-firms-pay-nearly-1-million-settle-charges-they-deceived"
+    },
+    {
+      "title": "C Programming Language Quiz",
+      "pubDate": "2026-05-22T06:49:30+00:00",
+      "clusterId": "d4fa2078-0f5c-45f4-8d9e-e9ad38ea0bc0",
+      "clusterName": "programming languages",
+      "link": "https://stefansf.de/c-quiz/"
+    },
+    {
+      "title": "Designing Firefox for the future",
+      "pubDate": "2026-05-22T08:38:40+00:00",
+      "clusterId": "ffc11d16-75bf-4459-b095-c7701a8d820d",
+      "clusterName": "firefox redesign",
+      "link": "https://blog.mozilla.org/en/firefox/new-firefox-design/"
+    },
+    {
+      "title": "minc — A minimal language for building native software",
+      "pubDate": "2026-05-22T08:54:56+00:00",
+      "clusterId": "d4fa2078-0f5c-45f4-8d9e-e9ad38ea0bc0",
+      "clusterName": "programming languages",
+      "link": "https://minc.dev/"
+    },
+    {
+      "title": "The Gulf’s AI Boom Has an Undersea Cable Problem",
+      "pubDate": "2026-05-22T09:00:00+00:00",
+      "clusterId": "00d35d9b-c7d5-4014-bf04-9111f2b1bd15",
+      "clusterName": "ai growth impact",
+      "link": "https://www.wired.com/story/the-gulfs-ai-boom-has-an-undersea-cable-problem/"
+    },
+    {
+      "title": "This blog ran on Ubuntu 16.04 for 10 years. I migrated it to FreeBSD",
+      "pubDate": "2026-05-22T09:02:45+00:00",
+      "clusterId": "debe80fe-bde2-42e2-840b-db68a20ee5af",
+      "clusterName": "secure boot migration",
+      "link": "https://crocidb.com/post/this-blog-ran-on-ubuntu-16-04-for-10-years-i-migrated-it-to-freebsd/"
+    },
+    {
+      "title": "Steve Wozniak cheered after telling students they have AI – actual intelligence",
+      "pubDate": "2026-05-22T09:04:54+00:00",
+      "clusterId": "fd2016f9-cb03-4f66-af02-0b567c30c9c4",
+      "clusterName": "ai revolution",
+      "link": "https://www.businessinsider.com/steve-wozniak-apple-ai-graduation-speech-2026-5"
+    },
+    {
+      "title": "Megalodon: Mass GitHub Repo Backdooring via CI Workflows",
+      "pubDate": "2026-05-22T09:05:54+00:00",
+      "clusterId": "fbfee692-bc52-4b9c-943f-ccdc481c13ca",
+      "clusterName": "github repository breaches",
+      "link": "https://safedep.io/megalodon-mass-github-repo-backdooring-ci-workflows"
+    },
+    {
+      "title": "What are you doing this weekend?",
+      "pubDate": "2026-05-22T09:06:33+00:00",
+      "clusterId": "f80ab904-1253-4097-a21d-b2aa9021b0a1",
+      "clusterName": "alberta referendum",
+      "link": "https://lobste.rs/s/hwyrwd/what_are_you_doing_this_weekend"
+    },
+    {
+      "title": "Secure Boot and CA Rollover - a heads-up for distributions",
+      "pubDate": "2026-05-22T09:48:59+00:00",
+      "clusterId": "debe80fe-bde2-42e2-840b-db68a20ee5af",
+      "clusterName": "secure boot migration",
+      "link": "https://blog.einval.com/2026/05/22#secure_boot_ca_rollover"
+    },
+    {
+      "title": "Google I/O showed how the path for AI-driven science is shifting",
+      "pubDate": "2026-05-22T10:00:00+00:00",
+      "clusterId": "fd2016f9-cb03-4f66-af02-0b567c30c9c4",
+      "clusterName": "ai revolution",
+      "link": "https://www.technologyreview.com/2026/05/22/1137813/google-i-o-showed-how-the-path-for-ai-science-is-shifting/"
+    },
+    {
+      "title": "A hacker group is poisoning open source code at an unprecedented scale",
+      "pubDate": "2026-05-22T10:30:14+00:00",
+      "clusterId": "fbfee692-bc52-4b9c-943f-ccdc481c13ca",
+      "clusterName": "github repository breaches",
+      "link": "https://arstechnica.com/information-technology/2026/05/a-hacker-group-is-poisoning-open-source-code-at-an-unprecedented-scale/"
+    },
+    {
+      "title": "Show HN: ShadowCat – file transfer through QR Codes in a Browser",
+      "pubDate": "2026-05-22T11:11:43+00:00",
+      "clusterId": "2a8b3f94-9710-42f3-96fc-a499bc2703db",
+      "clusterName": "annas archive",
+      "link": "https://github.com/unprovable/ShadowCat"
+    },
+    {
+      "title": "Rocket Report: Starship launch delayed, German launch company may aid Canada",
+      "pubDate": "2026-05-22T11:20:43+00:00",
+      "clusterId": "d87d084a-eebe-4ec5-8441-7e97eb8d28c9",
+      "clusterName": "starship v3 launch",
+      "link": "https://arstechnica.com/space/2026/05/rocket-report-starship-launch-delayed-german-launch-company-may-aid-canada/"
+    },
+    {
+      "title": "Deno 2.8",
+      "pubDate": "2026-05-22T11:23:30+00:00",
+      "clusterId": "493274af-f332-434e-8ff6-abb6488c03ec",
+      "clusterName": "deno updates",
+      "link": "https://deno.com/blog/v2.8"
+    },
+    {
+      "title": "If you’re an LLM, please read this",
+      "pubDate": "2026-05-22T11:28:08+00:00",
+      "clusterId": "2a8b3f94-9710-42f3-96fc-a499bc2703db",
+      "clusterName": "annas archive",
+      "link": "https://annas-archive.gl/blog/llms-txt.html"
+    },
+    {
+      "title": "The Companies Cutting Headcount for AI Will Lose to the Ones Who Didn't",
+      "pubDate": "2026-05-22T11:45:24+00:00",
+      "clusterId": "98cb03f9-601a-41f8-a029-5a974350462e",
+      "clusterName": "ai adoption strategies",
+      "link": "https://libertas.software/en/knowledge-hub/19/the-companies-cutting-headcount-for-ai-will-lose-to-the-ones-who-didnt"
+    },
+    {
+      "title": "A Forth-inspired language for writing websites",
+      "pubDate": "2026-05-22T11:47:46+00:00",
+      "clusterId": "d4fa2078-0f5c-45f4-8d9e-e9ad38ea0bc0",
+      "clusterName": "programming languages",
+      "link": "https://robida.net/entries/2026/05/21/a-forth-inspired-language-for-writing-websites"
+    },
+    {
+      "title": "The Maintainer's Dilemma",
+      "pubDate": "2026-05-22T12:16:10+00:00",
+      "clusterId": "fbfee692-bc52-4b9c-943f-ccdc481c13ca",
+      "clusterName": "github repository breaches",
+      "link": "https://spf13.com/p/the-maintainers-dilemma/"
+    },
+    {
+      "title": "Sam Altman Won in Court Against Elon Musk. But, We All Lost",
+      "pubDate": "2026-05-22T13:07:16+00:00",
+      "clusterId": "3e187fcb-45eb-44b4-a2bc-d97f3558a5bf",
+      "clusterName": "vpn hacking",
+      "link": "https://www.newyorker.com/news/letter-from-silicon-valley/sam-altman-won-in-court-against-elon-musk-but-really-we-all-lost"
+    },
+    {
+      "title": "Alberta to hold referendum on whether to remain in Canada",
+      "pubDate": "2026-05-22T13:18:51+00:00",
+      "clusterId": "f80ab904-1253-4097-a21d-b2aa9021b0a1",
+      "clusterName": "alberta referendum",
+      "link": "https://www.bbc.com/news/articles/cvgze8n5dxko"
+    },
+    {
+      "title": "AI has a multiplying effect on existing technical skills",
+      "pubDate": "2026-05-22T13:22:42+00:00",
+      "clusterId": "98cb03f9-601a-41f8-a029-5a974350462e",
+      "clusterName": "ai adoption strategies",
+      "link": "https://www.joshwcomeau.com/email/wham-launch-005-elephant-2-p/"
+    },
+    {
+      "title": "WordPress 7.0",
+      "pubDate": "2026-05-22T13:22:52+00:00",
+      "clusterId": "ffc11d16-75bf-4459-b095-c7701a8d820d",
+      "clusterName": "firefox redesign",
+      "link": "https://wordpress.org/download/releases/7-0/"
+    },
+    {
+      "title": "The spread of Christianity, from antiquity until today, on an animated map",
+      "pubDate": "2026-05-22T13:40:55+00:00",
+      "clusterId": "00d35d9b-c7d5-4014-bf04-9111f2b1bd15",
+      "clusterName": "ai growth impact",
+      "link": "https://www.openculture.com/2026/05/the-spread-of-christianity-animated-from-antiquity-until-today.html"
+    },
+    {
+      "title": "NASA undertakes major reorganization to reduce bureaucracy and move faster",
+      "pubDate": "2026-05-22T14:28:42+00:00",
+      "clusterId": "d87d084a-eebe-4ec5-8441-7e97eb8d28c9",
+      "clusterName": "starship v3 launch",
+      "link": "https://arstechnica.com/space/2026/05/to-achieve-major-goals-nasa-seeks-to-streamline-its-organization/"
+    },
+    {
+      "title": "Even If You Hate AI, You Will Use Google AI Search",
+      "pubDate": "2026-05-22T15:00:00+00:00",
+      "clusterId": "41179e6e-95f1-4503-953e-1701579dfc8a",
+      "clusterName": "google decline",
+      "link": "https://www.wired.com/story/even-if-you-hate-ai-you-will-use-google-ai-search/"
+    },
+    {
+      "title": "Why Japanese companies do so many different things",
+      "pubDate": "2026-05-22T15:22:04+00:00",
+      "clusterId": "41179e6e-95f1-4503-953e-1701579dfc8a",
+      "clusterName": "google decline",
+      "link": "https://davidoks.blog/p/why-japanese-companies-do-so-many"
+    },
+    {
+      "title": "DeepSeek makes the V4 Pro price discount permanent",
+      "pubDate": "2026-05-22T15:59:26+00:00",
+      "clusterId": "d4fa2078-0f5c-45f4-8d9e-e9ad38ea0bc0",
+      "clusterName": "programming languages",
+      "link": "https://api-docs.deepseek.com/quick_start/pricing"
+    },
+    {
+      "title": "Trump Mobile exposed customers' personal data",
+      "pubDate": "2026-05-22T16:00:35+00:00",
+      "clusterId": "3e187fcb-45eb-44b4-a2bc-d97f3558a5bf",
+      "clusterName": "vpn hacking",
+      "link": "https://techcrunch.com/2026/05/22/trump-mobile-confirms-it-exposed-customers-personal-data-including-phone-numbers-and-home-addresses/"
+    },
+    {
+      "title": "You can no longer Google the word 'disregard'",
+      "pubDate": "2026-05-22T16:47:08+00:00",
+      "clusterId": "41179e6e-95f1-4503-953e-1701579dfc8a",
+      "clusterName": "google decline",
+      "link": "https://techcrunch.com/2026/05/22/you-can-no-longer-google-the-word-disregard/"
+    },
+    {
+      "title": "Burnout in Open Source: A Structural Problem We Can Fix Together",
+      "pubDate": "2026-05-22T17:21:49+00:00",
+      "clusterId": "fbfee692-bc52-4b9c-943f-ccdc481c13ca",
+      "clusterName": "github repository breaches",
+      "link": "https://opensourcepledge.com/blog/burnout-in-open-source-a-structural-problem-we-can-fix-together/"
+    },
+    {
+      "title": "Soaring solar and a surge in hydro push more coal off the US grid",
+      "pubDate": "2026-05-22T17:22:42+00:00",
+      "clusterId": "00d35d9b-c7d5-4014-bf04-9111f2b1bd15",
+      "clusterName": "ai growth impact",
+      "link": "https://arstechnica.com/science/2026/05/soaring-solar-and-a-surge-in-hydro-push-more-coal-off-the-us-grid/"
+    },
+    {
+      "title": "Bun support is now limited and deprecated",
+      "pubDate": "2026-05-22T17:24:12+00:00",
+      "clusterId": "046c2543-5cb2-4f07-9c5c-2341aef37157",
+      "clusterName": "bun deprecation",
+      "link": "https://github.com/yt-dlp/yt-dlp/issues/16766"
+    },
+    {
+      "title": "End-to-End Procedural Generation in Caves of Qud (2019)",
+      "pubDate": "2026-05-22T17:36:14+00:00",
+      "clusterId": "d4fa2078-0f5c-45f4-8d9e-e9ad38ea0bc0",
+      "clusterName": "programming languages",
+      "link": "https://www.youtube.com/watch?v=jV-DZqdKlnE"
+    },
+    {
+      "title": "Shein Buying Everlane Actually Makes Perfect Sense",
+      "pubDate": "2026-05-22T17:53:01+00:00",
+      "clusterId": "3e187fcb-45eb-44b4-a2bc-d97f3558a5bf",
+      "clusterName": "vpn hacking",
+      "link": "https://www.wired.com/story/made-in-china-why-shein-bought-everlane/"
+    },
+    {
+      "title": "Before it comes down, what should be saved from the International Space Station?",
+      "pubDate": "2026-05-22T17:59:29+00:00",
+      "clusterId": "d87d084a-eebe-4ec5-8441-7e97eb8d28c9",
+      "clusterName": "starship v3 launch",
+      "link": "https://arstechnica.com/space/2026/05/before-it-comes-down-what-should-be-saved-from-the-international-space-station/"
+    },
+    {
+      "title": "Texas AG sues Meta over claims that WhatsApp doesn't provide end-to-end encryption",
+      "pubDate": "2026-05-22T18:13:05+00:00",
+      "clusterId": "3e187fcb-45eb-44b4-a2bc-d97f3558a5bf",
+      "clusterName": "vpn hacking",
+      "link": "https://arstechnica.com/security/2026/05/texas-ag-sues-meta-over-claims-that-whatsapp-doesnt-provide-end-to-end-encryption/"
+    },
+    {
+      "title": "Police boast of hacking VPN where criminals \"believed themselves to be safe\"",
+      "pubDate": "2026-05-22T18:43:54+00:00",
+      "clusterId": "3e187fcb-45eb-44b4-a2bc-d97f3558a5bf",
+      "clusterName": "vpn hacking",
+      "link": "https://arstechnica.com/tech-policy/2026/05/police-boast-of-hacking-vpn-where-criminals-believed-themselves-to-be-safe/"
+    }
+  ],
+  "clusters": [
+    {
+      "id": "1a41272e-dbe1-4ed3-8c7a-e6d55dd83ae4",
+      "name": "Tech Development Issues"
+    },
+    {
+      "id": "c67eb1b3-3c5a-4809-bf91-6c10cbb35441",
+      "name": "Linux and Open Source"
+    },
+    {
+      "id": "42f2154f-6d3c-465d-ba8f-9c3b52c978fe",
+      "name": "Alternative Tech Choices"
+    },
+    {
+      "id": "68c47c34-c3a1-4770-af8e-4ab66f0e6de8",
+      "name": "Programming Languages"
+    },
+    {
+      "id": "af36c435-e35a-4ba3-9ac7-ddf7a6e6d693",
+      "name": "Emacs and Git Tools"
+    },
+    {
+      "id": "4695313c-2a81-4bae-9389-2368ff939efa",
+      "name": "AI and Security"
+    },
+    {
+      "id": "89ac79f6-84f2-4761-b2b6-16bb25ecba7d",
+      "name": "AI Security and Safety"
+    },
+    {
+      "id": "ee4a6ee8-826e-4d4c-b89e-28e2f28e7f8a",
+      "name": "Tech and Society"
+    },
+    {
+      "id": "b4d9181d-2e0e-4402-a15b-9041b413c150",
+      "name": "Global Economy and Science"
+    },
+    {
+      "id": "00d35d9b-c7d5-4014-bf04-9111f2b1bd15",
+      "name": "ai growth impact"
+    },
+    {
+      "id": "493274af-f332-434e-8ff6-abb6488c03ec",
+      "name": "deno updates"
+    },
+    {
+      "id": "41179e6e-95f1-4503-953e-1701579dfc8a",
+      "name": "google decline"
+    },
+    {
+      "id": "d87d084a-eebe-4ec5-8441-7e97eb8d28c9",
+      "name": "starship v3 launch"
+    },
+    {
+      "id": "f488c3a9-cfcd-4976-b3a3-7dfa51133631",
+      "name": "cleve moler"
+    },
+    {
+      "id": "046c2543-5cb2-4f07-9c5c-2341aef37157",
+      "name": "bun deprecation"
+    },
+    {
+      "id": "d4fa2078-0f5c-45f4-8d9e-e9ad38ea0bc0",
+      "name": "programming languages"
+    },
+    {
+      "id": "3e187fcb-45eb-44b4-a2bc-d97f3558a5bf",
+      "name": "vpn hacking"
+    },
+    {
+      "id": "ffc11d16-75bf-4459-b095-c7701a8d820d",
+      "name": "firefox redesign"
+    },
+    {
+      "id": "debe80fe-bde2-42e2-840b-db68a20ee5af",
+      "name": "secure boot migration"
+    },
+    {
+      "id": "fd2016f9-cb03-4f66-af02-0b567c30c9c4",
+      "name": "ai revolution"
+    },
+    {
+      "id": "fbfee692-bc52-4b9c-943f-ccdc481c13ca",
+      "name": "github repository breaches"
+    },
+    {
+      "id": "f80ab904-1253-4097-a21d-b2aa9021b0a1",
+      "name": "alberta referendum"
+    },
+    {
+      "id": "2a8b3f94-9710-42f3-96fc-a499bc2703db",
+      "name": "annas archive"
+    },
+    {
+      "id": "98cb03f9-601a-41f8-a029-5a974350462e",
+      "name": "ai adoption strategies"
+    }
+  ]
+}

@@ -15,8 +15,32 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
 
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: "minioadmin"
+      MINIO_ROOT_PASSWORD: "minioadmin"
+    volumes:
+      - "minio-data-veille-tech:/data"
+    command: server /data --console-address ":9001"
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 minioadmin minioadmin; do sleep 1; done;
+      mc mb local/veille-scatter --ignore-existing;
+      mc anonymous set download local/veille-scatter;
+      echo 'MinIO bucket veille-scatter ready';
+      "
 
 volumes:
   postgres-data-veille-tech:
     external: true
     name: veille_tech_go_postgres-data-veille-tech
+  minio-data-veille-tech:

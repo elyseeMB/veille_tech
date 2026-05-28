@@ -19,6 +19,7 @@ const routes: AppRoute[] = [
   {
     path: "/",
     Component: RootLayout,
+
     children: [
       { index: true, loader: () => redirect("/feed") },
       {
@@ -45,6 +46,10 @@ const routes: AppRoute[] = [
         },
       },
     ],
+  },
+  {
+    path: "scatter",
+    Component: lazy(() => import("@/pages/ScatterPage")),
   },
 ];
 
