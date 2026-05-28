@@ -9,6 +9,7 @@ import { Button } from "./ui/button.tsx";
 import { Skeleton } from "./ui/skeleton.tsx";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import clsx from "clsx";
+import { useEffect } from "react";
 
 function ClusterCard({
   label,
@@ -111,6 +112,20 @@ export default function ClustersPanel() {
       navigate("/feed");
     }
   };
+
+  useEffect(() => {
+    if (selectedClusterId && clusters) {
+      const cluster = clusters.find((c) => c.id === selectedClusterId);
+      if (cluster) {
+        pushBanner({
+          title: cluster.label,
+          source: "Cluster",
+          pubDate: cluster.createdAt,
+          node: null,
+        });
+      }
+    }
+  }, [clusters, selectedClusterId]);
 
   return (
     <section

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useRef, useLayoutEffect } from "react";
 import { useNavigate } from "react-router";
 
-function ClusterSkeleton() {
+export function ClusterSkeleton() {
   return (
     <div className="flex flex-col gap-4 p-5">
       <Skeleton className="h-5 w-2/3 bg-muted" />

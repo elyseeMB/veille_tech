@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router";
+import { Outlet, useLocation, useNavigation } from "react-router";
 import ClustersPanel from "@/components/ClustersPanel";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Calendar } from "@/components/Calendar";
@@ -16,6 +16,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip.tsx";
+import { PageError } from "@/components/PageError.tsx";
+import { ErrorBoundary } from "react-error-boundary";
+import { ClusterSkeleton } from "@/components/ClusterArticles.tsx";
 
 export function DesktopLayout() {
   const location = useLocation();
@@ -24,6 +27,12 @@ export function DesktopLayout() {
   const { visible: calendarVisible, toggle } = useCalendarToggle();
   const calendarData = useCalendarData();
   const { ref: containerRef, left: buttonLeft } = useContainerLeftOffset();
+
+  const navigation = useNavigation();
+
+  const showClusterSkeleton =
+    navigation.state === "loading" &&
+    navigation.location?.pathname?.startsWith("/clusters/");
 
   return (
     <main
@@ -55,14 +64,18 @@ export function DesktopLayout() {
           <div className="grid grid-cols-3">
             <ClustersPanel />
             <main className="overflow-y-auto scrollbar-hide border-r border-border h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]">
-              {isClustersList ? (
+              {showClusterSkeleton ? (
+                <ClusterSkeleton />
+              ) : isClustersList ? (
                 <div className="flex items-center justify-center h-full">
                   <p className="text-sm text-muted-foreground px-5">
                     Select a cluster from the list
                   </p>
                 </div>
               ) : (
-                <Outlet />
+                <ErrorBoundary FallbackComponent={PageError}>
+                  <Outlet />
+                </ErrorBoundary>
               )}
             </main>
             <HistoryPanel />
