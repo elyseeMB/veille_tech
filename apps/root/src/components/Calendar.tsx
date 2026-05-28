@@ -309,7 +309,10 @@ export function Calendar({
                   }
                 >
                   {isToday ? (
-                    <a href={`/date/${d.toISOString().slice(0, 10)}`}>
+                    <a
+                      className="pointer-events-none"
+                      href={`/date/${d.toISOString().slice(0, 10)}`}
+                    >
                       <rect
                         width={D_CELL - 2}
                         height={D_CELL - 2}
@@ -320,7 +323,10 @@ export function Calendar({
                       />
                     </a>
                   ) : isPast && isArticleForDate ? (
-                    <a href={`/date/${d.toISOString().slice(0, 10)}`}>
+                    <a
+                      className="pointer-events-none"
+                      href={`/date/${d.toISOString().slice(0, 10)}`}
+                    >
                       <circle
                         r={D_CELL / 2 - 1}
                         fill="var(--color-amber-500)"
