@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router";
 import ClustersPanel from "@/components/ClustersPanel";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Calendar } from "@/components/Calendar";

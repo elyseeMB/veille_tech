@@ -1,4 +1,4 @@
-import { Outlet, useSearchParams } from "react-router-dom";
+import { Outlet, useSearchParams } from "react-router";
 import ExpandableTabs from "@/components/ExpandableTabs";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Calendar } from "@/components/Calendar";

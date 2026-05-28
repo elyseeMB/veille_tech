@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useLocation, matchPath } from "react-router-dom";
+import { useNavigate, useLocation, matchPath } from "react-router";
 import { clustersQuery } from "@/queries";
 import { useBanner } from "./BannerContext.tsx";
 import { useSummaryStore } from "@/store/summaryStore.ts";

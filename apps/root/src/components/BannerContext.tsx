@@ -7,7 +7,7 @@ import {
   type PropsWithChildren,
   useLayoutEffect,
 } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "./ui/button.tsx";
 import { ArrowRight, Target, X } from "lucide-react";

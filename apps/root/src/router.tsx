@@ -6,7 +6,9 @@ import {
   redirect,
   type LoaderFunction,
   type RouteObject,
-} from "react-router-dom";
+} from "react-router";
+import { PageError } from "./components/PageError.tsx";
+import { ErrorBoundary } from "./components/ErrorBoundary.tsx";
 
 type AppRoute = {
   Component?: FC<any> | LazyExoticComponent<FC<any>>;
@@ -19,7 +21,7 @@ const routes: AppRoute[] = [
   {
     path: "/",
     Component: RootLayout,
-
+    ErrorBoundary: ErrorBoundary,
     children: [
       { index: true, loader: () => redirect("/feed") },
       {
@@ -46,6 +48,10 @@ const routes: AppRoute[] = [
         },
       },
     ],
+  },
+  {
+    path: "*",
+    Component: PageError,
   },
 ];
 
