@@ -1,0 +1,59 @@
+import { useLocation, useRouteError } from "react-router";
+import { useEffect, useRef } from "react";
+import { CrossIcon } from "lucide-react";
+
+const classNames = {
+  wrapper: "py-10 text-center space-y-2",
+  title: "text-2xl flex gap-2 font-semibold items-center justify-center",
+  description: "text-base text-txt-tertiary",
+  detail:
+    "text-sm text-txt-tertiary font-mono text-start border border-border-low p-2 rounded bg-level-1 mt-2",
+};
+
+type Props = {
+  resetErrorBoundary?: () => void;
+  error?: unknown;
+};
+
+export function PageError({ resetErrorBoundary, error: propsError }: Props) {
+  const error = useRouteError() ?? propsError;
+  const location = useLocation();
+  const baseLocation = useRef(location);
+
+  useEffect(() => {
+    if (
+      location.pathname !== baseLocation.current.pathname &&
+      resetErrorBoundary
+    ) {
+      resetErrorBoundary();
+    }
+  }, [location, resetErrorBoundary]);
+
+  if (!error) {
+    return (
+      <div className={classNames.wrapper}>
+        <h1 className={classNames.title}>
+          <CrossIcon size={26} />
+          Page not found
+        </h1>
+        <p className={classNames.description}>
+          The page you are looking for does not exist
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={classNames.wrapper}>
+      <h1 className={classNames.title}>Unexpected error</h1>
+      {import.meta.env.DEV && (
+        <details>
+          <summary className={classNames.description}>
+            Something went wrong
+          </summary>
+          <p className={classNames.detail}>{error.toString()}</p>
+        </details>
+      )}
+    </div>
+  );
+}

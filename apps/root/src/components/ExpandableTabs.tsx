@@ -1,10 +1,5 @@
-import {
-  useState,
-  useRef,
-  useLayoutEffect,
-  type JSX,
-} from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useState, useRef, useLayoutEffect, type JSX } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -25,13 +20,14 @@ export default function ExpandableTabs({ tabs }: { tabs: TabsListNode }) {
   const [activeWidth, setActiveWidth] = useState(120);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const activeTab = searchParams.get("tab") === "history"
-    ? "history"
-    : location.pathname === "/feed"
-      ? "feed"
-      : location.pathname.startsWith("/clusters")
-        ? "clusters"
-        : "feed";
+  const activeTab =
+    searchParams.get("tab") === "history"
+      ? "history"
+      : location.pathname === "/feed"
+        ? "feed"
+        : location.pathname.startsWith("/clusters")
+          ? "clusters"
+          : "feed";
 
   useLayoutEffect(() => {
     if (!listRef.current) {
