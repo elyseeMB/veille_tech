@@ -47,6 +47,10 @@ const routes: AppRoute[] = [
       },
     ],
   },
+  {
+    path: "scatter",
+    Component: lazy(() => import("@/pages/ScatterPage")),
+  },
 ];
 
 function routeTransformer({
