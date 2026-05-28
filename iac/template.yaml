@@ -174,7 +174,7 @@ Resources:
           ENVIRONMENT: "production"
           YOUTUBE_SCRAPING: "false"
           USE_MOCK: "false"
-          NAMER_PROVIDER: "gemini"
+          NAMER_PROVIDER: "cloudflare"
           CF_GATEWAY_NAME: "default"
           DB_PARAM_NAME: "/veille/database_url"
           CF_ACCOUNT_ID: "/veille/cf_account_id"
