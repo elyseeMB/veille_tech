@@ -1,10 +1,13 @@
-import { Outlet, useSearchParams } from "react-router";
+import { Outlet, useNavigation, useSearchParams } from "react-router";
 import ExpandableTabs from "@/components/ExpandableTabs";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Calendar } from "@/components/Calendar";
 import { useHeaderHeight } from "@/hooks/useHeaderHeight";
 import { useCalendarData } from "@/hooks/useCalendarData";
 import { Rss, Merge, Clock } from "lucide-react";
+import { PageError } from "@/components/PageError.tsx";
+import { ErrorBoundary } from "react-error-boundary";
+import { ClusterSkeleton } from "@/components/ClusterArticles.tsx";
 
 const tabs = [
   {
@@ -30,6 +33,12 @@ export function MobileLayout() {
   const { ref: headerRef, height: headerHeight } = useHeaderHeight();
   const calendarData = useCalendarData();
 
+  const navigation = useNavigation();
+
+  const showClusterSkeleton =
+    navigation.state === "loading" &&
+    navigation.location?.pathname?.startsWith("/clusters/");
+
   const headerCss = {
     "--header-height": `${headerHeight}px`,
   } as React.CSSProperties;
@@ -47,7 +56,15 @@ export function MobileLayout() {
 
       <div className="mx-auto max-w-7xl px-4 md:px-0 sm:px-6 lg:px-12 lg:pt-[var(--header-height)] pt-[calc(var(--tabs-height)_+_var(--header-height)_+_var(--cluster-back-height,_0px))]">
         <ExpandableTabs tabs={tabs} />
-        {showHistory ? <HistoryPanel /> : <Outlet />}
+        {showHistory ? (
+          <HistoryPanel />
+        ) : showClusterSkeleton ? (
+          <ClusterSkeleton />
+        ) : (
+          <ErrorBoundary FallbackComponent={PageError}>
+            <Outlet />
+          </ErrorBoundary>
+        )}
       </div>
     </main>
   );

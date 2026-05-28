@@ -44,7 +44,7 @@ func GetRecentClusters(conn *db.PostgresConnection) ([]coredata.ClusterDB, map[s
 					JOIN videos v ON v.id = ci.ref_id AND ci.type = 'video'
 					JOIN sources s ON s.id = v.source_id
 				) items ON items.cluster_id = c.id
-				WHERE c.created_at >= NOW() - INTERVAL '3 days'
+				WHERE c.created_at >= NOW() - INTERVAL '24 days'
 				ORDER BY c.created_at DESC`
 
 	rows, err := conn.Pool.Query(context.Background(), query)
