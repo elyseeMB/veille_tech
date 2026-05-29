@@ -16,11 +16,4 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-      customRules:
-        - source: "/<*>/"
-          target: "/<*>"
-          status: "301"
-        - source: '</^[^.]+$|\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json)$)([^.]+$)/>'
-          target: "/index.html"
-          status: "200"
     appRoot: apps/root
