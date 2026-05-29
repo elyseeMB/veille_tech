@@ -13,6 +13,7 @@ export type Article = {
 
 export type YoutubeVideo = {
   id: string;
+  externalId: string;
   title: string;
   description: string;
   channelTitle: string;
