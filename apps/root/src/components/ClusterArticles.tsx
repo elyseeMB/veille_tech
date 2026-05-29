@@ -106,7 +106,7 @@ export function ClusterArticles({
       {data.items.map((item) =>
         item.type === "article" ? (
           <>
-            <title>{data.label}</title>
+            <title>Cluster | {data.label}</title>
             <ArticleItem
               key={item.data.id}
               article={item.data}
