@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef, useLayoutEffect } from "react";
 import { useNavigate } from "react-router";
+import { Seo } from "./Seo.tsx";
 
 export function ClusterSkeleton() {
   return (
@@ -106,7 +107,10 @@ export function ClusterArticles({
       {data.items.map((item) =>
         item.type === "article" ? (
           <>
-            <title>Cluster | {data.label}</title>
+            <Seo
+              title={`Cluster | ${data.label}`}
+              url={`https://veille.safecoffi.app/cluster/${data.id}`}
+            />
             <ArticleItem
               key={item.data.id}
               article={item.data}
