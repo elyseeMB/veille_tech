@@ -8,10 +8,18 @@ import { Button } from "@/components/ui/button";
 import { useRef, useLayoutEffect } from "react";
 import { useNavigate } from "react-router";
 import { Seo } from "./Seo.tsx";
+import { useMediaQuery } from "@/hooks/useMediaQuery.ts";
+import clsx from "clsx";
 
 export function ClusterSkeleton() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
-    <div className="flex flex-col gap-4 p-5">
+    <div
+      className={clsx(
+        "flex flex-col gap-4 p-5",
+        isMobile && "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem]",
+      )}
+    >
       <Skeleton className="h-5 w-2/3 bg-muted" />
       <Skeleton className="h-3 w-1/3 bg-muted" />
       <Skeleton className="h-20 w-full bg-muted" />

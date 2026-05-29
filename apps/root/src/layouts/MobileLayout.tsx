@@ -32,7 +32,6 @@ export function MobileLayout() {
   const showHistory = searchParams.get("tab") === "history";
   const { ref: headerRef, height: headerHeight } = useHeaderHeight();
   const calendarData = useCalendarData();
-
   const navigation = useNavigation();
 
   const showClusterSkeleton =
