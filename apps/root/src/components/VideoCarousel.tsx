@@ -42,7 +42,7 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
             <CarouselItem key={index} className="basis-[70%]">
               <div className="p-1">
                 <a
-                  href={`https://www.youtube.com/watch?v=${video.id}`}
+                  href={`https://www.youtube.com/watch?v=${video.externalId}`}
                   target="_blank"
                   rel="noreferrer"
                   className="group relative block overflow-hidden rounded-md aspect-video"
