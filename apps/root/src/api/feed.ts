@@ -15,6 +15,7 @@ type GatewayArticle = {
 
 type GatewayVideo = {
   id: string;
+  externalId: string;
   title: string;
   description: string;
   channelTitle: string;
@@ -42,6 +43,7 @@ function toArticle(a: GatewayArticle): Article {
 function toVideo(v: GatewayVideo): YoutubeVideo {
   return {
     id: v.id,
+    externalId: v.externalId,
     title: v.title,
     description: v.description,
     channelTitle: v.channelTitle,

@@ -20,6 +20,7 @@ type VideoDB struct {
 
 type VideoDTO struct {
 	ID            string   `json:"id"`
+	ExternalID    string   `json:"externalId"`
 	Title         string   `json:"title"`
 	Description   string   `json:"description"`
 	ChannelTitle  string   `json:"channelTitle"`
@@ -79,6 +80,7 @@ func ToVideoDTO(v VideoDB) VideoDTO {
 
 	return VideoDTO{
 		ID:            v.ID,
+		ExternalID:    v.ExternalID,
 		Title:         v.Title,
 		Description:   v.Description,
 		ChannelTitle:  v.ChannelTitle,

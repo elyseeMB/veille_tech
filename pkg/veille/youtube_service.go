@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/mbous/veille_tech/pkg/coredata"
 	"github.com/mbous/veille_tech/pkg/db"
@@ -66,7 +67,7 @@ func FetchYouTube(ctx context.Context, conn *db.PostgresConnection) error {
 
 			playlistID := "UU" + ch.ID[2:]
 			ytURL := fmt.Sprintf(
-				"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=%s&maxResults=5&key=%s",
+				"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=%s&maxResults=50&key=%s",
 				playlistID, apiKey,
 			)
 			chURL := fmt.Sprintf(
@@ -136,6 +137,7 @@ func FetchYouTube(ctx context.Context, conn *db.PostgresConnection) error {
 					thumbnail = s.Thumbnails.Medium.URL
 				}
 
+				publishedAt, _ := time.Parse(time.RFC3339, s.PublishedAt)
 				videos = append(videos, coredata.VideoDB{
 					ExternalID:    s.ResourceID.VideoID,
 					Title:         s.Title,
@@ -143,6 +145,7 @@ func FetchYouTube(ctx context.Context, conn *db.PostgresConnection) error {
 					ChannelTitle:  ch.Name,
 					ChannelAvatar: avatar,
 					Thumbnail:     thumbnail,
+					PublishedAt:   publishedAt,
 				})
 			}
 
