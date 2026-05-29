@@ -6,11 +6,20 @@ import { VideoItem } from "@/components/VideoItem";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef, useLayoutEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
+import { Seo } from "./Seo.tsx";
+import { useMediaQuery } from "@/hooks/useMediaQuery.ts";
+import clsx from "clsx";
 
-function ClusterSkeleton() {
+export function ClusterSkeleton() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
-    <div className="flex flex-col gap-4 p-5">
+    <div
+      className={clsx(
+        "flex flex-col gap-4 p-5",
+        isMobile && "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem]",
+      )}
+    >
       <Skeleton className="h-5 w-2/3 bg-muted" />
       <Skeleton className="h-3 w-1/3 bg-muted" />
       <Skeleton className="h-20 w-full bg-muted" />
@@ -106,7 +115,10 @@ export function ClusterArticles({
       {data.items.map((item) =>
         item.type === "article" ? (
           <>
-            <title>{data.label}</title>
+            <Seo
+              title={`Cluster | ${data.label}`}
+              url={`https://veille.safecoffi.app/cluster/${data.id}`}
+            />
             <ArticleItem
               key={item.data.id}
               article={item.data}

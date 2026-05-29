@@ -105,7 +105,8 @@ CREATE TABLE feed_items (
     type feed_item_type NOT NULL,
     ref_id UUID NOT NULL,
     published_at TIMESTAMPTZ NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(type, ref_id)
 );
 
 CREATE TABLE clusters (

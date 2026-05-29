@@ -10,6 +10,8 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
   const [isInsideCarousel, setInsideCarousel] = useState(false);
   const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8081";
 
+  console.log(item);
+
   useEffect(() => {
     const node = articleRef.current;
     if (!node) return;
@@ -28,7 +30,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
       )}
     >
       <a
-        href={`https://www.youtube.com/watch?v=${item.id}`}
+        href={`https://www.youtube.com/watch?v=${item.externalId}`}
         target="_blank"
         rel="noreferrer"
         className="before:absolute before:content-[''] before:inset-0 before:w-full before:h-full z-10"

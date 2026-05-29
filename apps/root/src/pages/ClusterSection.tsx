@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ClusterArticles } from "@/components/ClusterArticles";
 
