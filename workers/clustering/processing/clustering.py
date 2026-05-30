@@ -33,7 +33,8 @@ class Clusterer:
             min_cluster_size=min_cluster_size,
             min_samples=2,
             metric="euclidean",
-            cluster_selection_method="eom",
+            cluster_selection_method="leaf",
+            cluster_selection_epsilon=0.3,
         )
 
     def cluster(self, embeddings: EmbeddingResult) -> Result[ClusterResult]:
