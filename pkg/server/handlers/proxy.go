@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -18,7 +19,10 @@ func ProxyFavicon() gin.HandlerFunc {
 			return
 		}
 
-		url := "https://icons.duckduckgo.com/ip3/" + domain + ".ico"
+		url := fmt.Sprintf(
+			"https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://%s&size=128",
+			domain,
+		)
 		req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodGet, url, nil)
 		if err != nil {
 			c.Status(http.StatusInternalServerError)
