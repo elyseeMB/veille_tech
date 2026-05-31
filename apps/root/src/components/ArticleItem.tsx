@@ -148,7 +148,6 @@ export function ArticleItem({
 
   const isCategoryDefault = !!BADGES_MAPPING[item.category];
 
-
   return (
     <>
       <article
@@ -240,9 +239,11 @@ export function ArticleItem({
           {item.keywords && (
             <div className="flex -mx-2 flex-wrap gap-1.5">
               {item.keywords.map((keyword) => (
-                <Badge variant="secondary" className="border border-border">
-                  {keyword}
-                </Badge>
+                <span className="max-w-[370px] truncate">
+                  <Badge variant="secondary" className="border border-border">
+                    {keyword}
+                  </Badge>
+                </span>
               ))}
             </div>
           )}
