@@ -238,7 +238,7 @@ export function ArticleItem({
             <div className="flex -mx-2 flex-wrap gap-1.5">
               {item.keywords.map((keyword) => (
                 <Badge variant="secondary" className="border border-border">
-                  <span className="max-w-[360px] truncate">{keyword}</span>
+                  <span className="max-w-[340px] truncate">{keyword}</span>
                 </Badge>
               ))}
             </div>
