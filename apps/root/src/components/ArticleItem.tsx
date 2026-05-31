@@ -237,13 +237,11 @@ export function ArticleItem({
             )}
 
           {item.keywords && (
-            <div className="flex -mx-2 flex-wrap gap-1.5">
+            <div className="flex -mx-2 flex-wrap gap-1.5 max-w-90 truncate">
               {item.keywords.map((keyword) => (
-                <span className="max-w-[370px]! truncate">
-                  <Badge variant="secondary" className="border border-border">
-                    {keyword}
-                  </Badge>
-                </span>
+                <Badge variant="secondary" className="border border-border">
+                  {keyword}
+                </Badge>
               ))}
             </div>
           )}
