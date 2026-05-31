@@ -195,31 +195,29 @@ export function ArticleItem({
                 {item.source}
               </span>
               <span>·</span>
-              <span className="text-xs max-w-60 truncate text-muted-foreground/60 capitalize">
-                <Badge
-                  className={
-                    isCategoryDefault
-                      ? BADGES_MAPPING[item.category].className
-                      : "bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/50 border-1"
-                  }
-                >
-                  {isCategoryDefault ? (
-                    <span className="max-w-[200px] truncate">
-                      {BADGES_MAPPING[item.category].name}
+              <Badge
+                className={
+                  isCategoryDefault
+                    ? BADGES_MAPPING[item.category].className
+                    : "bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/50 border-1"
+                }
+              >
+                {isCategoryDefault ? (
+                  <span className="max-w-[200px] truncate">
+                    {BADGES_MAPPING[item.category].name}
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1">
+                    <Astroid
+                      className="fill-emerald-300 stroke-emerald-300"
+                      size={10}
+                    />
+                    <span className=" max-w-[180px] truncate">
+                      {item.category}
                     </span>
-                  ) : (
-                    <span className="flex items-center gap-1">
-                      <Astroid
-                        className="fill-emerald-300 stroke-emerald-300"
-                        size={10}
-                      />
-                      <span className=" max-w-[180px] truncate">
-                        {item.category}
-                      </span>
-                    </span>
-                  )}
-                </Badge>
-              </span>
+                  </span>
+                )}
+              </Badge>
             </div>
           </div>
           <div className="flex items-center gap-3 font-mono text-sm uppercase tracking-normal text-muted-foreground">
@@ -237,10 +235,10 @@ export function ArticleItem({
             )}
 
           {item.keywords && (
-            <div className="flex -mx-2 flex-wrap gap-1.5 max-w-90 truncate">
+            <div className="flex -mx-2 flex-wrap gap-1.5">
               {item.keywords.map((keyword) => (
                 <Badge variant="secondary" className="border border-border">
-                  {keyword}
+                  <span className="max-w-[360px] truncate">{keyword}</span>
                 </Badge>
               ))}
             </div>
