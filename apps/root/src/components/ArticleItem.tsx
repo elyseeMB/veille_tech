@@ -188,8 +188,8 @@ export function ArticleItem({
                 variant="default"
                 className="-mx-2 flex item-center gap-1 bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/50 border-1"
               >
-                <span>Seen</span>
                 <Eye />
+                <span>Seen</span>
               </Badge>
             )}
 
