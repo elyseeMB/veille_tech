@@ -183,13 +183,13 @@ export function ArticleItem({
 
         <div className="space-y-3 w-full">
           <div className="flex flex-col items-start gap-1">
-            {!readIds.has(item.id) && (
+            {readIds.has(item.id) && (
               <Badge
                 variant="default"
                 className="-mx-2 flex item-center gap-1 bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/50 border-1"
               >
                 <span>Seen</span>
-                <Eye className="" />
+                <Eye />
               </Badge>
             )}
 
