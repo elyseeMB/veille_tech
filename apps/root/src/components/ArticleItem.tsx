@@ -172,7 +172,7 @@ export function ArticleItem({
           isDesktop &&
             "group relative grid grid-cols-[1px_1fr] gap-5 w-full mx-0 py-5 pl-0 pr-5",
           isSelected ? "bg-foreground/10" : "hover:bg-foreground/5",
-          readIds.has(item.id) && "bg-emerald-400/10",
+          readIds.has(item.id) && "bg-foreground/5",
         )}
       >
         {isDesktop && (
