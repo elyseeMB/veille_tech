@@ -1,11 +1,13 @@
-import type { Article } from "@/types";
-import { Astroid, Divide, Link } from "lucide-react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { db } from "@/lib/db";
 import { useSummaryStore } from "@/store/summaryStore.ts";
+import type { Article } from "@/types";
+import clsx from "clsx";
+import { useLiveQuery } from "dexie-react-hooks";
+import { Astroid, Check, Link } from "lucide-react";
 import { useRef, type MouseEventHandler } from "react";
 import { useBanner } from "./BannerContext.tsx";
 import { TimeRelative } from "./TimeRelative.tsx";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
-import clsx from "clsx";
 import { Badge } from "./ui/badge.tsx";
 import { Button } from "./ui/button.tsx";
 
@@ -148,6 +150,15 @@ export function ArticleItem({
 
   const isCategoryDefault = !!BADGES_MAPPING[item.category];
 
+  const readIds = useLiveQuery(
+    () =>
+      db.clicks
+        .toArray()
+        .then((clicks) => new Set(clicks.map((c) => c.articleId))),
+    [],
+    new Set<string>(),
+  );
+
   return (
     <>
       <article
@@ -170,6 +181,13 @@ export function ArticleItem({
 
         <div className="space-y-3 w-full">
           <div className="flex flex-col items-start gap-1">
+            {readIds.has(item.id) && (
+              <Badge variant="default" className="-mx-2 flex item-center gap-2">
+                <span> Marked as read </span>
+                <Check size={16} className="text-green-500 stroke-5" />
+              </Badge>
+            )}
+
             <div className="w-full flex items-center justify-between">
               <TimeRelative date={item.pubDate} />
               <a
