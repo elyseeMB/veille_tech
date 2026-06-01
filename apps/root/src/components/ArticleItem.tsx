@@ -4,7 +4,7 @@ import { useSummaryStore } from "@/store/summaryStore.ts";
 import type { Article } from "@/types";
 import clsx from "clsx";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Astroid, Check, Link } from "lucide-react";
+import { Astroid, Eye, Link } from "lucide-react";
 import { useRef, type MouseEventHandler } from "react";
 import { useBanner } from "./BannerContext.tsx";
 import { TimeRelative } from "./TimeRelative.tsx";
@@ -153,8 +153,9 @@ export function ArticleItem({
   const readIds = useLiveQuery(
     () =>
       db.clicks
-        .toArray()
-        .then((clicks) => new Set(clicks.map((c) => c.articleId))),
+        .orderBy("articleId")
+        .uniqueKeys()
+        .then((keys) => new Set(keys)),
     [],
     new Set<string>(),
   );
@@ -171,6 +172,7 @@ export function ArticleItem({
           isDesktop &&
             "group relative grid grid-cols-[1px_1fr] gap-5 w-full mx-0 py-5 pl-0 pr-5",
           isSelected ? "bg-foreground/10" : "hover:bg-foreground/5",
+          !readIds.has(item.id) && "bg-emerald-400/10",
         )}
       >
         {isDesktop && (
@@ -181,10 +183,13 @@ export function ArticleItem({
 
         <div className="space-y-3 w-full">
           <div className="flex flex-col items-start gap-1">
-            {readIds.has(item.id) && (
-              <Badge variant="default" className="-mx-2 flex item-center gap-2">
-                <span> Marked as read </span>
-                <Check size={16} className="text-green-500 stroke-5" />
+            {!readIds.has(item.id) && (
+              <Badge
+                variant="default"
+                className="-mx-2 flex item-center gap-1 bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/50 border-1"
+              >
+                <span>Seen</span>
+                <Eye className="" />
               </Badge>
             )}
 
