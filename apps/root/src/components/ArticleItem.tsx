@@ -24,7 +24,22 @@ const SOURCE_COLORS: Record<string, string> = {
 };
 
 const BADGES_MAPPING = {
-  top: {
+  "HN Top 100": {
+    name: "Top",
+    className:
+      "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1",
+  },
+  "lobsters daily": {
+    name: "Top",
+    className:
+      "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1",
+  },
+  "lobsters weekly": {
+    name: "Top",
+    className:
+      "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1",
+  },
+  "lobsters monthly": {
     name: "Top",
     className:
       "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1",
