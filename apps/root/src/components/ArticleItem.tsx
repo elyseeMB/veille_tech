@@ -171,8 +171,7 @@ export function ArticleItem({
           isMobile && "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem]",
           isDesktop &&
             "group relative grid grid-cols-[1px_1fr] gap-5 w-full mx-0 py-5 pl-0 pr-5",
-          isSelected ? "bg-foreground/10" : "hover:bg-foreground/5",
-          readIds.has(item.id) && "bg-foreground/5",
+          isSelected ? "bg-foreground/10" : "hover:bg-foreground/5"
         )}
       >
         {isDesktop && (
@@ -186,7 +185,7 @@ export function ArticleItem({
             {readIds.has(item.id) && (
               <Badge
                 variant="default"
-                className="-mx-2 flex item-center gap-1 bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/50 border-1"
+                className="-mx-2 flex item-center gap-1"
               >
                 <Eye />
                 <span>Seen</span>
