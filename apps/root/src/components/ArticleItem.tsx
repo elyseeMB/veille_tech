@@ -186,7 +186,7 @@ export function ArticleItem({
           isMobile && "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem]",
           isDesktop &&
             "group relative grid grid-cols-[1px_1fr] gap-5 w-full mx-0 py-5 pl-0 pr-5",
-          isSelected ? "bg-foreground/10" : "hover:bg-foreground/5",
+          isSelected ? "bg-foreground/10" : "hover:bg-foreground/5"
         )}
       >
         {isDesktop && (
