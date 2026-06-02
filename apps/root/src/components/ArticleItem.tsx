@@ -25,27 +25,27 @@ const SOURCE_COLORS: Record<string, string> = {
 
 const BADGES_MAPPING = {
   "HN Top 100": {
-    name: "Top",
+    name: "HN Top 100",
     className:
       "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1",
   },
   "lobsters daily": {
-    name: "Top",
+    name: "lobsters daily",
     className:
       "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1",
   },
   "lobsters weekly": {
-    name: "Top",
+    name: "lobsters weekly",
     className:
       "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1",
   },
   "lobsters monthly": {
-    name: "Top",
+    name: "lobsters monthly",
     className:
       "bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border-amber-200 dark:border-amber-900/50 border-1",
   },
   show: {
-    name: "Show",
+    name: "HN Show",
     className:
       "bg-fuchsia-50 text-fuchsia-800 dark:bg-fuchsia-950 dark:text-fuchsia-200 border-fuchsia-200 dark:border-fuchsia-900/50 border-1",
   },
@@ -186,7 +186,7 @@ export function ArticleItem({
           isMobile && "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem]",
           isDesktop &&
             "group relative grid grid-cols-[1px_1fr] gap-5 w-full mx-0 py-5 pl-0 pr-5",
-          isSelected ? "bg-foreground/10" : "hover:bg-foreground/5"
+          isSelected ? "bg-foreground/10" : "hover:bg-foreground/5",
         )}
       >
         {isDesktop && (
