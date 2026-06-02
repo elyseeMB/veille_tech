@@ -35,7 +35,7 @@ type YouTubeChannelConfig struct {
 
 var RSSFeeds = []RSSFeedConfig{
 	{Name: "Hacker News", Categories: []CategoryConfig{
-		{URL: "https://hnrss.org/newest?points=100", Category: "top"},
+		{URL: "https://hnrss.org/newest?points=100", Category: "HN Top 100"},
 		{URL: "https://hnrss.org/show?points=100", Category: "show"},
 	}},
 	{Name: "Ars Technica", Categories: []CategoryConfig{
@@ -49,9 +49,9 @@ var RSSFeeds = []RSSFeedConfig{
 		{URL: "https://www.technologyreview.com/topic/climate/feed", Category: "climate"},
 	}},
 	{Name: "Lobsters", Categories: []CategoryConfig{
-		{URL: "https://lobste.rs/top/1d.rss", Category: "top"},
-		{URL: "https://lobste.rs/top/1w.rss", Category: "top"},
-		{URL: "https://lobste.rs/top/1m.rss", Category: "top"},
+		{URL: "https://lobste.rs/top/1d.rss", Category: "lobsters daily"},
+		{URL: "https://lobste.rs/top/1w.rss", Category: "lobsters weekly"},
+		{URL: "https://lobste.rs/top/1m.rss", Category: "lobsters monthly"},
 	}},
 	{Name: "Y Combinator Blog", Categories: []CategoryConfig{
 		{URL: "https://www.ycombinator.com/blog/rss.xml", Category: "startup"},

@@ -172,7 +172,6 @@ export function ArticleItem({
           isDesktop &&
             "group relative grid grid-cols-[1px_1fr] gap-5 w-full mx-0 py-5 pl-0 pr-5",
           isSelected ? "bg-foreground/10" : "hover:bg-foreground/5",
-          readIds.has(item.id) && "bg-foreground/5",
         )}
       >
         {isDesktop && (
@@ -184,10 +183,7 @@ export function ArticleItem({
         <div className="space-y-3 w-full">
           <div className="flex flex-col items-start gap-1">
             {readIds.has(item.id) && (
-              <Badge
-                variant="default"
-                className="-mx-2 flex item-center gap-1 bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/50 border-1"
-              >
+              <Badge variant="default" className="-mx-2 flex item-center gap-1">
                 <Eye />
                 <span>Seen</span>
               </Badge>
