@@ -200,7 +200,7 @@ export function ArticleItem({
             {readIds.has(item.id) && (
               <Badge variant="default" className="-mx-2 flex item-center gap-1">
                 <Eye />
-                <span>Seen</span>
+                <span>seen</span>
               </Badge>
             )}
 
