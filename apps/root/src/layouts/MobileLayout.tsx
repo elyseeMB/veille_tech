@@ -16,8 +16,8 @@ const tabs = [
     icon: <Rss className="size-4 shrink-0" />,
   },
   {
-    name: "Clusters",
-    value: "clusters",
+    name: "Topics",
+    value: "topics",
     icon: <Merge className="size-4 shrink-0" />,
   },
   {
