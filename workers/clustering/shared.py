@@ -24,6 +24,7 @@ class EmbeddingResult(BaseModel):
 
 class ClusterResult(BaseModel):
     labels: List[int]
+    cohesion_scores: dict[int, float] = {}
 
 
 class NamingResult(BaseModel):

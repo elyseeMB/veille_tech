@@ -336,6 +336,12 @@ def handler(event, context):
         cluster_rows = []
 
         for label, members in groups.items():
+
+            score = clusters.value.cohesion_scores.get(label, 0)
+            log.info(
+                f"cluster {label} | cohesion={score:.3f} | {len(members)} articles | ex: {members[0]['title'][:50]}"
+            )
+
             naming = container.namer.generate(
                 NamingInput(
                     titles=[m["title"] for m in members[:10]],

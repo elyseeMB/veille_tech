@@ -61,7 +61,19 @@ class Clusterer:
             n_noise = list(labels).count(-1)
             print(f"result: {n_clusters} clusters, {n_noise} noise articles")
 
-            return Result.ok(ClusterResult(labels=labels.tolist()))
+            labels_list = labels.tolist()
+
+            scores = {}
+            for label in set(labels_list):
+                if label == -1:
+                    continue
+                mask = np.array(labels_list) == label
+                cluster_vectors = vectors[mask]
+                centroid = cluster_vectors.mean(axis=0)
+                distances = np.linalg.norm(cluster_vectors - centroid, axis=1)
+                scores[label] = float(distances.mean())
+
+            return Result.ok(ClusterResult(labels=labels_list, cohesion_scores=scores))
 
         except Exception as e:
             return Result.fail(f"clustering error: {e}")

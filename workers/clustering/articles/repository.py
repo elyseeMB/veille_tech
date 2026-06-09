@@ -32,33 +32,33 @@ class MockRepository(BaseRepository):
             [
                 ArticleRow(
                     id="1",
-                    title="OpenAI lance GPT-5",
-                    url="https://openai.com/fr-FR/index/introducing-gpt-5/",
+                    title="Can’t make sense of Dashlane’s vault theft notification? You’re not alone.",
+                    url="https://arstechnica.com/security/2026/06/dashlane-issues-opaque-advisory-warning-20-encrypted-vaults-were-stolen/",
                 ),
                 ArticleRow(
                     id="2",
-                    title="Mistral AI lance Mistral 3",
-                    url="https://www.blogdumoderateur.com/mistral-3/",
+                    title="The Bloat",
+                    url="https://milkandcigarettes.com/notes/devlog/the-bloat",
                 ),
                 ArticleRow(
                     id="3",
-                    title="Node.js 26.2.0 : bug fix et quelques nouveautés",
-                    url="https://www.programmez.com/actualites/nodejs-2620-bug-fix-et-quelques-nouveautes-39475",
+                    title="Safe Made Easy Pt.1: Single Ownership is (Not) Optional",
+                    url="https://ergeysay.github.io/safe-made-easy-pt1.html",
                 ),
                 ArticleRow(
                     id="4",
-                    title="Search agentique, Gemini 3.5 Flash, Spark : ce que Google I/O 2026 change pour les pros du digital",
-                    url="https://www.leptidigital.fr/intelligence-artificielle-ia/recap-google-io-2026-pros-90178/",
+                    title="Randomness Testing Guide",
+                    url="https://random.tastemaker.design/",
                 ),
                 ArticleRow(
                     id="5",
-                    title="I/O 2026: Welcome to the agentic Gemini era",
-                    url="https://blog.google/innovation-and-ai/sundar-pichai-io-2026/",
+                    title="The lone lisp heap",
+                    url="https://www.matheusmoreira.com/articles/lone-lisp-heap",
                 ),
                 ArticleRow(
                     id="6",
-                    title="NVIDIA Announces Financial Results for First Quarter Fiscal 2027",
-                    url="https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2027",
+                    title="Codex Discovered a Hidden HTTP/2 Bomb",
+                    url="https://blog.calif.io/p/codex-discovered-a-hidden-http2-bomb",
                 ),
                 ArticleRow(
                     id="7",
