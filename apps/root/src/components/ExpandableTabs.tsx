@@ -26,7 +26,7 @@ export default function ExpandableTabs({ tabs }: { tabs: TabsListNode }) {
       : location.pathname === "/feed"
         ? "feed"
         : location.pathname.startsWith("/clusters")
-          ? "clusters"
+          ? "topics"
           : "feed";
 
   useLayoutEffect(() => {
