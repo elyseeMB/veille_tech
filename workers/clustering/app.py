@@ -352,12 +352,22 @@ def handler(event, context):
 
             log.info(f"cluster named: '{naming.value.label}'")
 
+            outliers = set(naming.value.outlier_titles)
+            if outliers:
+                log.info(
+                    f"cluster {label}: {len(outliers)} outliers removed — {outliers}"
+                )
+
+            final_members = [m for m in members if m["title"] not in outliers]
+
             cluster_rows.append(
                 ClusterRow(
                     label=naming.value.label,
                     description=naming.value.description,
-                    article_ids=[m["id"] for m in members if m["type"] == "article"],
-                    video_ids=[m["id"] for m in members if m["type"] == "video"],
+                    article_ids=[
+                        m["id"] for m in final_members if m["type"] == "article"
+                    ],
+                    video_ids=[m["id"] for m in final_members if m["type"] == "video"],
                 )
             )
 

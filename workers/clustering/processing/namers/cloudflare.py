@@ -88,12 +88,18 @@ class CloudflareNamer(BaseNamer):
             - describes what is happening, not just what the domain is
             - no marketing tone
 
+            OUTLIER DETECTION:
+            - If one or more articles clearly do NOT belong to the main topic, list their EXACT titles in "outliers"
+            - Most clusters have NO outliers — only flag genuinely unrelated articles
+            - Do not flag articles that are loosely related but still on-topic
+
             OUTPUT FORMAT:
             Respond ONLY with valid JSON. No markdown, no explanation.
 
             {{
             "label": "specific subject label",
-            "description": "One sentence describing what is happening in this topic."
+            "description": "One sentence describing what is happening in this topic.",
+            "outliers": ["exact title 1", "exact title 2"]
             }}
             """
 
@@ -133,9 +139,14 @@ class CloudflareNamer(BaseNamer):
 
             raw_desc = result_json.get("description", "")
             label = self._clean_label(result_json.get("label", "Unnamed Cluster"))
+            outliers = result_json.get("outliers", [])
+            if not isinstance(outliers, list):
+                outliers = []
 
             log.info(f"cluster named: '{label}'")
             log.debug(f"description: {raw_desc}")
+            if outliers:
+                log.info(f"outliers detected: {outliers}")
 
             return Result.ok(
                 NamingResult(
@@ -143,6 +154,7 @@ class CloudflareNamer(BaseNamer):
                     description=(
                         raw_desc if isinstance(raw_desc, str) else str(raw_desc)
                     ),
+                    outlier_titles=outliers,
                 )
             )
         except Exception as e:
