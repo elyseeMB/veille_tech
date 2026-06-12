@@ -30,6 +30,7 @@ class ClusterResult(BaseModel):
 class NamingResult(BaseModel):
     label: str
     description: Optional[str] = None
+    outlier_titles: List[str] = []
 
 
 class NamingResultGemini(NamingResult):
