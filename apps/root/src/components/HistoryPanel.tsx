@@ -46,8 +46,8 @@ export function HistoryPanel() {
     return (
       <aside
         className={clsx(
-          "h-[calc(100vh_-_8rem)] p-4 space-y-3",
-          !isMobile && "border-b",
+          "h-[calc(100vh_-_8rem)] space-y-3",
+          !isMobile && "border-b p-4",
         )}
       >
         <Skeleton className="h-8 w-24 rounded-md" />
