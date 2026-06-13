@@ -20,7 +20,7 @@ export function ClusterSkeleton() {
         isMobile && "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem]",
       )}
     >
-      <Skeleton className="h-5 w-2/3 bg-muted" />
+      <Skeleton className="h-5   w-2/3 bg-muted" />
       <Skeleton className="h-3 w-1/3 bg-muted" />
       <Skeleton className="h-20 w-full bg-muted" />
       {Array.from({ length: 3 }).map((_, i) => (
