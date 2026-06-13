@@ -6,6 +6,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 import path from "path";
 
 export default defineConfig({
+  base: "/",
   server: {
     allowedHosts: ["proud-owls-change.loca.lt"],
     hmr: { overlay: false },
@@ -23,6 +24,9 @@ export default defineConfig({
       filename: "sw.ts",
       registerType: "autoUpdate",
       injectRegister: "inline",
+      workbox: {
+        cleanupOutdatedCaches: true,
+      },
       devOptions: {
         enabled: true,
         type: "module",
