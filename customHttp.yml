@@ -41,3 +41,7 @@ applications:
             value: "nosniff"
           - key: "Strict-Transport-Security"
             value: "max-age=31536000; includeSubDomains"
+      - pattern: "/sw.mjs"
+        headers:
+          - key: "Cache-Control"
+            value: "no-cache, no-store, must-revalidate"
