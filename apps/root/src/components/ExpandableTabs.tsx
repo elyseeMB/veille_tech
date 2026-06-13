@@ -1,6 +1,6 @@
 import { useState, useRef, useLayoutEffect, type JSX } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
-import { motion, AnimatePresence } from "motion/react";
+import { AnimatePresence, m, LazyMotion } from "motion/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type TabsListNode = Array<{
@@ -69,9 +69,15 @@ export default function ExpandableTabs({ tabs }: { tabs: TabsListNode }) {
         }}
         className="gap-4"
       >
-        <TabsList
-          ref={listRef}
-          className="
+        <LazyMotion
+          features={() =>
+            import("motion/react").then((mod) => mod.domAnimation)
+          }
+          strict
+        >
+          <TabsList
+            ref={listRef}
+            className="
           rounded-none
           flex
           justify-between
@@ -94,41 +100,42 @@ export default function ExpandableTabs({ tabs }: { tabs: TabsListNode }) {
           before:from-background
           before:to-transparent
           "
-        >
-          {tabs.map(({ icon, name, value }) => {
-            const isActive = activeTab === value;
+          >
+            {tabs.map(({ icon, name, value }) => {
+              const isActive = activeTab === value;
 
-            return (
-              <motion.div
-                key={value}
-                className="overflow-hidden shrink-0"
-                initial={false}
-                animate={{ width: isActive ? activeWidth : INACTIVE_W }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              >
-                <TabsTrigger
-                  value={value}
-                  className="flex h-12 w-full items-center justify-center gap-1.5 px-2 data-[state=active]:shadow-none border border-input"
+              return (
+                <m.div
+                  key={value}
+                  className="overflow-hidden shrink-0"
+                  initial={false}
+                  animate={{ width: isActive ? activeWidth : INACTIVE_W }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 >
-                  {icon}
-                  <AnimatePresence initial={false}>
-                    {isActive && (
-                      <motion.span
-                        className="text-sm font-medium whitespace-nowrap overflow-hidden"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0, width: 0 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
-                      >
-                        {name}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </TabsTrigger>
-              </motion.div>
-            );
-          })}
-        </TabsList>
+                  <TabsTrigger
+                    value={value}
+                    className="flex h-12 w-full items-center justify-center gap-1.5 px-2 data-[state=active]:shadow-none border border-input"
+                  >
+                    {icon}
+                    <AnimatePresence initial={false}>
+                      {isActive && (
+                        <m.span
+                          className="text-sm font-medium whitespace-nowrap overflow-hidden"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0, width: 0 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                        >
+                          {name}
+                        </m.span>
+                      )}
+                    </AnimatePresence>
+                  </TabsTrigger>
+                </m.div>
+              );
+            })}
+          </TabsList>
+        </LazyMotion>
       </Tabs>
     </div>
   );

@@ -1,15 +1,16 @@
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { db } from "@/lib/db";
+import { useReadArticles } from "@/hooks/useReadArticle.ts";
 import { useSummaryStore } from "@/store/summaryStore.ts";
 import type { Article } from "@/types";
 import clsx from "clsx";
-import { useLiveQuery } from "dexie-react-hooks";
 import { Astroid, Eye, Link } from "lucide-react";
 import { useRef, type MouseEventHandler } from "react";
 import { useBanner } from "./BannerContext.tsx";
 import { TimeRelative } from "./TimeRelative.tsx";
 import { Badge } from "./ui/badge.tsx";
 import { Button } from "./ui/button.tsx";
+import { db } from "@/lib/db.ts";
+import { useQueryClient } from "@tanstack/react-query";
 
 const SOURCE_COLORS: Record<string, string> = {
   "Hacker News": "text-orange-400",
@@ -127,6 +128,8 @@ export function ArticleItem({
   const isDesktop = !isDeviceMedium;
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { pushBanner } = useBanner();
+  const readIds = useReadArticles();
+  const queryClient = useQueryClient();
 
   const handleSelect: MouseEventHandler<HTMLElement> = (e) => {
     e.preventDefault();
@@ -165,15 +168,21 @@ export function ArticleItem({
 
   const isCategoryDefault = !!BADGES_MAPPING[item.category];
 
-  const readIds = useLiveQuery(
-    () =>
-      db.clicks
-        .orderBy("articleId")
-        .uniqueKeys()
-        .then((keys) => new Set(keys)),
-    [],
-    new Set<string>(),
-  );
+  const handleArticleClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    await db.addClick({
+      articleId: item.id,
+      title: item.title,
+      url: item.link,
+      source: item.source,
+      sourceBaseUrl: new URL(item.link).hostname,
+      clickedAt: new Date().toISOString(),
+    });
+
+    queryClient.invalidateQueries({ queryKey: ["readArticles"] });
+    queryClient.invalidateQueries({ queryKey: ["history"] });
+  };
 
   return (
     <>
@@ -210,7 +219,7 @@ export function ArticleItem({
                 href={`/r/${item.id}?title=${encodeURIComponent(item.title)}&url=${encodeURIComponent(item.link)}&source=${encodeURIComponent(item.source)}&sourceBaseUrl=${encodeURIComponent(new URL(item.link).hostname)}`}
                 target="_blank"
                 rel="noreferrer"
-                onClick={(e) => e.stopPropagation()}
+                onClick={handleArticleClick}
               >
                 <Button
                   size="xs"

@@ -15,9 +15,5 @@
   "packageManager": "pnpm@10.28.2",
   "devDependencies": {
     "turbo": "^2.9.5"
-  },
-  "dependencies": {
-    "dexie": "^4.4.2",
-    "dexie-react-hooks": "^4.4.0"
   }
 }

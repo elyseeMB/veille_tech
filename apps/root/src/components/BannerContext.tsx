@@ -8,7 +8,7 @@ import {
   useLayoutEffect,
 } from "react";
 import { useNavigate } from "react-router";
-import { motion, AnimatePresence } from "motion/react";
+import { m, AnimatePresence, LazyMotion } from "motion/react";
 import { Button } from "./ui/button.tsx";
 import { ArrowRight, Target, X } from "lucide-react";
 import { useSummaryStore } from "@/store/summaryStore.ts";
@@ -102,18 +102,24 @@ export function Banner() {
               size={12}
               className="shrink-0 text-muted-foreground/50"
             />
-            <AnimatePresence mode="popLayout">
-              <motion.p
-                key={banner.title}
-                className="text-sm font-medium truncate text-foreground"
-                initial={{ opacity: 0, x: -6 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 6 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-              >
-                {banner.title}
-              </motion.p>
-            </AnimatePresence>
+            <LazyMotion
+              features={() =>
+                import("motion/react").then((r) => r.domAnimation)
+              }
+            >
+              <AnimatePresence mode="wait">
+                <m.p
+                  key={banner.title}
+                  className="text-sm font-medium truncate text-foreground"
+                  initial={{ opacity: 0, x: -6 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 6 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
+                  {banner.title}
+                </m.p>
+              </AnimatePresence>
+            </LazyMotion>
           </div>
         </div>
       ) : (

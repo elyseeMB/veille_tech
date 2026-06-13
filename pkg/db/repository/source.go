@@ -87,6 +87,7 @@ var YouTubeChannels = []YouTubeChannelConfig{
 	{ID: "UCUyeluBRhGPCW4rPe_UvBZQ", Name: "The PrimeTime"},
 	{ID: "UCbRP3c757lWg9M-U7TyEkXA", Name: "Theo - t3․gg"},
 	{ID: "UCFbNIlppjAuEX4znoulh0Cw", Name: "Web Dev Simplified"},
+	{ID: "UCR-DXc1voovS8nhAvccRZhg", Name: "Jeff Geerling"},
 }
 
 func SeedSources(conn *db.PostgresConnection) error {

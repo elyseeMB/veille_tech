@@ -85,7 +85,7 @@ function SkeletonCard({ isMobile }: { isMobile: boolean }) {
 
 export default function ClustersPanel() {
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const { data: clusters, isLoading, error, refetch } = useQuery(clustersQuery);
+  const { data: clusters, error, refetch } = useQuery(clustersQuery);
   const navigate = useNavigate();
   const location = useLocation();
   const clusterMatch = matchPath("/clusters/:id", location.pathname);
@@ -134,11 +134,7 @@ export default function ClustersPanel() {
           "border-l border-r border-border overflow-y-auto scrollbar-hide h-[calc(100vh-var(--header-height)-var(--banner-height,0px))]",
       )}
     >
-      {isLoading ? (
-        Array.from({ length: 5 }).map((_, i) => (
-          <SkeletonCard key={i} isMobile={isMobile} />
-        ))
-      ) : error ? (
+      {error ? (
         <div className="p-2 flex items-center justify-center">
           <Button
             className="cursor-pointer"

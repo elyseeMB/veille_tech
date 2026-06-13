@@ -6,14 +6,15 @@ export function useHistory() {
 
   const { data: clicks = [], isLoading } = useQuery({
     queryKey: ["history"],
-    queryFn: () => db.clicks.orderBy("clickedAt").reverse().limit(50).toArray(),
+    queryFn: () => db.getRecentClicks(50),
     staleTime: 0,
     refetchOnWindowFocus: true,
   });
 
   const clearHistory = async () => {
-    await db.clicks.clear();
+    await db.clearClicks();
     queryClient.invalidateQueries({ queryKey: ["history"] });
+    queryClient.invalidateQueries({ queryKey: ["readArticles"] });
   };
 
   return { clicks, clearHistory, isLoading };

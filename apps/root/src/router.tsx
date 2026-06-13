@@ -9,6 +9,8 @@ import {
 } from "react-router";
 import { PageError } from "./components/PageError.tsx";
 import { ErrorBoundary } from "./components/ErrorBoundary.tsx";
+import { queryClient } from "./queryClient.ts";
+import { clustersQuery } from "./queries.ts";
 
 type AppRoute = {
   Component?: FC<any> | LazyExoticComponent<FC<any>>;
@@ -22,6 +24,10 @@ const routes: AppRoute[] = [
     path: "/",
     Component: RootLayout,
     ErrorBoundary: ErrorBoundary,
+    loader: async () => {
+      await queryClient.ensureQueryData(clustersQuery);
+      return null;
+    },
     children: [
       { index: true, loader: () => redirect("/feed") },
       {
