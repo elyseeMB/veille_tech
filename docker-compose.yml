@@ -36,6 +36,7 @@ services:
       until mc alias set local http://minio:9000 minioadmin minioadmin; do sleep 1; done;
       mc mb local/veille-scatter --ignore-existing;
       mc anonymous set download local/veille-scatter;
+      mc mb local/veille-tech-audio --ignore-existing;
       echo 'MinIO bucket veille-scatter ready';
       "
 
@@ -44,3 +45,5 @@ volumes:
     external: true
     name: veille_tech_go_postgres-data-veille-tech
   minio-data-veille-tech:
+    external: true
+    name: veille_tech_minio-data-veille-tech

@@ -1,0 +1,7 @@
+{
+  "Records": [
+    {
+      "body": "{\"detail\": {\"run_date\": \"2026-06-13\", \"clusters\": [{\"label\": \"openai gpt-5 release\", \"description\": \"OpenAI released GPT-5 with major reasoning improvements.\", \"articles\": [{\"title\": \"OpenAI launches GPT-5\", \"main_topic\": \"AI Models\", \"keywords\": [\"OpenAI\", \"GPT-5\"], \"chunks\": [\"GPT-5 shows significant improvements over previous versions\", \"The model outperforms competitors on reasoning benchmarks\"]}]}]}}"
+    }
+  ]
+}

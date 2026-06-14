@@ -154,9 +154,15 @@ Resources:
           CF_API_TOKEN: "/veille/cf_api_token"
           CF_API_TOKEN_GATEWAY: "/veille/cf_api_token_gateway"
           GEMINI_API_KEY: "/veille/gemini_api_key"
+          EVENT_BUS_NAME: "default"
       Policies:
         - SSMParameterReadPolicy:
             ParameterName: "veille/*"
+        - Statement:
+            - Effect: Allow
+              Action:
+                - events:PutEvents
+              Resource: "*"
       Events:
         MorningSchedule:
           Type: Schedule
@@ -170,3 +176,116 @@ Resources:
             Schedule: cron(0 18 ? * * *)
             Name: clustering-evening
             Enabled: true
+
+  # ── Audio bulletin pipeline ─────────────────────────────────────
+
+  AudioDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: veille-audio-dlq
+      MessageRetentionPeriod: 1209600
+
+  AudioQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: veille-audio-queue
+      VisibilityTimeout: 120
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt AudioDLQ.Arn
+        maxReceiveCount: 3
+
+  AudioQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref AudioQueue
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt AudioQueue.Arn
+
+  ClustersReadyRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: veille-clusters-ready
+      EventPattern:
+        source:
+          - "veille.clustering"
+        detail-type:
+          - "ClustersReady"
+      Targets:
+        - Id: AudioQueueTarget
+          Arn: !GetAtt AudioQueue.Arn
+
+  # MODIFIÉ — bucket privé, les mp3 sont servis via URLs présignées
+  # (ancien code avait PublicAccessBlock tout à false — mauvaise pratique)
+  AudioBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: veille-tech-audio
+      # pas de PublicAccessBlockConfiguration = tout bloqué par défaut (AWS default)
+
+  AudioFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ../workers/audio_handler
+      DockerTag: latest
+    Properties:
+      FunctionName: veille-audio
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Timeout: 60
+      MemorySize: 256
+      Environment:
+        Variables:
+          AUDIO_BUCKET: !Ref AudioBucket
+          CF_ACCOUNT_ID: "/veille/cf_account_id"
+          CF_GATEWAY_NAME: "default"
+          CF_API_TOKEN_GATEWAY: "/veille/cf_api_token_gateway"
+          GEMINI_API_KEY: "/veille/gemini_api_key"
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: "veille/*"
+        - Statement:
+            - Effect: Allow
+              Action:
+                - polly:SynthesizeSpeech
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                # MODIFIÉ — ajout s3:GetObject pour générer les URLs présignées
+                # depuis la GatewayFunction (Lambda GET)
+                - s3:GetObject
+              Resource: !Sub "arn:aws:s3:::${AudioBucket}/*"
+            - Effect: Allow
+              Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:GetQueueAttributes
+              Resource: !GetAtt AudioQueue.Arn
+      Events:
+        SQSTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt AudioQueue.Arn
+            BatchSize: 1
+
+  # MODIFIÉ — ajout s3:GetObject sur AudioBucket pour que la Gateway
+  # puisse générer des URLs présignées et les renvoyer au frontend
+  # À merger avec les policies existantes de GatewayFunction si besoin
+  GatewayAudioPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource: !Sub "arn:aws:s3:::${AudioBucket}/*"

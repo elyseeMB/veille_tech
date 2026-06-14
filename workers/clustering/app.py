@@ -3,7 +3,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
+import json
 import time
+from datetime import datetime, timezone
 import boto3
 from collections import defaultdict
 from container import Container
@@ -17,6 +19,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 log = get_logger("app")
 container = None
+events_client = boto3.client("events")
 
 
 def load_secrets():
@@ -265,7 +268,6 @@ def handler(event, context):
         log.info(f"saving embeddings...")
         saved_count = 0
         for item in all_items:
-            # Skip si embedding récupéré depuis DB — pas besoin de re-sauvegarder
             if item.get("existing_embedding"):
                 continue
 
@@ -334,9 +336,9 @@ def handler(event, context):
         log.info(f"naming {len(groups)} clusters...")
 
         cluster_rows = []
+        audio_clusters = []
 
         for label, members in groups.items():
-
             score = clusters.value.cohesion_scores.get(label, 0)
             log.info(
                 f"cluster {label} | cohesion={score:.3f} | {len(members)} articles | ex: {members[0]['title'][:50]}"
@@ -366,6 +368,22 @@ def handler(event, context):
 
             final_members = [m for m in members if m["title"] not in outliers]
 
+            audio_clusters.append(
+                {
+                    "label": naming.value.label,
+                    "description": naming.value.description,
+                    "articles": [
+                        {
+                            "title": m["title"],
+                            "main_topic": m["main_topic"],
+                            "keywords": m["keywords"],
+                            "chunks": m["chunks"],
+                        }
+                        for m in final_members[:5]
+                    ],
+                }
+            )
+
             cluster_rows.append(
                 ClusterRow(
                     label=naming.value.label,
@@ -386,6 +404,23 @@ def handler(event, context):
         log.info(
             f"done — {len(cluster_rows)} clusters saved ({len(scraped_articles)} articles + {len(scraped_videos)} videos)"
         )
+
+        events_client.put_events(
+            Entries=[
+                {
+                    "Source": "veille.clustering",
+                    "DetailType": "ClustersReady",
+                    "Detail": json.dumps(
+                        {
+                            "run_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                            "clusters": audio_clusters,
+                        }
+                    ),
+                    "EventBusName": os.environ.get("EVENT_BUS_NAME", "default"),
+                }
+            ]
+        )
+        log.info(f"event sent to EventBridge — {len(audio_clusters)} clusters")
 
     except Exception as e:
         log.error(f"handler error: {e}")
