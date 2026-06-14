@@ -36,13 +36,20 @@ class CloudflareEmbedder:
         ),
     )
     def embed(self, input: EmbeddingInput) -> Result[EmbeddingResult]:
-        response = requests.post(
-            self.__url,
-            headers=self.__headers,
-            json={"text": input.texts},
-            timeout=30,
-        )
-        response.raise_for_status()
+        try:
+            response = requests.post(
+                self.__url,
+                headers=self.__headers,
+                json={"text": input.texts},
+                timeout=30,
+            )
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            log.error(
+                f"Cloudflare HTTP error {response.status_code}: {response.text[:300]}"
+            )
+            raise
+
         try:
             data = response.json()
             log.debug(f"vector dimensions: {len(data['result']['data'][0])}")
