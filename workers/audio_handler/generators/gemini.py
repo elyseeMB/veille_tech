@@ -35,7 +35,7 @@ class GeminiNarrativeGenerator(AbstractNarrativeGenerator):
                     "model": "google-ai-studio/gemini-2.5-flash",
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0.4,
-                    "max_tokens": 1000,
+                    "max_tokens": 2000,
                 },
                 timeout=60,
             )
@@ -66,18 +66,18 @@ class GeminiNarrativeGenerator(AbstractNarrativeGenerator):
 
         return f"""You are a tech journalist writing a daily audio bulletin.
 
-Bulletin date : {run_date}
+                Bulletin date : {run_date}
 
-Here are today's major tech trends with their articles:
-{clusters_block}
+                Here are today's major tech trends with their articles:
+                {clusters_block}
 
-INSTRUCTIONS :
-- Write a smooth, natural audio bulletin meant to be read aloud
-- Start with a general hook about the day
-- Cover each topic in 2-3 narrative sentences (no lists, no dashes)
-- Use natural transitions between topics ("Also...", "On the... front...", "Another notable...")
-- End with a closing sentence
-- Tone : professional yet accessible, like tech radio
-- Length : 200 to 300 words maximum
-- Language : english only
-- NO markdown, NO titles, NO symbols — only plain readable text"""
+                INSTRUCTIONS :
+                - Write a smooth, natural audio bulletin meant to be read aloud
+                - Start with a general hook about the day
+                - Cover each topic in 2-3 narrative sentences (no lists, no dashes)
+                - Use natural transitions between topics ("Also...", "On the... front...", "Another notable...")
+                - End with a closing sentence
+                - Tone : professional yet accessible, like tech radio
+                - Length : 200 to 300 words maximum
+                - Language : english only
+                - NO markdown, NO titles, NO symbols — only plain readable text"""
