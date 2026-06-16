@@ -5,8 +5,8 @@ import Logo from "./Logo.tsx";
 import { Button } from "./ui/button.tsx";
 
 const classNames = {
-  wrapper: "grid place-items-center h-full text-center space-y-2 ",
-  card: "flex flex-col gap-5 p-10 w-1/3 border border-border rounded-xl bg-secondary/50",
+  wrapper: "grid place-items-center h-full text-center p-5",
+  card: "flex flex-col gap-3 w-full p-10 lg:w-1/3 border border-border rounded-xl bg-secondary/50",
   title: "text-2xl flex gap-2 font-semibold items-center justify-center",
   description: "text-base text-txt-tertiary",
   detail:
@@ -40,10 +40,13 @@ export function PageError({ resetErrorBoundary, error: propsError }: Props) {
             <Logo />
           </div>
           <span className="text-4xl font-bold text-amber-200">404</span>
-          <h1 className={classNames.title}>
-            <AlertTriangle className="fill-amber-200 stroke-black" size={26} />
-            Page not found
-          </h1>
+          <div className="flex justify-center items-center gap-2">
+            <AlertTriangle
+              className="fill-amber-200 stroke-primary-foreground"
+              size={24}
+            />
+            <h1 className={classNames.title}>Page not found</h1>
+          </div>
           <p className={classNames.description}>
             The page you are looking for does not exist
           </p>
