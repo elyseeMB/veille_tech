@@ -1,13 +1,16 @@
 import { useLocation, useRouteError } from "react-router";
 import { useEffect, useRef } from "react";
 import { CrossIcon } from "lucide-react";
+import Logo from "./Logo.tsx";
+import { Button } from "./ui/button.tsx";
 
 const classNames = {
-  wrapper: "py-10 text-center space-y-2",
+  wrapper: "grid place-items-center h-full py-10 text-center space-y-2 ",
+  card: "flex flex-col gap-5 p-10 w-1/3 border border-border rounded-xl bg-secondary/50",
   title: "text-2xl flex gap-2 font-semibold items-center justify-center",
   description: "text-base text-txt-tertiary",
   detail:
-    "text-sm text-txt-tertiary font-mono text-start border border-border-low p-2 rounded bg-level-1 mt-2",
+    "text-sm text-txt-tertiary text-destructive font-mono text-start border border-border-low p-2 rounded-lg bg-level-1 mt-2",
 };
 
 type Props = {
@@ -45,15 +48,26 @@ export function PageError({ resetErrorBoundary, error: propsError }: Props) {
 
   return (
     <div className={classNames.wrapper}>
-      <h1 className={classNames.title}>Unexpected error</h1>
-      {import.meta.env.DEV && (
-        <details>
-          <summary className={classNames.description}>
-            Something went wrong
-          </summary>
-          <p className={classNames.detail}>{error.toString()}</p>
-        </details>
-      )}
+      <div className={classNames.card}>
+        <div className="m-auto">
+          <Logo />
+        </div>
+        <h1 className={classNames.title}>Unexpected error</h1>
+        {import.meta.env.DEV ? (
+          <details>
+            <summary className={classNames.description}>
+              Something went wrong
+            </summary>
+            <p className={classNames.detail}>{error.toString()}</p>
+          </details>
+        ) : (
+          <>
+            <Button variant="default" render={<a href="/" />}>
+              Back to home page
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -127,7 +127,10 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground h-screen;
+  }
+  #root {
+    @apply h-screen;
   }
   html {
     @apply font-sans;
