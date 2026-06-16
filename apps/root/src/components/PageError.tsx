@@ -41,7 +41,7 @@ export function PageError({ resetErrorBoundary, error: propsError }: Props) {
           </div>
           <span className="text-4xl font-bold text-amber-200">404</span>
           <h1 className={classNames.title}>
-            <AlertTriangle className="fill-amber-200 stroke-black" size={30} />
+            <AlertTriangle className="fill-amber-200 stroke-black" size={26} />
             Page not found
           </h1>
           <p className={classNames.description}>
