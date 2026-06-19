@@ -44,11 +44,22 @@ export function HistoryPanel() {
 
   if (isLoading) {
     return (
-      <div className="h-[calc(100vh_-_8rem)] border-r p-4 space-y-3">
+      <div
+        className={clsx(
+          "h-[calc(100vh_-_8rem)] space-y-3",
+          !isMobile && "border-b p-4",
+        )}
+      >
         <Skeleton className="h-8 w-24 rounded-md" />
         <div className="space-y-5">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-lg" />
+            <Skeleton
+              key={i}
+              className={clsx(
+                "h-20 w-full rounded-lg",
+                isMobile && "w-[calc(100%_+_2rem)] -mx-[1rem] px-[1rem] py-5",
+              )}
+            />
           ))}
         </div>
       </div>
