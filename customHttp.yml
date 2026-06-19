@@ -5,6 +5,10 @@ applications:
         headers:
           - key: "Cache-Control"
             value: "public, no-cache, no-store, must-revalidate"
+      - pattern: "/sw.mjs"
+        headers:
+          - key: "Cache-Control"
+            value: "no-cache, no-store, must-revalidate"
       - pattern: "**/*.js"
         headers:
           - key: "Cache-Control"

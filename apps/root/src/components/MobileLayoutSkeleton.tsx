@@ -6,7 +6,7 @@ export function MobileLayoutSkeleton() {
       {/* Calendar header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-md">
         <div className="mx-auto max-w-5xl lg:px-12 pt-3 lg:pt-4 pb-0 lg:pb-2 px-4">
-          <Skeleton className="h-60 w-full rounded-lg" />
+          <Skeleton className="h-65 w-full rounded-lg" />
         </div>
       </div>
 
