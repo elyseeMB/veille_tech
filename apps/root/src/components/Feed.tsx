@@ -62,6 +62,7 @@ export function Feed({
 
   return (
     <section>
+      <h2 className="sr-only">Feed</h2>
       {loading ? (
         Array.from({ length: 5 }).map((_, i) => <ItemSkeleton2 key={i} />)
       ) : items.length === 0 && !error ? (

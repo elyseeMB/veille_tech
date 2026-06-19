@@ -44,19 +44,19 @@ export function HistoryPanel() {
 
   if (isLoading) {
     return (
-      <aside className="h-[calc(100vh_-_8rem)] border-r p-4 space-y-3">
+      <div className="h-[calc(100vh_-_8rem)] border-r p-4 space-y-3">
         <Skeleton className="h-8 w-24 rounded-md" />
         <div className="space-y-5">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-20 w-full rounded-lg" />
           ))}
         </div>
-      </aside>
+      </div>
     );
   }
 
   return (
-    <section
+    <aside
       className={clsx(
         !isMobile &&
           "border-r border-border sticky overflow-y-auto scrollbar-hide overscroll-contain h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]",
@@ -147,6 +147,6 @@ export function HistoryPanel() {
           ))
         )}
       </div>
-    </section>
+    </aside>
   );
 }
