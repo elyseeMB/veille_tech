@@ -128,7 +128,7 @@ export default function ClustersPanel() {
   }, [clusters, selectedClusterId]);
 
   return (
-    <section
+    <aside
       className={clsx(
         !isMobile &&
           "border-l border-r border-border overflow-y-auto scrollbar-hide h-[calc(100vh-var(--header-height)-var(--banner-height,0px))]",
@@ -163,6 +163,6 @@ export default function ClustersPanel() {
           />
         ))
       )}
-    </section>
+    </aside>
   );
 }

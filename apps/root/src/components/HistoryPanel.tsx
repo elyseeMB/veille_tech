@@ -44,7 +44,7 @@ export function HistoryPanel() {
 
   if (isLoading) {
     return (
-      <aside
+      <div
         className={clsx(
           "h-[calc(100vh_-_8rem)] space-y-3",
           !isMobile && "border-b p-4",
@@ -62,12 +62,12 @@ export function HistoryPanel() {
             />
           ))}
         </div>
-      </aside>
+      </div>
     );
   }
 
   return (
-    <section
+    <aside
       className={clsx(
         !isMobile &&
           "border-r border-border sticky overflow-y-auto scrollbar-hide overscroll-contain h-[calc(100vh_-_var(--header-height)_-_var(--banner-height,_0px))]",
@@ -158,6 +158,6 @@ export function HistoryPanel() {
           ))
         )}
       </div>
-    </section>
+    </aside>
   );
 }

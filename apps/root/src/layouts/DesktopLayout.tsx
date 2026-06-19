@@ -39,7 +39,7 @@ export function DesktopLayout() {
     navigation.location?.pathname?.startsWith("/clusters/");
 
   return (
-    <main
+    <div
       className="min-h-screen bg-background"
       style={
         {
@@ -125,6 +125,6 @@ export function DesktopLayout() {
           <AboutDialog />
         </Suspense>
       </div>
-    </main>
+    </div>
   );
 }
