@@ -1,0 +1,60 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended", "schedule:weekly", "group:allNonMajor"],
+  labels: ["dependencies"],
+  rangeStrategy: "bump",
+  postUpdateOptions: ["pnpmDedupe"],
+  lockFileMaintenance: {
+    enabled: true,
+  },
+  packageRules: [
+    {
+      matchDepTypes: ["peerDependencies"],
+      enabled: false,
+    },
+    {
+      groupName: "vite",
+      matchPackageNames: [
+        "vite",
+        "vite-plugin-pwa",
+        "@vitejs/plugin-react",
+        "rollup-plugin-visualizer",
+      ],
+    },
+    {
+      groupName: "tailwind",
+      matchPackageNames: [
+        "tailwindcss",
+        "@tailwindcss/vite",
+        "@tailwindcss/typography",
+        "tw-animate-css",
+      ],
+    },
+    {
+      groupName: "eslint",
+      matchPackageNames: [
+        "eslint",
+        "@eslint/js",
+        "eslint-plugin-react-hooks",
+        "eslint-plugin-react-refresh",
+        "typescript-eslint",
+        "globals",
+      ],
+    },
+    {
+      groupName: "react + types",
+      matchPackageNames: [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom",
+      ],
+    },
+  ],
+  ignoreDeps: [
+    // manually bumping
+    "node",
+    "@types/node",
+    "pnpm",
+  ],
+}
