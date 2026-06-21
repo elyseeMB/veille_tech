@@ -1,6 +1,6 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  extends: ["config:recommended", "schedule:weekly", "group:allNonMajor"],
+  extends: ["config:recommended", "schedule:monthly", "group:allNonMajor"],
   labels: ["dependencies"],
   rangeStrategy: "bump",
   postUpdateOptions: ["pnpmDedupe"],
@@ -49,6 +49,10 @@
         "@types/react",
         "@types/react-dom",
       ],
+    },
+    {
+      matchUpdateTypes: ["major"],
+      schedule: ["* 0-3 * * 1"],
     },
   ],
   ignoreDeps: [
