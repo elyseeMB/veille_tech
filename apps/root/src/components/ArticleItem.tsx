@@ -208,7 +208,6 @@ export function ArticleItem({
           <div className="flex flex-col items-start gap-1">
             {readIds.has(item.id) && (
               <Badge variant="default" className="-mx-2 flex item-center gap-1">
-                <Eye />
                 <span>seen</span>
               </Badge>
             )}
