@@ -57,8 +57,9 @@ func NewRouter(conn *db.PostgresConnection, config *cfg.Config) *gin.Engine {
 		v1.GET("/clusters", cacheControl("public, max-age=1800"), v1handler.GetClusters(conn))
 		v1.GET("/clusters/:id", cacheControl("public, max-age=1800"), v1handler.GetClusterByID(conn))
 		v1.GET("/articles/:id", cacheControl("public, max-age=86400"), v1handler.GetArticleByID(conn))
-		v1.GET("/avatar", cacheControl("public, max-age=86400"), handlers.ProxyAvatar())
-		v1.GET("/favicon", cacheControl("public, max-age=86400"), handlers.ProxyFavicon())
+
+		v1.GET("/favicon", cacheControl("public, max-age=86400"), handlers.SecureProxy(handlers.FaviconRule), handlers.ProxyFavicon())
+		v1.GET("/avatar", cacheControl("public, max-age=86400"), handlers.SecureProxy(handlers.AvatarRule), handlers.ProxyAvatar())
 	}
 
 	return r
