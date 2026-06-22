@@ -3,7 +3,7 @@ import { useReadArticles } from "@/hooks/useReadArticle.ts";
 import { useSummaryStore } from "@/store/summaryStore.ts";
 import type { Article } from "@/types";
 import clsx from "clsx";
-import { Astroid, Eye, Link } from "lucide-react";
+import { Astroid, CheckCheck, Eye, Link } from "lucide-react";
 import { useRef, type MouseEventHandler } from "react";
 import { useBanner } from "./BannerContext.tsx";
 import { TimeRelative } from "./TimeRelative.tsx";
@@ -207,9 +207,9 @@ export function ArticleItem({
         <div className="space-y-3 w-full">
           <div className="flex flex-col items-start gap-1">
             {readIds.has(item.id) && (
-              <Badge variant="default" className="-mx-2 flex item-center gap-1">
-                <span>seen</span>
-              </Badge>
+              <span className="bg-primary text-primary-foreground rounded-full py-1 px-1">
+                <CheckCheck size={14} />
+              </span>
             )}
 
             <div className="w-full flex items-center justify-between">
