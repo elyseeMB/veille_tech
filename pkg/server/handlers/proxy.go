@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
@@ -29,8 +30,11 @@ var AvatarRule = ProxyRule{
 	AllowedHosts: map[string]bool{
 		"yt3.ggpht.com":             true,
 		"yt3.googleusercontent.com": true,
+		"i.ytimg.com":               true,
 	},
 }
+
+var sizeParam = regexp.MustCompile(`=s\d+`)
 
 func SecureProxy(rule ProxyRule) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -49,6 +53,7 @@ func SecureProxy(rule ProxyRule) gin.HandlerFunc {
 		if rule.HTTPSOnly && parsed.Scheme != "https" {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
+
 		}
 
 		if len(rule.AllowedHosts) > 0 && !rule.AllowedHosts[parsed.Hostname()] {
@@ -102,6 +107,8 @@ func ProxyAvatar() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		imgURL := c.Query("url")
 
+		imgURL = sizeParam.ReplaceAllString(imgURL, "=s88")
+
 		req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodGet, imgURL, nil)
 		if err != nil {
 			c.Status(http.StatusInternalServerError)
@@ -117,7 +124,7 @@ func ProxyAvatar() gin.HandlerFunc {
 		defer resp.Body.Close()
 
 		contentType := resp.Header.Get("Content-Type")
-		if !strings.HasPrefix(contentType, "Image/") {
+		if !strings.HasPrefix(contentType, "image/") {
 			c.Status(http.StatusBadGateway)
 			return
 		}
