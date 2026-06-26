@@ -25,6 +25,7 @@ const getDCx = (d: Date) => {
   const weekIdx = Math.floor((timeDay.count(ms, d) + startDay) / DAYS_IN_WEEK);
   return xFull(ms) + weekIdx * D_CELL;
 };
+
 const getDCy = (d: Date) =>
   (DAYS_IN_WEEK - 1 - ((d.getDay() + 6) % 7)) * D_CELL +
   D_CELL / 2 +
@@ -40,10 +41,11 @@ const QUARTERSFN = (n: number = 3) => {
     end: new Date(now.getFullYear(), q * 3 + n, 1),
   }));
 };
-const HALVESFN = () =>
+
+const HALVESFN = (n: number = 6) =>
   [0, 1].map((h) => ({
     start: new Date(now.getFullYear(), h * 6, 1),
-    end: new Date(now.getFullYear(), h * 6 + 6, 1),
+    end: new Date(now.getFullYear(), h * 6 + n, 1),
   }));
 
 function weeksInMonth(m: Date): number {
@@ -208,8 +210,8 @@ export function Calendar({
 }) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const axisRef = useRef<SVGGElement | null>(null);
-  const isMobile = useMediaQuery("(max-width: 768px)");
-  const isMediumMobile = useMediaQuery("(max-width: 800px)");
+  const isMobile = useMediaQuery("(max-width: 550px)");
+  const isMediumMobile = useMediaQuery("(max-width: 900px)");
   const scrollable = isMediumMobile;
 
   const periods = isMobile ? QUARTERSFN(3) : HALVESFN();
@@ -243,7 +245,6 @@ export function Calendar({
       .attr("class", "text-muted-foreground");
   }, [scrollable]);
 
-  // ── Scroll vers le trimestre courant (mobile)
   useEffect(() => {
     if (!scrollable || !scrollRef.current) {
       return;

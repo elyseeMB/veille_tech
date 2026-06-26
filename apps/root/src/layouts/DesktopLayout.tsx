@@ -61,7 +61,7 @@ export function DesktopLayout() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 md:px-0 sm:px-6 lg:px-12 lg:pt-[var(--header-height)] transition-[padding-top] duration-150 ease-out">
+      <div className="mx-auto max-w-7xl px-4 md:px-0 sm:px-6 lg:px-12 md:pt-[var(--header-height)] transition-[padding-top] duration-150 ease-out">
         <Banner />
 
         <div ref={containerRef}>
