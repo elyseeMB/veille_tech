@@ -46,7 +46,6 @@ export const MOCK_VIDEOS: YoutubeVideo[] = [
   },
 ];
 
-// --- Sous-composant ---
 function VideoItem({ item }: { item: YoutubeVideo }) {
   const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
@@ -120,7 +119,6 @@ function VideoItem({ item }: { item: YoutubeVideo }) {
   );
 }
 
-// --- Composant Principal ---
 export function VideosCard({
   data,
   loading,

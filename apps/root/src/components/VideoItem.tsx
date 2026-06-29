@@ -23,7 +23,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
       ref={articleRef}
       className={clsx(
         isInsideCarousel && "border-none",
-        "group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:pl-0 lg:pr-5 border-b border-border transition-colors",
+        "group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:px-5 border-b border-border transition-colors",
         !isInsideCarousel && "hover:bg-foreground/5",
       )}
     >
@@ -33,7 +33,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
         rel="noreferrer"
         className="before:absolute before:content-[''] before:inset-0 before:w-full before:h-full z-10"
       />
-      <div className={clsx(!isMobile && "grid grid-cols-[1px_1fr] gap-5")}>
+      <div className={clsx(!isMobile && "grid grid-cols-[1fr] gap-5")}>
         {!isMobile && (
           <div
             className={clsx(
@@ -65,7 +65,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
           </div>
 
           {item.thumbnail && (
-            <div className="rounded-md overflow-hidden border border-border aspect-video w-full">
+            <div className="ml-[-1.5rem] w-[calc(100%+(2_*_1.5rem))] overflow-hidden aspect-video">
               <img
                 src={item.thumbnail}
                 alt={item.title}
