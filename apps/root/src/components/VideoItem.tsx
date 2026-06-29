@@ -65,7 +65,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
           </div>
 
           {item.thumbnail && (
-            <div className="mx-[-1.5rem] w-[calc(100%+(2_*_1.5rem))] overflow-hidden aspect-video">
+            <div className="mx-[-1.5rem] w-[calc(100%+(2_*_1.5rem-0.25rem)))]  overflow-hidden aspect-video">
               <img
                 src={item.thumbnail}
                 alt={item.title}
