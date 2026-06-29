@@ -37,31 +37,37 @@ export default defineConfig({
     sourcemap: "hidden",
     rolldownOptions: {
       output: {
-        advancedChunks: {
+        codeSplitting: {
           groups: [
             {
               name: "motion",
               test: /node_modules\/(motion-dom|motion|framer-motion)/,
+              priority: 50,
             },
             {
               name: "vendor-react",
               test: /node_modules\/(react|react-dom|scheduler)/,
+              priority: 40,
             },
             {
               name: "vendor-router",
               test: /node_modules\/(react-router|@remix-run)/,
+              priority: 30,
             },
             {
               name: "vendor-query",
               test: /node_modules\/@tanstack/,
+              priority: 25,
             },
             {
               name: "vendor-ui",
               test: /node_modules\/(@base-ui-components|floating-ui|lucide-react)/,
+              priority: 20,
             },
             {
               name: "vendor",
               test: /node_modules/,
+              priority: 10,
             },
           ],
         },
