@@ -26,7 +26,7 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
       )}
     >
       <Carousel
-        className="w-full overflow-hidden"
+        className="w-full overflow-hidden px-4"
         opts={{
           align: "center",
           loop: true,

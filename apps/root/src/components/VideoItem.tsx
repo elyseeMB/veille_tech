@@ -7,24 +7,13 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 export function VideoItem({ video: item }: { video: YoutubeVideo }) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const articleRef = useRef<HTMLElement>(null);
-  const [isInsideCarousel, setInsideCarousel] = useState(false);
   const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8081";
-
-  useEffect(() => {
-    const node = articleRef.current;
-    if (!node) return;
-
-    const isInsideElement = node.closest('[data-slot="carousel-item"]');
-    setInsideCarousel(!!isInsideElement);
-  }, []);
 
   return (
     <article
       ref={articleRef}
       className={clsx(
-        isInsideCarousel && "border-none",
-        "group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:px-5 border-b border-border transition-colors",
-        !isInsideCarousel && "hover:bg-foreground/5",
+        "group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:px-5 border-b border-border transition-colors hover:bg-foreground/5",
       )}
     >
       <a
@@ -34,14 +23,6 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
         className="before:absolute before:content-[''] before:inset-0 before:w-full before:h-full z-10"
       />
       <div className={clsx(!isMobile && "grid grid-cols-[1fr] gap-5")}>
-        {!isMobile && (
-          <div
-            className={clsx(
-              !isInsideCarousel &&
-                "bg-muted opacity-0 transition-colors group-hover:opacity-100 group-hover:bg-foreground",
-            )}
-          />
-        )}
         <div className="flex flex-col gap-3 flex-1 min-w-0 pb-1">
           <TimeRelative date={item.publishedAt} />
 
@@ -65,7 +46,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
           </div>
 
           {item.thumbnail && (
-            <div className="mx-[-1.5rem] w-[calc(100%+(2_*_1.5rem-0.5rem)))] lg:w-[calc(100%+(2_*_1.5rem-0.25rem)))]  overflow-hidden aspect-video">
+            <div className="mx-[-1.5rem] w-[calc(100%+(2_*_1.5rem-0.5rem)))] lg:w-[calc(100%+(2_*_1.5rem-0.25rem)))] overflow-hidden aspect-video">
               <img
                 src={item.thumbnail}
                 alt={item.title}
