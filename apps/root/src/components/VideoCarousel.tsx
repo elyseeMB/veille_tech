@@ -10,6 +10,7 @@ import Autoplay from "embla-carousel-autoplay";
 import type { YoutubeVideo } from "@/types";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import clsx from "clsx";
+import { TimeRelative } from "./TimeRelative.tsx";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8081";
 
@@ -52,11 +53,11 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
                     alt={video.title}
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
-                    <div className="flex items-center gap-2">
+                  <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/100 via-black/30 to-transparent p-3 opacity-80 transition-opacity group-hover:opacity-100">
+                    <div className="flex items-start gap-2">
                       {video.channelAvatar && (
                         <img
-                          className="size-6 rounded-full object-cover"
+                          className="size-6 rounded-full object-cover md:max-lg:size-5"
                           src={
                             video.channelAvatar.startsWith("http")
                               ? video.channelAvatar
@@ -65,13 +66,21 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
                           alt=""
                         />
                       )}
-                      <span className="text-[10px] font-medium text-white/80">
-                        {video.channelTitle}
-                      </span>
+                      <div className="flex flex-col">
+                        <h3 className="text-sm font-medium text-white line-clamp-2 md:max-lg:text-[10px]">
+                          {video.title}
+                        </h3>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] font-medium text-white md:max-lg:text-[8px]">
+                            {video.channelTitle}
+                          </span>
+                          <TimeRelative
+                            date={video.publishedAt}
+                            className="text-[10px] text-white/80 md:max-lg:text-[8px]"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="text-sm font-medium text-white line-clamp-2">
-                      {video.title}
-                    </h3>
                   </div>
                 </a>
               </div>

@@ -13,50 +13,52 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
     <article
       ref={articleRef}
       className={clsx(
-        "group relative w-[calc(100%_+_2rem)] -mx-[1rem] p-4 lg:w-full lg:mx-0 lg:py-5 lg:px-5 border-b border-border transition-colors hover:bg-foreground/5",
+        "group relative w-[calc(100%_+_2rem)] -mx-[1rem] md:w-full md:mx-0 lg:w-full lg:mx-0 border-b border-border transition-colors hover:bg-foreground/5",
       )}
     >
-      <a
-        href={`https://www.youtube.com/watch?v=${item.externalId}`}
-        target="_blank"
-        rel="noreferrer"
-        className="before:absolute before:content-[''] before:inset-0 before:w-full before:h-full z-10"
-      />
       <div className={clsx(!isMobile && "grid grid-cols-[1fr] gap-5")}>
-        <div className="flex flex-col gap-3 flex-1 min-w-0 pb-1">
-          <TimeRelative date={item.publishedAt} />
-
-          <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            <div className="flex items-center gap-2 font-sans">
-              {item.channelAvatar && (
-                <img
-                  className="object-cover w-10 rounded-full inline-block"
-                  src={
-                    item.channelAvatar.startsWith("http")
-                      ? item.channelAvatar
-                      : `${API_URL}${item.channelAvatar}`
-                  }
-                  alt=""
-                />
-              )}
-              <span className="text-foreground text-[10px]">
-                {item.channelTitle}
-              </span>
+        <div className="flex flex-col gap-3 flex-1 min-w-0">
+          <a
+            href={`https://www.youtube.com/watch?v=${item.externalId}`}
+            target="_blank"
+            rel="noreferrer"
+            className="overflow-hidden aspect-video relative block"
+          >
+            <img
+              src={item.thumbnail}
+              alt={item.title}
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/100 via-black/10 to-transparent  p-4 lg:px-5 opacity-80 transition-opacity group-hover:opacity-100">
+              <div className="flex items-start gap-2">
+                {item.channelAvatar && (
+                  <img
+                    className="size-12 rounded-full object-cover md:max-lg:size-8"
+                    src={
+                      item.channelAvatar.startsWith("http")
+                        ? item.channelAvatar
+                        : `${API_URL}${item.channelAvatar}`
+                    }
+                    alt={item.channelTitle}
+                  />
+                )}
+                <div>
+                  <h3 className="text-lg font-medium text-white line-clamp-2 md:max-lg:text-sm">
+                    {item.title}
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-white/90 md:max-lg:text-sm">
+                      {item.channelTitle}
+                    </span>
+                    <TimeRelative
+                      date={item.publishedAt}
+                      className="text-white/70 md:max-lg:text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-
-          {item.thumbnail && (
-            <div className="mx-[-1.5rem] w-[calc(100%+(2_*_1.5rem-0.5rem)))] lg:w-[calc(100%+(2_*_1.5rem-0.25rem)))] overflow-hidden aspect-video">
-              <img
-                src={item.thumbnail}
-                alt={item.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          <h2 className="font-normal leading-snug tracking-[-0.01em] text-foreground transition-colors group-hover:text-muted-foreground">
-            {item.title}
-          </h2>
+          </a>
         </div>
       </div>
     </article>
