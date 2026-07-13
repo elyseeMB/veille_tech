@@ -46,14 +46,14 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
                   href={`https://www.youtube.com/watch?v=${video.externalId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="group relative block overflow-hidden rounded-md aspect-video"
+                  className="relative block overflow-hidden rounded-md aspect-video"
                 >
                   <img
                     src={video.thumbnail}
                     alt={video.title}
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/100 via-black/30 to-transparent p-3 opacity-80 transition-opacity group-hover:opacity-100">
+                  <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/100 via-black/30 to-transparent p-3">
                     <div className="flex items-start gap-2">
                       {video.channelAvatar && (
                         <img
