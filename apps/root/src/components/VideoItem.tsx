@@ -13,7 +13,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
     <article
       ref={articleRef}
       className={clsx(
-        "group relative w-[calc(100%_+_2rem)] -mx-[1rem] md:w-full md:mx-0 lg:w-full lg:mx-0 border-b border-border transition-colors hover:bg-foreground/5",
+        "relative w-[calc(100%_+_2rem)] -mx-[1rem] md:w-full md:mx-0 lg:w-full lg:mx-0 border-b border-border transition-colors hover:bg-foreground/5",
       )}
     >
       <div className={clsx(!isMobile && "grid grid-cols-[1fr] gap-5")}>
@@ -29,7 +29,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
               alt={item.title}
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/100 via-black/10 to-transparent  p-4 lg:px-5 opacity-80 transition-opacity group-hover:opacity-100">
+            <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/100 via-black/10 to-transparent p-4 lg:px-5">
               <div className="flex items-start gap-2">
                 {item.channelAvatar && (
                   <img
