@@ -53,7 +53,7 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
                     alt={video.title}
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/100 via-black/30 to-transparent p-3">
+                  <div className="group absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/100 via-black/50 to-transparent p-3">
                     <div className="flex items-start gap-2">
                       {video.channelAvatar && (
                         <img
@@ -67,7 +67,7 @@ export default function VideoCarousel({ group }: { group: YoutubeVideo[] }) {
                         />
                       )}
                       <div className="flex flex-col">
-                        <h3 className="text-sm font-medium text-white line-clamp-2 md:max-lg:text-[10px]">
+                        <h3 className="text-sm font-medium text-white/90 line-clamp-2 md:max-lg:text-[10px] leading-tight transition group-hover:text-white">
                           {video.title}
                         </h3>
                         <div className="flex items-center gap-1">
