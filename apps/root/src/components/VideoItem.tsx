@@ -29,7 +29,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
               alt={item.title}
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/100 via-black/10 to-transparent p-4 lg:px-5">
+            <div className="group absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/100 via-black/50 to-transparent p-4 lg:px-5">
               <div className="flex items-start gap-2">
                 {item.channelAvatar && (
                   <img
@@ -43,7 +43,7 @@ export function VideoItem({ video: item }: { video: YoutubeVideo }) {
                   />
                 )}
                 <div>
-                  <h3 className="text-lg font-medium text-white line-clamp-2 md:max-lg:text-sm">
+                  <h3 className="text-lg font-medium text-white/90 line-clamp-2 md:max-lg:text-sm leading-tight transition group-hover:text-white">
                     {item.title}
                   </h3>
                   <div className="flex items-center gap-2">
