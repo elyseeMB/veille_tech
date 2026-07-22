@@ -18,12 +18,13 @@
 	"devDependencies": {
 		"oxfmt": "^0.60.0",
 		"oxlint": "^1.75.0",
-		"turbo": "^2.9.5"
+		"turbo": "^2.10.6"
 	},
 	"packageManager": "pnpm@10.28.2",
 	"pnpm": {
-		"overrides": {
-			"vite-plugin-pwa>vite": "^8.0.14"
-		}
+		"onlyBuiltDependencies": [
+			"esbuild",
+			"msw"
+		]
 	}
 }
