@@ -1,21 +1,25 @@
 name: "DEPLOY-BETA"
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
+    types: ["completed"]
     branches: ["develop"]
-    paths:
-      - "apps/root/**"
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: "24"
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
@@ -26,10 +30,11 @@ jobs:
           VITE_API_URL: https://api.veille.safecoffi.app
           VITE_ENV: beta
 
-      - uses: cloudflare/wrangler-action@v3
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_VEILLE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/root
-          command: pages deploy apps/root/dist --project-name=veille-safecoffi-beta
+          command: pages deploy dist --project-name=veille-safecoffi-beta
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
