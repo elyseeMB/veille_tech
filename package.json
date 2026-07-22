@@ -15,5 +15,10 @@
   "packageManager": "pnpm@10.28.2",
   "devDependencies": {
     "turbo": "^2.9.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite-plugin-pwa>vite": "^8.0.14"
+    }
   }
 }
