@@ -17,5 +17,5 @@ export default {
 	experimentalTailwindcss: {
 		functions: ["tv", "clsx", "cn", "cva"],
 	},
-	ignorePatterns: ["node_modules/**", "dist/**", "build/**", "*.yml"],
+	ignorePatterns: ["node_modules/**", "dist/**", "build/**", "public/**", "**/*.go", "**/*.py"],
 };
