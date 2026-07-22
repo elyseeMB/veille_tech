@@ -1,0 +1,9 @@
+{
+	"name": "veille-safecoffi-beta",
+	"compatibility_date": "2025-01-10",
+	"pages_build_output_dir": "dist",
+	"vars": {},
+	"observability": {
+		"enabled": true
+	}
+}
