@@ -1,1 +1,5 @@
-# Welcome to veille.safecoffi !
+# Veille Tech
+
+My personal space to track and organize everything I find interesting.
+
+**Live:** [veille.safecoffi.app](https://veille.safecoffi.app)
