@@ -1,6 +1,6 @@
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { axisBottom, scaleUtc, select, timeDay, timeMonth, timeYear } from "d3";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip.tsx";
 
 const DAYS_IN_WEEK = 7;
@@ -16,349 +16,311 @@ const D_H = DAYS_IN_WEEK * D_CELL + D_MARGIN[0] + D_MARGIN[2] + 5;
 const desktopMonths = timeMonth.range(timeYear.floor(now), timeYear.ceil(now));
 
 const xFull = scaleUtc()
-  .domain([timeYear.floor(now), timeYear.ceil(now)])
-  .range([D_MARGIN[3], D_W - D_MARGIN[1]]);
+	.domain([timeYear.floor(now), timeYear.ceil(now)])
+	.range([D_MARGIN[3], D_W - D_MARGIN[1]]);
 
 const getDCx = (d: Date) => {
-  const ms = timeMonth.floor(d);
-  const startDay = (ms.getDay() + 6) % 7;
-  const weekIdx = Math.floor((timeDay.count(ms, d) + startDay) / DAYS_IN_WEEK);
-  return xFull(ms) + weekIdx * D_CELL;
+	const ms = timeMonth.floor(d);
+	const startDay = (ms.getDay() + 6) % 7;
+	const weekIdx = Math.floor((timeDay.count(ms, d) + startDay) / DAYS_IN_WEEK);
+	return xFull(ms) + weekIdx * D_CELL;
 };
 
-const getDCy = (d: Date) =>
-  (DAYS_IN_WEEK - 1 - ((d.getDay() + 6) % 7)) * D_CELL +
-  D_CELL / 2 +
-  D_MARGIN[0];
+const getDCy = (d: Date) => (DAYS_IN_WEEK - 1 - ((d.getDay() + 6) % 7)) * D_CELL + D_CELL / 2 + D_MARGIN[0];
 
 // ── Mobile (trimestres)
 const QC_MOBILE = 14;
 const QM = { t: 8, r: 8, b: 30, l: 8 };
 
 const QUARTERSFN = (n: number = 3) => {
-  return [0, 1, 2, 3].map((q) => ({
-    start: new Date(now.getFullYear(), q * 3, 1),
-    end: new Date(now.getFullYear(), q * 3 + n, 1),
-  }));
+	return [0, 1, 2, 3].map((q) => ({
+		start: new Date(now.getFullYear(), q * 3, 1),
+		end: new Date(now.getFullYear(), q * 3 + n, 1),
+	}));
 };
 
 const HALVESFN = (n: number = 6) =>
-  [0, 1].map((h) => ({
-    start: new Date(now.getFullYear(), h * 6, 1),
-    end: new Date(now.getFullYear(), h * 6 + n, 1),
-  }));
+	[0, 1].map((h) => ({
+		start: new Date(now.getFullYear(), h * 6, 1),
+		end: new Date(now.getFullYear(), h * 6 + n, 1),
+	}));
 
 function weeksInMonth(m: Date): number {
-  const startDay = (m.getDay() + 6) % 7;
-  const days = timeDay.count(m, timeMonth.offset(m, 1));
-  return Math.ceil((days + startDay) / DAYS_IN_WEEK);
+	const startDay = (m.getDay() + 6) % 7;
+	const days = timeDay.count(m, timeMonth.offset(m, 1));
+	return Math.ceil((days + startDay) / DAYS_IN_WEEK);
 }
 
 export type CalendarData = Record<string, { count: string }>;
 
 function QuarterCalendar({
-  start,
-  end,
-  data,
-  cellSize = QC_MOBILE,
+	start,
+	end,
+	data,
+	cellSize = QC_MOBILE,
 }: {
-  start: Date;
-  end: Date;
-  data: CalendarData;
-  cellSize?: number;
+	start: Date;
+	end: Date;
+	data: CalendarData;
+	cellSize?: number;
 }) {
-  const Q_H = DAYS_IN_WEEK * cellSize + QM.t + QM.b;
-  const axisRef = useRef<SVGGElement | null>(null);
-  const months = timeMonth.range(start, end);
+	const Q_H = DAYS_IN_WEEK * cellSize + QM.t + QM.b;
+	const axisRef = useRef<SVGGElement | null>(null);
+	const months = timeMonth.range(start, end);
 
-  const monthXMap = new Map<number, number>();
-  let xOff = QM.l;
-  for (const m of months) {
-    monthXMap.set(+m, xOff);
-    xOff += weeksInMonth(m) * cellSize;
-  }
-  const svgW = xOff + QM.r;
+	const { monthXMap, svgW } = useMemo(() => {
+		const map = new Map<number, number>();
+		let xOff = QM.l;
+		for (const m of months) {
+			map.set(+m, xOff);
+			xOff += weeksInMonth(m) * cellSize;
+		}
+		return { monthXMap: map, svgW: xOff + QM.r };
+	}, [months, cellSize]);
 
-  const getCx = (d: Date) => {
-    const ms = timeMonth.floor(d);
-    const startDay = (ms.getDay() + 6) % 7;
-    const weekIdx = Math.floor(
-      (timeDay.count(ms, d) + startDay) / DAYS_IN_WEEK,
-    );
-    return (monthXMap.get(+ms) ?? 0) + weekIdx * cellSize + cellSize / 2;
-  };
-  const getCy = (d: Date) =>
-    (DAYS_IN_WEEK - 1 - ((d.getDay() + 6) % 7)) * cellSize +
-    cellSize / 2 +
-    QM.t;
+	const getCx = (d: Date) => {
+		const ms = timeMonth.floor(d);
+		const startDay = (ms.getDay() + 6) % 7;
+		const weekIdx = Math.floor((timeDay.count(ms, d) + startDay) / DAYS_IN_WEEK);
+		return (monthXMap.get(+ms) ?? 0) + weekIdx * cellSize + cellSize / 2;
+	};
+	const getCy = (d: Date) => (DAYS_IN_WEEK - 1 - ((d.getDay() + 6) % 7)) * cellSize + cellSize / 2 + QM.t;
 
-  useEffect(() => {
-    if (!axisRef.current) return;
-    const g = select(axisRef.current);
-    g.selectAll("*").remove();
-    months.forEach((m) => {
-      const cx = (monthXMap.get(+m) ?? 0) + (weeksInMonth(m) * cellSize) / 2;
-      g.append("text")
-        .attr("x", cx)
-        .attr("y", 0)
-        .attr("text-anchor", "middle")
-        .attr("fill", "currentColor")
-        .style("font-size", "10px")
-        .style("letter-spacing", "0.2em")
-        .style("text-transform", "uppercase")
-        .text(m.toLocaleString(navigator.language, { month: "short" }));
-    });
-  }, [monthXMap, months, cellSize]);
+	useEffect(() => {
+		if (!axisRef.current) return;
+		const g = select(axisRef.current);
+		g.selectAll("*").remove();
+		months.forEach((m) => {
+			const cx = (monthXMap.get(+m) ?? 0) + (weeksInMonth(m) * cellSize) / 2;
+			g.append("text")
+				.attr("x", cx)
+				.attr("y", 0)
+				.attr("text-anchor", "middle")
+				.attr("fill", "currentColor")
+				.style("font-size", "10px")
+				.style("letter-spacing", "0.2em")
+				.style("text-transform", "uppercase")
+				.text(m.toLocaleString(navigator.language, { month: "short" }));
+		});
+	}, [months, cellSize, monthXMap]);
 
-  return (
-    <svg
-      viewBox={`0 0 ${svgW} ${Q_H}`}
-      width="100%"
-      style={{ display: "block" }}
-      className="text-foreground dark:text-white"
-    >
-      {months.map((m) => (
-        <g key={+m} className="month-group">
-          {timeDay.range(m, timeMonth.offset(m, 1)).map((d) => {
-            const isToday = +d === today;
-            const isPast = +d < today;
-            const cx = getCx(d);
-            const cy = getCy(d);
-            const dateStr = d.toISOString().slice(0, 10);
-            const dateKey = d.toLocaleDateString("en-CA");
-            const articleForDate = data?.[dateKey];
-            const isArticleForDate = !!articleForDate;
-            const label = d.toLocaleDateString("fr", {
-              weekday: "short",
-              day: "numeric",
-              month: "short",
-            });
+	return (
+		<svg
+			viewBox={`0 0 ${svgW} ${Q_H}`}
+			width="100%"
+			style={{ display: "block" }}
+			className="text-foreground dark:text-white"
+		>
+			{months.map((m) => (
+				<g key={+m} className="month-group">
+					{timeDay.range(m, timeMonth.offset(m, 1)).map((d) => {
+						const isToday = +d === today;
+						const isPast = +d < today;
+						const cx = getCx(d);
+						const cy = getCy(d);
+						const dateStr = d.toISOString().slice(0, 10);
+						const dateKey = d.toLocaleDateString("en-CA");
+						const articleForDate = data?.[dateKey];
+						const isArticleForDate = !!articleForDate;
+						const label = d.toLocaleDateString("fr", {
+							weekday: "short",
+							day: "numeric",
+							month: "short",
+						});
 
-            return (
-              <Tooltip key={+d}>
-                <TooltipTrigger
-                  render={
-                    <g
-                      style={{
-                        cursor: isPast || isToday ? "pointer" : "default",
-                      }}
-                    />
-                  }
-                >
-                  {isToday ? (
-                    <a href={`/date/${dateStr}`}>
-                      <rect
-                        width={cellSize - 2}
-                        height={cellSize - 2}
-                        x={cx - (cellSize - 2) / 2}
-                        y={cy - (cellSize - 2) / 2}
-                        fill="#5dff6d"
-                        className="dark:fill-emerald-400"
-                      />
-                    </a>
-                  ) : isPast ? (
-                    <a href={`/date/${dateStr}`}>
-                      <circle
-                        r={cellSize / 2 - 1.5}
-                        fill={
-                          isArticleForDate
-                            ? "var(--color-amber-500)"
-                            : "currentColor"
-                        }
-                        opacity={isArticleForDate ? 1 : 0.2}
-                        cx={cx}
-                        cy={cy}
-                      />
-                    </a>
-                  ) : (
-                    <circle
-                      r={cellSize / 2 - 1.5}
-                      fill="currentColor"
-                      opacity={0.75}
-                      cx={cx}
-                      cy={cy}
-                    />
-                  )}
-                </TooltipTrigger>
-                <TooltipContent className="pointer-events-none">
-                  <div className="flex flex-col gap-0.5 items-center">
-                    <p className="font-sans text-sm">{label}</p>
-                    {articleForDate?.count && (
-                      <span>article(s) {articleForDate.count}</span>
-                    )}
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
-        </g>
-      ))}
-      <g
-        ref={axisRef}
-        className="text-muted-foreground"
-        transform={`translate(0, ${Q_H - QM.b + 12})`}
-      />
-    </svg>
-  );
+						return (
+							<Tooltip key={+d}>
+								<TooltipTrigger
+									render={
+										<g
+											style={{
+												cursor: isPast || isToday ? "pointer" : "default",
+											}}
+										/>
+									}
+								>
+									{isToday ? (
+										<a href={`/date/${dateStr}`}>
+											<rect
+												width={cellSize - 2}
+												height={cellSize - 2}
+												x={cx - (cellSize - 2) / 2}
+												y={cy - (cellSize - 2) / 2}
+												fill="#5dff6d"
+												className="dark:fill-emerald-400"
+											/>
+										</a>
+									) : isPast ? (
+										<a href={`/date/${dateStr}`}>
+											<circle
+												r={cellSize / 2 - 1.5}
+												fill={isArticleForDate ? "var(--color-amber-500)" : "currentColor"}
+												opacity={isArticleForDate ? 1 : 0.2}
+												cx={cx}
+												cy={cy}
+											/>
+										</a>
+									) : (
+										<circle r={cellSize / 2 - 1.5} fill="currentColor" opacity={0.75} cx={cx} cy={cy} />
+									)}
+								</TooltipTrigger>
+								<TooltipContent className="pointer-events-none">
+									<div className="flex flex-col items-center gap-0.5">
+										<p className="font-sans text-sm">{label}</p>
+										{articleForDate?.count && <span>article(s) {articleForDate.count}</span>}
+									</div>
+								</TooltipContent>
+							</Tooltip>
+						);
+					})}
+				</g>
+			))}
+			<g ref={axisRef} className="text-muted-foreground" transform={`translate(0, ${Q_H - QM.b + 12})`} />
+		</svg>
+	);
 }
 
-export function Calendar({
-  data,
-}: {
-  scrollable?: boolean;
-  data: CalendarData;
-}) {
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const axisRef = useRef<SVGGElement | null>(null);
-  const isMobile = useMediaQuery("(max-width: 550px)");
-  const isMediumMobile = useMediaQuery("(max-width: 900px)");
-  const scrollable = isMediumMobile;
+export function Calendar({ data }: { scrollable?: boolean; data: CalendarData }) {
+	const scrollRef = useRef<HTMLDivElement | null>(null);
+	const axisRef = useRef<SVGGElement | null>(null);
+	const isMobile = useMediaQuery("(max-width: 550px)");
+	const isMediumMobile = useMediaQuery("(max-width: 900px)");
+	const scrollable = isMediumMobile;
 
-  const periods = isMobile ? QUARTERSFN(3) : HALVESFN();
-  const currentPeriodIdx = isMobile
-    ? Math.floor(now.getMonth() / 3)
-    : Math.floor(now.getMonth() / 6);
+	const periods = isMobile ? QUARTERSFN(3) : HALVESFN();
+	const currentPeriodIdx = isMobile ? Math.floor(now.getMonth() / 3) : Math.floor(now.getMonth() / 6);
 
-  // ── Axis D3 desktop
-  useEffect(() => {
-    if (scrollable || !axisRef.current) {
-      return;
-    }
+	// ── Axis D3 desktop
+	useEffect(() => {
+		if (scrollable || !axisRef.current) {
+			return;
+		}
 
-    const axis = axisBottom(xFull)
-      .tickValues(desktopMonths)
-      .tickFormat((d) =>
-        (d as Date).toLocaleString(navigator.language, { month: "short" }),
-      );
+		const axis = axisBottom(xFull)
+			.tickValues(desktopMonths)
+			.tickFormat((d) => (d as Date).toLocaleString(navigator.language, { month: "short" }));
 
-    select(axisRef.current)
-      .call(axis)
-      .call((g) => g.select(".domain").attr("stroke", "none"))
-      .call((g) => g.selectAll(".tick line").attr("stroke", "none"))
-      .selectAll(".tick text")
-      .attr("x", (d: Date) => {
-        const start = getDCx(d);
-        const end = getDCx(timeDay.offset(timeMonth.offset(d, 1), -1));
-        return (end - start) / 2;
-      })
-      .attr("fill", "currentColor")
-      .attr("class", "text-muted-foreground");
-  }, [scrollable]);
+		select(axisRef.current)
+			.call(axis)
+			.call((g) => g.select(".domain").attr("stroke", "none"))
+			.call((g) => g.selectAll(".tick line").attr("stroke", "none"))
+			.selectAll(".tick text")
+			.attr("x", (d: Date) => {
+				const start = getDCx(d);
+				const end = getDCx(timeDay.offset(timeMonth.offset(d, 1), -1));
+				return (end - start) / 2;
+			})
+			.attr("fill", "currentColor")
+			.attr("class", "text-muted-foreground");
+	}, [scrollable]);
 
-  useEffect(() => {
-    if (!scrollable || !scrollRef.current) {
-      return;
-    }
-    const node = scrollRef.current.children[currentPeriodIdx] as HTMLElement;
-    node.scrollIntoView({
-      behavior: "instant",
-      inline: "start",
-      block: "nearest",
-    });
-  }, [scrollable, currentPeriodIdx]);
+	useEffect(() => {
+		if (!scrollable || !scrollRef.current) {
+			return;
+		}
+		const node = scrollRef.current.children[currentPeriodIdx] as HTMLElement;
+		node.scrollIntoView({
+			behavior: "instant",
+			inline: "start",
+			block: "nearest",
+		});
+	}, [scrollable, currentPeriodIdx]);
 
-  if (scrollable) {
-    return (
-      <div
-        ref={scrollRef}
-        className="flex scrollbar-hide overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
-        {periods.map((p, i) => (
-          <div key={i} className="snap-start shrink-0 w-full">
-            <QuarterCalendar
-              start={p.start}
-              end={p.end}
-              data={data}
-              cellSize={QC_MOBILE}
-            />
-          </div>
-        ))}
-      </div>
-    );
-  }
+	if (scrollable) {
+		return (
+			<div
+				ref={scrollRef}
+				className="scrollbar-hide flex snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden"
+			>
+				{periods.map((p, i) => (
+					<div key={i} className="w-full shrink-0 snap-start">
+						<QuarterCalendar start={p.start} end={p.end} data={data} cellSize={QC_MOBILE} />
+					</div>
+				))}
+			</div>
+		);
+	}
 
-  return (
-    <svg
-      viewBox={`0 0 ${D_W} ${D_H}`}
-      width="100%"
-      style={{ display: "block" }}
-      className="text-foreground dark:text-white"
-    >
-      {desktopMonths.map((m) => (
-        <g key={+m} className="month-group">
-          {timeDay.range(m, timeMonth.offset(m, 1)).map((d) => {
-            const isToday = +d === today;
-            const isPast = +d < today;
-            const label = d.toLocaleDateString("fr", {
-              weekday: "short",
-              day: "numeric",
-              month: "short",
-            });
-            const dateKey = d.toLocaleDateString("en-CA");
-            const articleForDate = data?.[dateKey];
-            const isArticleForDate = !!articleForDate;
+	return (
+		<svg
+			viewBox={`0 0 ${D_W} ${D_H}`}
+			width="100%"
+			style={{ display: "block" }}
+			className="text-foreground dark:text-white"
+		>
+			{desktopMonths.map((m) => (
+				<g key={+m} className="month-group">
+					{timeDay.range(m, timeMonth.offset(m, 1)).map((d) => {
+						const isToday = +d === today;
+						const isPast = +d < today;
+						const label = d.toLocaleDateString("fr", {
+							weekday: "short",
+							day: "numeric",
+							month: "short",
+						});
+						const dateKey = d.toLocaleDateString("en-CA");
+						const articleForDate = data?.[dateKey];
+						const isArticleForDate = !!articleForDate;
 
-            return (
-              <Tooltip key={+d}>
-                <TooltipTrigger
-                  render={
-                    <g
-                      style={{
-                        cursor: isPast || isToday ? "pointer" : "default",
-                      }}
-                    />
-                  }
-                >
-                  {isToday ? (
-                    <a href="#">
-                      <rect
-                        width={D_CELL - 2}
-                        height={D_CELL - 2}
-                        x={getDCx(d) - (D_CELL - 2) / 2}
-                        y={getDCy(d) - (D_CELL - 2) / 2}
-                        fill="#5dff6d"
-                        className="dark:fill-emerald-400"
-                      />
-                    </a>
-                  ) : isPast && isArticleForDate ? (
-                    <a href="#">
-                      <circle
-                        r={D_CELL / 2 - 1}
-                        fill="var(--color-amber-500)"
-                        opacity={1}
-                        cx={getDCx(d)}
-                        cy={getDCy(d)}
-                      />
-                    </a>
-                  ) : (
-                    <circle
-                      className="cursor-default"
-                      r={D_CELL / 2 - 1}
-                      fill="currentColor"
-                      opacity={isPast ? 0.2 : 1}
-                      cx={getDCx(d)}
-                      cy={getDCy(d)}
-                    />
-                  )}
-                </TooltipTrigger>
-                <TooltipContent className="pointer-events-none">
-                  <div className="flex flex-col gap-0.5 items-center">
-                    <p className="font-sans text-sm">{label}</p>
-                    {articleForDate?.count && (
-                      <span>article(s) {articleForDate.count}</span>
-                    )}
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
-        </g>
-      ))}
-      <g
-        ref={axisRef}
-        className="text-sm font-sans text-muted-foreground dark:text-muted-foreground"
-        transform={`translate(0, ${D_H - D_MARGIN[2]})`}
-      />
-    </svg>
-  );
+						return (
+							<Tooltip key={+d}>
+								<TooltipTrigger
+									render={
+										<g
+											style={{
+												cursor: isPast || isToday ? "pointer" : "default",
+											}}
+										/>
+									}
+								>
+									{isToday ? (
+										<a href="#">
+											<rect
+												width={D_CELL - 2}
+												height={D_CELL - 2}
+												x={getDCx(d) - (D_CELL - 2) / 2}
+												y={getDCy(d) - (D_CELL - 2) / 2}
+												fill="#5dff6d"
+												className="dark:fill-emerald-400"
+											/>
+										</a>
+									) : isPast && isArticleForDate ? (
+										<a href="#">
+											<circle
+												r={D_CELL / 2 - 1}
+												fill="var(--color-amber-500)"
+												opacity={1}
+												cx={getDCx(d)}
+												cy={getDCy(d)}
+											/>
+										</a>
+									) : (
+										<circle
+											className="cursor-default"
+											r={D_CELL / 2 - 1}
+											fill="currentColor"
+											opacity={isPast ? 0.2 : 1}
+											cx={getDCx(d)}
+											cy={getDCy(d)}
+										/>
+									)}
+								</TooltipTrigger>
+								<TooltipContent className="pointer-events-none">
+									<div className="flex flex-col items-center gap-0.5">
+										<p className="font-sans text-sm">{label}</p>
+										{articleForDate?.count && <span>article(s) {articleForDate.count}</span>}
+									</div>
+								</TooltipContent>
+							</Tooltip>
+						);
+					})}
+				</g>
+			))}
+			<g
+				ref={axisRef}
+				className="text-muted-foreground dark:text-muted-foreground font-sans text-sm"
+				transform={`translate(0, ${D_H - D_MARGIN[2]})`}
+			/>
+		</svg>
+	);
 }

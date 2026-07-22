@@ -1,24 +1,30 @@
 {
-  "name": "veille_tech",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "clean": "turbo run clean",
-    "dev": "turbo run dev",
-    "host": "turbo run dev --host",
-    "build": "turbo run build"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.28.2",
-  "devDependencies": {
-    "turbo": "^2.9.5"
-  },
-  "pnpm": {
-    "overrides": {
-      "vite-plugin-pwa>vite": "^8.0.14"
-    }
-  }
+	"name": "veille_tech",
+	"version": "1.0.0",
+	"keywords": [],
+	"license": "ISC",
+	"author": "",
+	"type": "module",
+	"main": "index.js",
+	"scripts": {
+		"clean": "turbo run clean",
+		"dev": "turbo run dev",
+		"host": "turbo run dev --host",
+		"build": "turbo run build",
+		"lint": "oxlint",
+		"format": "oxfmt --write .",
+		"format:check": "oxfmt --check ."
+	},
+	"devDependencies": {
+		"oxfmt": "^0.60.0",
+		"oxlint": "^1.75.0",
+		"turbo": "^2.10.6"
+	},
+	"packageManager": "pnpm@10.28.2",
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild",
+			"msw"
+		]
+	}
 }
