@@ -46,6 +46,7 @@
 		"shiki": "^4.1.0",
 		"typescript": "catalog:",
 		"vite": "catalog:",
-		"vite-plugin-pwa": "catalog:"
+		"vite-plugin-pwa": "catalog:",
+		"wrangler": "^4.113.0"
 	}
 }
