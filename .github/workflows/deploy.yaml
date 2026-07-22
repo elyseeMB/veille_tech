@@ -1,9 +1,8 @@
-name: "deploy-beta"
+name: "DEPLOY-BETA"
 
 on:
   push:
-    branches:
-      - "develop"
+    branches: ["develop"]
     paths:
       - "apps/root/**"
   workflow_dispatch:
@@ -18,12 +17,15 @@ jobs:
         with:
           node-version: lts/*
           cache: pnpm
+
       - run: pnpm install --frozen-lockfile
-      - run: pnpm add -wD wrangler@latest
-      - run: pnpm --filter=root build -- --mode=beta
+
+      - name: Build
+        run: pnpm --filter=root build --mode=beta
         env:
           VITE_API_URL: https://api.veille.safecoffi.app
           VITE_ENV: beta
+
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_VEILLE_API_TOKEN }}
