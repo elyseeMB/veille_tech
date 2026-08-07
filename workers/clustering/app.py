@@ -3,17 +3,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-import time
+
 import boto3
-from collections import defaultdict
+
 from container import Container
-from processing import MetadataInput
-from processing.namers.base import NamingInput
-from articles import ClusterRow, EmbeddingRow
-from videos import VideoEmbeddingRow
-from shared import EmbeddingResult
 from logger import get_logger
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from pipeline.cluster_naming import build_clusters, group_by_label
+from pipeline.database import save_embeddings
+from pipeline.embeddings import embed_items
+from pipeline.metadata import extract_missing_metadata
+from pipeline.scraping import scrape_and_chunk
+from shared import EmbeddingResult
 
 log = get_logger("app")
 container = None
@@ -37,155 +37,6 @@ def load_secrets():
                 os.environ[env_key] = resp["Parameter"]["Value"]
             except Exception as e:
                 log.error(f"failed to load ssm parameter {ssm_path}: {e}")
-
-
-def scrape_and_chunk(
-    items,
-    scrape_fn,
-    id_field,
-    url_field,
-    skip_fn,
-    chunker,
-    embedder,
-    metadata_extractor_fn,
-    item_type,
-):
-    def process_item(item):
-        try:
-            has_embedding = getattr(item, "embedding", None) is not None
-            has_keywords = bool(getattr(item, "keywords", []))
-            has_topic = bool(
-                getattr(item, "category", "") or getattr(item, "main_topic", "")
-            )
-
-            if has_embedding and has_keywords and has_topic:
-                log.debug(f"Cache hit: skipping '{item.title}'")
-                return {
-                    "id": getattr(item, id_field),
-                    "title": item.title,
-                    "full_text": "",
-                    "excerpt": "",
-                    "chunks": getattr(item, "chunks", []),
-                    "main_topic": getattr(item, "category", "")
-                    or getattr(item, "main_topic", ""),
-                    "keywords": getattr(item, "keywords", []),
-                    "type": item_type,
-                    "existing_embedding": item.embedding,
-                }
-
-            url_or_id = getattr(item, url_field)
-            scraped = scrape_fn(url_or_id)
-            if scraped.success and scraped.value and scraped.value.full_text:
-                chunks = chunker.chunk(scraped.value.full_text)
-                chunks = chunker.select_best_chunks(item.title, chunks, embedder)
-                chunks = chunks[:3]
-
-                log.debug(f"--- BEST CHUNKS : {item.title} ---")
-                for idx, c in enumerate(chunks):
-                    log.debug(f"  Chunk {idx + 1}: {c[:2]}...")
-
-                if not chunks:
-                    skip_fn(getattr(item, id_field))
-                    return None
-
-                existing_category = getattr(item, "category", "") or getattr(
-                    item, "main_topic", ""
-                )
-
-                return {
-                    "id": getattr(item, id_field),
-                    "title": item.title,
-                    "full_text": scraped.value.full_text,
-                    "excerpt": " ".join(chunks[:5]),
-                    "chunks": chunks,
-                    "main_topic": existing_category,
-                    "keywords": getattr(item, "keywords", []) or [],
-                    "type": item_type,
-                    "existing_embedding": None,
-                }
-            else:
-                log.warning(f"scraping failed for {url_or_id}, skipping")
-                skip_fn(getattr(item, id_field))
-                return None
-        except Exception as e:
-            log.error(f"error scraping {getattr(item, url_field)}: {e}")
-            skip_fn(getattr(item, id_field))
-            return None
-
-    result = []
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        futures = {executor.submit(process_item, item): item for item in items}
-        for future in as_completed(futures):
-            item_result = future.result()
-            if item_result:
-                result.append(item_result)
-
-    for item in result:
-        if item["keywords"] and item["main_topic"].strip():
-            log.debug(
-                f"keywords + category exist for '{item['title']}' — skipping extraction"
-            )
-            continue
-
-        meta_result = metadata_extractor_fn(
-            MetadataInput(title=item["title"], chunks=item["chunks"])
-        )
-        if meta_result.success:
-            item["main_topic"] = meta_result.value.main_topic
-            item["keywords"] = meta_result.value.keywords
-            item["existing_embedding"] = None
-        else:
-            log.warning(
-                f"metadata extraction failed for '{item['title']}': {meta_result.error}"
-            )
-
-        time.sleep(0.5)
-    return result
-
-
-def embed_items(items, embedder):
-    to_embed = []
-    for item in items:
-        if item.get("existing_embedding"):
-            item["vector"] = item["existing_embedding"]
-        else:
-            to_embed.append(item)
-
-    log.info(
-        f"{len(items) - len(to_embed)} embeddings récupérés depuis DB, {len(to_embed)} à calculer"
-    )
-
-    if not to_embed:
-        return items, None
-
-    texts_to_embed = []
-    for item in to_embed:
-        tags_parts = []
-        if item["main_topic"]:
-            tags_parts.append(item["main_topic"])
-        tags_parts.extend(item["keywords"])
-        tags_str = ", ".join(tags_parts) if tags_parts else ""
-
-        chunks_str = " ".join(item["chunks"])
-        enriched_text = (
-            f"Title: {item['title']} | Tags: {tags_str} | Content: {chunks_str}"
-            if tags_str
-            else f"Title: {item['title']} | Content: {chunks_str}"
-        )
-        texts_to_embed.append(enriched_text)
-        log.info(f"enriched text for '{item['title']}': {enriched_text[:150]}...")
-
-    embeddings = embedder.embed_in_batches(texts_to_embed, batch_size=50)
-    if not embeddings.success:
-        return None, embeddings.error
-
-    for i, vector in enumerate(embeddings.value.vectors):
-        to_embed[i]["vector"] = vector
-        log.info(
-            f"embedding generated for '{to_embed[i]['title']}' -> shape: {len(vector)}, preview: {vector[:5]}..."
-        )
-
-    return items, None
 
 
 def handler(event, context):
@@ -219,9 +70,9 @@ def handler(event, context):
             skip_fn=container.repository.mark_as_skipped,
             chunker=container.chunker,
             embedder=container.embedder,
-            metadata_extractor_fn=container.metadata_extractor.extract,
             item_type="article",
         )
+        extract_missing_metadata(scraped_articles, container.metadata_extractor.extract)
         log.info(
             f"scraped {len(scraped_articles)}/{len(articles.value or [])} articles"
         )
@@ -239,8 +90,10 @@ def handler(event, context):
                 skip_fn=container.video_repository.mark_as_skipped,
                 chunker=container.chunker,
                 embedder=container.embedder,
-                metadata_extractor_fn=container.metadata_extractor.extract,
                 item_type="video",
+            )
+            extract_missing_metadata(
+                scraped_videos, container.metadata_extractor.extract
             )
             log.info(f"scraped {len(scraped_videos)}/{len(videos.value or [])} videos")
 
@@ -261,40 +114,8 @@ def handler(event, context):
 
         log.info("embeddings done")
 
-        # ── 4. Sauvegarder les embeddings ─────────────────────────────────
-        log.info(f"saving embeddings...")
-        saved_count = 0
-        for item in all_items:
-            # Skip si embedding récupéré depuis DB — pas besoin de re-sauvegarder
-            if item.get("existing_embedding"):
-                continue
-
-            if item["type"] == "article":
-                saved = container.repository.save_embedding(
-                    EmbeddingRow(
-                        article_id=item["id"],
-                        vector=item["vector"],
-                        main_topic=item["main_topic"],
-                        keywords=item["keywords"],
-                    )
-                )
-            else:
-                saved = container.video_repository.save_embedding(
-                    VideoEmbeddingRow(
-                        video_id=item["id"],
-                        vector=item["vector"],
-                        main_topic=item["main_topic"],
-                        keywords=item["keywords"],
-                    )
-                )
-            if not saved.success:
-                log.error(saved.error)
-            else:
-                saved_count += 1
-
-        log.info(
-            f"{saved_count} embeddings saved, {len(all_items) - saved_count} reused from DB"
-        )
+        # ── 4. Save embeddings ────────────────────────────────────────────
+        save_embeddings(all_items, container.repository, container.video_repository)
 
         # ── 5. Clustering ─────────────────────────────────────────────────
         if len(all_items) < 5:
@@ -309,73 +130,17 @@ def handler(event, context):
             log.error(clusters.error)
             return
 
-        # ── 6. Grouper par cluster ────────────────────────────────────────
-        groups = defaultdict(list)
-        noise_count = 0
-        for item, label in zip(all_items, clusters.value.labels):
-            if label == -1:
-                noise_count += 1
-                continue
-            groups[label].append(item)
-
-        log.info(
-            f"clustering result: {len(groups)} clusters, {noise_count} noise articles"
-        )
-        for label_id, members in groups.items():
-            log.info(
-                f"  cluster {label_id}: {len(members)} articles — ex: {members[0]['title'][:60]}"
-            )
+        # ── 6. Group by cluster ───────────────────────────────────────────
+        groups, _ = group_by_label(all_items, clusters.value.labels)
 
         if not groups:
             log.warning("no clusters formed")
             return
 
-        # ── 7. Nommer + sauvegarder ───────────────────────────────────────
-        log.info(f"naming {len(groups)} clusters...")
-
-        cluster_rows = []
-
-        for label, members in groups.items():
-
-            score = clusters.value.cohesion_scores.get(label, 0)
-            log.info(
-                f"cluster {label} | cohesion={score:.3f} | {len(members)} articles | ex: {members[0]['title'][:50]}"
-            )
-
-            naming = container.namer.generate(
-                NamingInput(
-                    titles=[m["title"] for m in members[:10]],
-                    excerpts=[
-                        f"Category: {m['main_topic']} | Content: {' '.join(m['chunks'][:4])[:1000]}"
-                        for m in members[:10]
-                    ],
-                )
-            )
-
-            if not naming.success:
-                log.error(f"naming error: {naming.error}")
-                continue
-
-            log.info(f"cluster named: '{naming.value.label}'")
-
-            outliers = set(naming.value.outlier_titles)
-            if outliers:
-                log.info(
-                    f"cluster {label}: {len(outliers)} outliers removed — {outliers}"
-                )
-
-            final_members = [m for m in members if m["title"] not in outliers]
-
-            cluster_rows.append(
-                ClusterRow(
-                    label=naming.value.label,
-                    description=naming.value.description,
-                    article_ids=[
-                        m["id"] for m in final_members if m["type"] == "article"
-                    ],
-                    video_ids=[m["id"] for m in final_members if m["type"] == "video"],
-                )
-            )
+        # ── 7. Name + save ────────────────────────────────────────────────
+        cluster_rows = build_clusters(
+            groups, clusters.value.cohesion_scores, container.namer
+        )
 
         log.info(f"saving {len(cluster_rows)} clusters...")
         saved = container.repository.save_clusters(cluster_rows)

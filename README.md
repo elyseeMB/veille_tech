@@ -12,22 +12,22 @@ The project combines a React frontend, a Go backend, Python workers for NLP/ML p
 
 ## Features
 
-* Collect technology content from RSS feeds
-* Collect YouTube content
-* Automatically enrich content with AI-generated metadata
-* Extract topics and keywords
-* Generate semantic embeddings
-* Store and query vector data with PostgreSQL
-* Automatically group related content using clustering
-* Detect outliers/noise during clustering
-* Generate names and descriptions for clusters
-* Expose the data through a Go HTTP API
-* Provide a responsive React web application
-* Progressive Web App support
-* Run the backend locally or through AWS Lambda
-* Automate ingestion and clustering with scheduled AWS functions
-* Manage infrastructure through AWS SAM
-* Run the complete development stack with Docker
+- Collect technology content from RSS feeds
+- Collect YouTube content
+- Automatically enrich content with AI-generated metadata
+- Extract topics and keywords
+- Generate semantic embeddings
+- Store and query vector data with PostgreSQL
+- Automatically group related content using clustering
+- Detect outliers/noise during clustering
+- Generate names and descriptions for clusters
+- Expose the data through a Go HTTP API
+- Provide a responsive React web application
+- Progressive Web App support
+- Run the backend locally or through AWS Lambda
+- Automate ingestion and clustering with scheduled AWS functions
+- Manage infrastructure through AWS SAM
+- Run the complete development stack with Docker
 
 ---
 
@@ -202,8 +202,8 @@ The Go `fetcher` is responsible for retrieving new content from configured sourc
 
 It can run:
 
-* locally as a Go process;
-* as an AWS Lambda function.
+- locally as a Go process;
+- as an AWS Lambda function.
 
 The same application entry point supports both execution environments.
 
@@ -215,14 +215,14 @@ The Python clustering worker processes content that has not yet been enriched.
 
 The processing pipeline includes:
 
-* scraping;
-* text extraction;
-* chunking;
-* metadata extraction;
-* embedding generation;
-* clustering;
-* outlier detection;
-* cluster naming.
+- scraping;
+- text extraction;
+- chunking;
+- metadata extraction;
+- embedding generation;
+- clustering;
+- outlier detection;
+- cluster naming.
 
 The worker is designed to run locally as well as inside AWS Lambda using a container image.
 
@@ -250,10 +250,10 @@ The clustering pipeline uses dimensionality reduction and density-based clusteri
 
 The main components include:
 
-* NumPy
-* UMAP
-* HDBSCAN
-* PostgreSQL vector storage
+- NumPy
+- UMAP
+- HDBSCAN
+- PostgreSQL vector storage
 
 HDBSCAN allows the system to identify both meaningful groups and content that does not clearly belong to a cluster.
 
@@ -340,16 +340,16 @@ apps/root
 
 It is built with:
 
-* React
-* TypeScript
-* Vite
-* Tailwind CSS
-* React Router
-* TanStack Query
-* Zustand
-* Framer Motion
-* D3
-* PWA tooling
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- TanStack Query
+- Zustand
+- Framer Motion
+- D3
+- PWA tooling
 
 The frontend communicates with the Go API and provides the interface for browsing and exploring the collected technology content.
 
@@ -386,16 +386,16 @@ Local PostgreSQL infrastructure is available through Docker.
 
 Install the following tools:
 
-* Git
-* Go
-* Node.js
-* pnpm
-* Python
-* Docker
-* Docker Compose
-* Make
-* AWS CLI — only required for AWS deployment
-* AWS SAM CLI — only required for SAM deployment
+- Git
+- Go
+- Node.js
+- pnpm
+- Python
+- Docker
+- Docker Compose
+- Make
+- AWS CLI — only required for AWS deployment
+- AWS SAM CLI — only required for SAM deployment
 
 The JavaScript workspace currently uses pnpm and Turborepo.
 
@@ -605,9 +605,9 @@ AWS
 
 The SAM template defines:
 
-* `veille-fetcher`
-* `veille-gateway`
-* `veille-clustering`
+- `veille-fetcher`
+- `veille-gateway`
+- `veille-clustering`
 
 The fetcher uses AWS Systems Manager Parameter Store for sensitive configuration such as the database URL and YouTube API key.
 

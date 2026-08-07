@@ -1,7 +1,20 @@
 from pydantic import BaseModel
-from typing import TypeVar, Generic, Optional, List
+from typing import TypeVar, Generic, Optional, List, TypedDict
 
 T = TypeVar("T")
+
+
+class ScrapedItem(TypedDict, total=False):
+    id: str
+    title: str
+    full_text: str
+    excerpt: str
+    chunks: List[str]
+    main_topic: str
+    keywords: List[str]
+    type: str
+    existing_embedding: Optional[List[float]]
+    vector: List[float]
 
 
 class Result(BaseModel, Generic[T]):
@@ -43,10 +56,11 @@ class MetadataResult(BaseModel):
 
 
 __all__ = [
-    "Result",
-    "EmbeddingResult",
     "ClusterResult",
+    "EmbeddingResult",
+    "MetadataResult",
     "NamingResult",
     "NamingResultGemini",
-    "MetadataResult",
+    "Result",
+    "ScrapedItem",
 ]
