@@ -1,4 +1,4 @@
-# VEILLE TECH
+# Veille Tech
 
 My personal space to track and organize everything I find interesting.
 
